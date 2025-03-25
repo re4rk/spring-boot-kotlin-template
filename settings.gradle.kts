@@ -7,6 +7,7 @@ include(
     "tests:api-docs",
     "support:logging",
     "support:monitoring",
+    "support:notification:sms",
     "clients:client-example",
     "clients:client-payment",
     "clients:client-coolsms",
@@ -34,8 +35,3 @@ pluginManagement {
         }
     }
 }
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-}
-include("support:notifiaction:sms")
-findProject(":support:notifiaction:sms")?.name = "sms"
