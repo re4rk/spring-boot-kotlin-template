@@ -8,7 +8,8 @@ include(
     "support:logging",
     "support:monitoring",
     "clients:client-example",
-    "clients:client-payment"
+    "clients:client-payment",
+    "clients:client-coolsms",
 )
 
 pluginManagement {

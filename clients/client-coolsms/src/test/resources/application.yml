@@ -1,0 +1,6 @@
+spring.application.name: client-coolsms-test
+
+spring:
+  config:
+    import:
+      - client-coolsms.yml
