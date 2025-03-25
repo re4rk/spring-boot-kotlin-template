@@ -1,4 +1,6 @@
 dependencies {
-    implementation("io.micrometer:micrometer-tracing-bridge-brave")
+    api("io.micrometer:micrometer-tracing")
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+    implementation("io.micrometer:micrometer-observation")
     implementation("io.sentry:sentry-logback:${property("sentryVersion")}")
 }
