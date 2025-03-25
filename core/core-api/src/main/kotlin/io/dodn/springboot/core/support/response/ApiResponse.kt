@@ -1,9 +1,11 @@
 package io.dodn.springboot.core.support.response
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.dodn.springboot.core.support.error.ErrorMessage
 import io.dodn.springboot.core.support.error.ErrorType
 import org.slf4j.MDC
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ApiResponse<T> private constructor(
     val result: ResultType,
     val data: T? = null,
