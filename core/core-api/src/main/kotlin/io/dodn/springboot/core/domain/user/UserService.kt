@@ -10,7 +10,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,14 +24,14 @@ class UserService(
         val user = findByEmail(email)
 
         if (user.status != UserStatus.ACTIVE) {
-            throw UsernameNotFoundException("User is not active: $email")
+            throw CoreException(ErrorType.USER_INACTIVE)
         }
 
         val authorities = listOf(SimpleGrantedAuthority("ROLE_${user.role.name}"))
 
         // We need to get the encoded password from the UserEntity
         val userEntity = userRepository.findByEmail(email)
-            .orElseThrow { UsernameNotFoundException("User not found with email: $email") }
+            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
 
         return User.builder()
             .username(user.email)
