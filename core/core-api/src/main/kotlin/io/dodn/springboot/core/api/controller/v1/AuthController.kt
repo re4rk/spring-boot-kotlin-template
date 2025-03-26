@@ -1,4 +1,4 @@
-package io.dodn.springboot.core.api.controller
+package io.dodn.springboot.core.api.controller.v1
 
 import io.dodn.springboot.core.api.auth.AuthService
 import io.dodn.springboot.core.domain.user.AuthResponse
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 class AuthController(private val authService: AuthService) {
 
     @PostMapping("/register")

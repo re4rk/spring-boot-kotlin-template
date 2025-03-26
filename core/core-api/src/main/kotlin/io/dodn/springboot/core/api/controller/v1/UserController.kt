@@ -1,4 +1,4 @@
-package io.dodn.springboot.core.api.controller
+package io.dodn.springboot.core.api.controller.v1
 
 import io.dodn.springboot.core.api.auth.AuthService
 import io.dodn.springboot.core.domain.user.UserInfo
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 class UserController(private val authService: AuthService) {
 
     @GetMapping("/profile")
