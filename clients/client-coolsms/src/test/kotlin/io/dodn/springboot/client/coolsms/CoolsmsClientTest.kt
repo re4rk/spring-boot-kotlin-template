@@ -14,16 +14,16 @@ class CoolsmsClientTest(
         val exception = assertThrows<RetryableException> {
             coolsmsClient.sendSms("01012345678", "01098765432", "Hello, SMS test")
         }
-        
+
         assertThat(exception).isExactlyInstanceOf(RetryableException::class.java)
     }
-    
+
     @Test
     fun shouldBeThrownExceptionWhenSendLms() {
         val exception = assertThrows<RetryableException> {
             coolsmsClient.sendLms("01012345678", "01098765432", "Test Subject", "Hello, LMS test with longer content")
         }
-        
+
         assertThat(exception).isExactlyInstanceOf(RetryableException::class.java)
     }
 }

@@ -16,7 +16,7 @@ class CoolsmsClient internal constructor(
             to = to,
             from = from,
             text = text,
-            type = "SMS"
+            type = "SMS",
         )
         return coolsmsApi.sendSms(request).toResult()
     }
@@ -29,7 +29,7 @@ class CoolsmsClient internal constructor(
             from = from,
             text = text,
             subject = subject,
-            type = "LMS"
+            type = "LMS",
         )
         return coolsmsApi.sendSms(request).toResult()
     }

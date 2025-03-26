@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/orders")
 class OrderController(
-    private val orderService: OrderService
+    private val orderService: OrderService,
 ) {
     @PostMapping
     fun createOrder(@RequestBody request: CreateOrderRequestDto): ApiResponse<OrderResponseDto> {
@@ -20,7 +20,7 @@ class OrderController(
         val result = orderService.createOrder(orderData)
         return ApiResponse.success(OrderResponseDto.from(result))
     }
-    
+
     @PostMapping("/external-payment")
     fun createOrderWithExternalPayment(@RequestBody request: CreateOrderRequestDto): ApiResponse<OrderResponseDto> {
         val orderData = request.toOrderData()

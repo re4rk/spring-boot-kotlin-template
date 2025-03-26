@@ -16,20 +16,20 @@ class SmsSender(
 
     fun sendSms(request: SmsRequest): SmsResponse {
         log.info("Sending SMS to {}", request.to)
-        
+
         val sender = request.from ?: coolsmsProperties.defaultSender
-        
+
         val smsResult = if (request.subject != null) {
             coolsmsClient.sendLms(request.to, sender, request.subject, request.content)
         } else {
             coolsmsClient.sendSms(request.to, sender, request.content)
         }
-        
+
         return SmsResponse(
             messageId = smsResult.messageId,
             success = smsResult.success,
             statusCode = smsResult.statusCode,
-            statusMessage = smsResult.statusMessage
+            statusMessage = smsResult.statusMessage,
         )
     }
 }

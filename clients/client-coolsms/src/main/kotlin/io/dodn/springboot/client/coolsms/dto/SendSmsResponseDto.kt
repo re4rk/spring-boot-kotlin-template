@@ -19,7 +19,7 @@ internal data class SendSmsResponseDto(
             messageId = messageId,
             success = success,
             statusCode = statusCode,
-            statusMessage = statusMessage
+            statusMessage = statusMessage,
         )
     }
 }

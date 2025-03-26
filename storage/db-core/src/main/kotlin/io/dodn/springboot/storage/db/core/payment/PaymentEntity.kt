@@ -10,16 +10,16 @@ import jakarta.persistence.Table
 class PaymentEntity(
     @Column(nullable = false)
     val orderId: Long,
-    
+
     @Column(nullable = false)
     val userId: Long,
-    
+
     @Column(nullable = false)
     val amount: Long,
-    
+
     @Column(nullable = false)
     var status: String,
-    
+
     @Column
-    var externalPaymentId: String? = null
+    var externalPaymentId: String? = null,
 ) : BaseEntity()

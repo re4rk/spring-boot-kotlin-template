@@ -6,14 +6,14 @@ data class CreateOrderRequestDto(
     val userId: Long,
     val productId: Long,
     val quantity: Int,
-    val amount: Long
+    val amount: Long,
 ) {
     fun toOrderData(): OrderData {
         return OrderData(
             userId = userId,
             productId = productId,
             quantity = quantity,
-            amount = amount
+            amount = amount,
         )
     }
 }

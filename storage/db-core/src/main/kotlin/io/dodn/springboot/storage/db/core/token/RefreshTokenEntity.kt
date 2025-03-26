@@ -16,5 +16,5 @@ class RefreshTokenEntity(
     val userId: Long,
 
     @Column(nullable = false)
-    val expiresAt: LocalDateTime
+    val expiresAt: LocalDateTime,
 ) : BaseEntity()

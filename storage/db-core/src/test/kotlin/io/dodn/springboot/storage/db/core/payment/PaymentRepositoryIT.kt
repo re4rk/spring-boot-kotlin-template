@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.context.jdbc.Sql
 
 class PaymentRepositoryIT(
-    private val paymentRepository: PaymentRepository
+    private val paymentRepository: PaymentRepository,
 ) : CoreDbContextTest() {
 
     @Test
@@ -16,12 +16,12 @@ class PaymentRepositoryIT(
             orderId = 1L,
             userId = 100L,
             amount = 50000L,
-            status = "PROCESSING"
+            status = "PROCESSING",
         )
-        
+
         // When
         val savedPayment = paymentRepository.save(payment)
-        
+
         // Then
         assertThat(savedPayment.id).isPositive()
         assertThat(savedPayment.orderId).isEqualTo(1L)
@@ -29,10 +29,10 @@ class PaymentRepositoryIT(
         assertThat(savedPayment.amount).isEqualTo(50000L)
         assertThat(savedPayment.status).isEqualTo("PROCESSING")
         assertThat(savedPayment.externalPaymentId).isNull()
-        
+
         // When
         val foundPayment = paymentRepository.findById(savedPayment.id).orElseThrow()
-        
+
         // Then
         assertThat(foundPayment.id).isEqualTo(savedPayment.id)
         assertThat(foundPayment.orderId).isEqualTo(1L)
@@ -40,7 +40,7 @@ class PaymentRepositoryIT(
         assertThat(foundPayment.amount).isEqualTo(50000L)
         assertThat(foundPayment.status).isEqualTo("PROCESSING")
     }
-    
+
     @Test
     fun `should update payment status and external ID`() {
         // Given
@@ -48,21 +48,21 @@ class PaymentRepositoryIT(
             orderId = 1L,
             userId = 100L,
             amount = 50000L,
-            status = "PROCESSING"
+            status = "PROCESSING",
         )
         val savedPayment = paymentRepository.save(payment)
-        
+
         // When
         savedPayment.status = "SUCCESS"
         savedPayment.externalPaymentId = "payment-123"
         paymentRepository.save(savedPayment)
-        
+
         // Then
         val updatedPayment = paymentRepository.findById(savedPayment.id).orElseThrow()
         assertThat(updatedPayment.status).isEqualTo("SUCCESS")
         assertThat(updatedPayment.externalPaymentId).isEqualTo("payment-123")
     }
-    
+
     @Test
     // Given
     @Sql("/test-data/payments.sql")
@@ -70,7 +70,7 @@ class PaymentRepositoryIT(
         // When
         val payments = paymentRepository.findAll()
             .filter { it.orderId == 100L }
-        
+
         // Then
         assertThat(payments).isNotEmpty()
         assertThat(payments[0].orderId).isEqualTo(100L)

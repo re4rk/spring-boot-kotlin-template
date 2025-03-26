@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 class UserDetailsServiceImpl(
     private val userService: UserService,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) : UserDetailsService {
 
     override fun loadUserByUsername(email: String): UserDetails {

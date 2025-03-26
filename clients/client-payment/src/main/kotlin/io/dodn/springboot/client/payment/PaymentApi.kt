@@ -15,7 +15,7 @@ internal interface PaymentApi {
         consumes = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun processPayment(@RequestBody request: PaymentRequestDto): PaymentResponseDto
-    
+
     @RequestMapping(
         method = [RequestMethod.POST],
         value = ["/api/v1/payments/{paymentId}/cancel"],

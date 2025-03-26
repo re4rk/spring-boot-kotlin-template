@@ -7,22 +7,22 @@ import jakarta.validation.constraints.NotBlank
 internal data class SendSmsRequestDto(
     @field:NotBlank
     val apiKey: String,
-    
+
     @field:NotBlank
     val apiSecret: String,
-    
+
     @field:NotBlank
     val to: String,
-    
+
     @field:NotBlank
     val from: String,
-    
+
     @field:NotBlank
     val text: String,
-    
+
     @field:NotBlank
-    val type: String, // "SMS", "LMS", "MMS"
-    
+    val type: String,
+
     val subject: String? = null,
     val imageId: String? = null,
 )

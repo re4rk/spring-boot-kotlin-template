@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 @Service
 class TokenService(
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
 
     @Transactional
@@ -24,7 +24,7 @@ class TokenService(
         val refreshToken = RefreshTokenEntity(
             token = token,
             userId = user.id,
-            expiresAt = expiresAt
+            expiresAt = expiresAt,
         )
 
         refreshTokenRepository.save(refreshToken)

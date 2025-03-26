@@ -24,7 +24,7 @@ class AuthService(
     private val tokenService: TokenService,
     private val jwtService: JwtService,
     private val userDetailsService: UserDetailsService,
-    private val authenticationManager: AuthenticationManager
+    private val authenticationManager: AuthenticationManager,
 ) {
 
     @Transactional
@@ -46,7 +46,7 @@ class AuthService(
         return AuthResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
-            user = userInfo
+            user = userInfo,
         )
     }
 
@@ -54,7 +54,7 @@ class AuthService(
     fun login(request: UserLoginRequest): AuthResponse {
         // Authenticate user through Spring Security
         authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(request.email, request.password)
+            UsernamePasswordAuthenticationToken(request.email, request.password),
         )
 
         // Verify credentials and update last login time
@@ -74,7 +74,7 @@ class AuthService(
         return AuthResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
-            user = userInfo
+            user = userInfo,
         )
     }
 
@@ -103,7 +103,7 @@ class AuthService(
             return AuthResponse(
                 accessToken = accessToken,
                 refreshToken = refreshToken,
-                user = userInfo
+                user = userInfo,
             )
         } catch (e: Exception) {
             throw CoreException(ErrorType.INVALID_CREDENTIALS)

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 class OrderService(
     private val orderRepository: OrderRepository,
     private val paymentService: PaymentService,
-    private val notificationSender: NotificationSender
+    private val notificationSender: NotificationSender,
 ) {
     @Transactional
     fun createOrder(orderData: OrderData): OrderResult {
@@ -23,7 +23,7 @@ class OrderService(
             productId = orderData.productId,
             quantity = orderData.quantity,
             amount = orderData.amount,
-            status = "PENDING"
+            status = "PENDING",
         )
         val savedOrder = orderRepository.save(order)
 
@@ -32,7 +32,7 @@ class OrderService(
             val paymentResult = paymentService.processPayment(
                 userId = orderData.userId,
                 orderId = savedOrder.id,
-                amount = orderData.amount
+                amount = orderData.amount,
             )
 
             // 3. 주문 상태 업데이트
@@ -46,7 +46,7 @@ class OrderService(
             return OrderResult(
                 orderId = savedOrder.id,
                 status = savedOrder.status,
-                paymentId = paymentResult.paymentId
+                paymentId = paymentResult.paymentId,
             )
         } catch (e: Exception) {
             savedOrder.updateStatus("FAILED")
@@ -63,7 +63,7 @@ class OrderService(
             productId = orderData.productId,
             quantity = orderData.quantity,
             amount = orderData.amount,
-            status = "PENDING"
+            status = "PENDING",
         )
         val savedOrder = orderRepository.save(order)
 
@@ -72,7 +72,7 @@ class OrderService(
             val paymentResult = paymentService.processExternalPayment(
                 userId = orderData.userId,
                 orderId = savedOrder.id,
-                amount = orderData.amount
+                amount = orderData.amount,
             )
 
             // 3. 주문 상태 업데이트
@@ -88,13 +88,13 @@ class OrderService(
             // 4. 알림 발송
             notificationSender.sendSmsNotification(
                 phoneNumber = "01012345678",
-                message = "주문이 완료되었습니다."
+                message = "주문이 완료되었습니다.",
             )
 
             return OrderResult(
                 orderId = savedOrder.id,
                 status = savedOrder.status,
-                paymentId = paymentResult.paymentId
+                paymentId = paymentResult.paymentId,
             )
         } catch (e: Exception) {
             // 외부 결제가 성공했으나 이후 처리가 실패한 경우

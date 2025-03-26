@@ -10,18 +10,18 @@ import jakarta.persistence.Table
 class OrderEntity(
     @Column(nullable = false)
     val userId: Long,
-    
+
     @Column(nullable = false)
     val productId: Long,
-    
+
     @Column(nullable = false)
     val quantity: Int,
-    
+
     @Column(nullable = false)
     val amount: Long,
-    
+
     @Column(nullable = false)
-    var status: String
+    var status: String,
 ) : BaseEntity() {
 
     fun updateStatus(newStatus: String) {
