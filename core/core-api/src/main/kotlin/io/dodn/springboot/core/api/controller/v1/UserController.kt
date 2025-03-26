@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.api.controller.v1
 
-import io.dodn.springboot.core.api.auth.AuthService
+import io.dodn.springboot.core.api.auth.AuthFacade
 import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.http.ResponseEntity
@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/users")
-class UserController(private val authService: AuthService) {
+class UserController(private val authFacade: AuthFacade) {
 
     @GetMapping("/profile")
     fun getUserProfile(): ResponseEntity<ApiResponse<UserInfo>> {
-        val currentUser = authService.getCurrentUser()
+        val currentUser = authFacade.getCurrentUser()
         return ResponseEntity.ok(ApiResponse.success(currentUser))
     }
 }

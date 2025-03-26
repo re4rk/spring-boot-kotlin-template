@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.api.controller.v1
 
-import io.dodn.springboot.core.api.auth.AuthService
+import io.dodn.springboot.core.api.auth.AuthFacade
 import io.dodn.springboot.core.domain.user.dto.AuthResponse
 import io.dodn.springboot.core.domain.user.dto.RefreshTokenRequest
 import io.dodn.springboot.core.domain.user.UserInfo
@@ -16,35 +16,35 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthController(private val authService: AuthService) {
+class AuthController(private val authFacade: AuthFacade) {
 
     @PostMapping("/register")
     fun register(@RequestBody request: UserRegisterRequest): ResponseEntity<ApiResponse<AuthResponse>> {
-        val authResponse = authService.register(request)
+        val authResponse = authFacade.register(request)
         return ResponseEntity.ok(ApiResponse.success(authResponse))
     }
 
     @PostMapping("/login")
     fun login(@RequestBody request: UserLoginRequest): ResponseEntity<ApiResponse<AuthResponse>> {
-        val authResponse = authService.login(request)
+        val authResponse = authFacade.login(request)
         return ResponseEntity.ok(ApiResponse.success(authResponse))
     }
 
     @PostMapping("/refresh")
     fun refreshToken(@RequestBody request: RefreshTokenRequest): ResponseEntity<ApiResponse<AuthResponse>> {
-        val authResponse = authService.refreshToken(request)
+        val authResponse = authFacade.refreshToken(request)
         return ResponseEntity.ok(ApiResponse.success(authResponse))
     }
 
     @PostMapping("/logout")
     fun logout(): ResponseEntity<ApiResponse<Any>> {
-        authService.logout()
+        authFacade.logout()
         return ResponseEntity.ok(ApiResponse.success())
     }
 
     @GetMapping("/me")
     fun getCurrentUser(): ResponseEntity<ApiResponse<UserInfo>> {
-        val userInfo = authService.getCurrentUser()
+        val userInfo = authFacade.getCurrentUser()
         return ResponseEntity.ok(ApiResponse.success(userInfo))
     }
 }

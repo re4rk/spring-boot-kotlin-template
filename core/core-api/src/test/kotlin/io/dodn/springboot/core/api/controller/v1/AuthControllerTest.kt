@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.api.controller.v1
 
-import io.dodn.springboot.core.api.auth.AuthService
+import io.dodn.springboot.core.api.auth.AuthFacade
 import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.dto.AuthResponse
 import io.dodn.springboot.core.domain.user.dto.RefreshTokenRequest
@@ -25,7 +25,7 @@ import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import java.time.LocalDateTime
 
 class AuthControllerTest : RestDocsTest() {
-    private lateinit var authService: AuthService
+    private lateinit var authFacade: AuthFacade
     private lateinit var controller: AuthController
 
     private lateinit var mockUserInfo: UserInfo
@@ -34,8 +34,8 @@ class AuthControllerTest : RestDocsTest() {
     @BeforeEach
     fun setUp() {
         // 서비스 모킹
-        authService = mockk()
-        controller = AuthController(authService)
+        authFacade = mockk()
+        controller = AuthController(authFacade)
         mockMvc = mockController(controller)
 
         // Mock 데이터 설정
@@ -66,7 +66,7 @@ class AuthControllerTest : RestDocsTest() {
             name = "Test User",
         )
 
-        every { authService.register(registerRequest) } returns mockAuthResponse
+        every { authFacade.register(registerRequest) } returns mockAuthResponse
 
         // When & Then
         given()
@@ -111,7 +111,7 @@ class AuthControllerTest : RestDocsTest() {
             password = "password123",
         )
 
-        every { authService.login(loginRequest) } returns mockAuthResponse
+        every { authFacade.login(loginRequest) } returns mockAuthResponse
 
         // When & Then
         given()
@@ -154,7 +154,7 @@ class AuthControllerTest : RestDocsTest() {
             refreshToken = "old-refresh-token",
         )
 
-        every { authService.refreshToken(refreshRequest) } returns mockAuthResponse
+        every { authFacade.refreshToken(refreshRequest) } returns mockAuthResponse
 
         // When & Then
         given()
@@ -192,7 +192,7 @@ class AuthControllerTest : RestDocsTest() {
     @Test
     fun logoutTest() {
         // Given
-        every { authService.logout() } returns Unit
+        every { authFacade.logout() } returns Unit
 
         // When & Then
         given()
@@ -217,7 +217,7 @@ class AuthControllerTest : RestDocsTest() {
     @Test
     fun getCurrentUserTest() {
         // Given
-        every { authService.getCurrentUser() } returns mockUserInfo
+        every { authFacade.getCurrentUser() } returns mockUserInfo
 
         // When & Then
         given()

@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
-class AuthService(
+class AuthFacade(
     private val userService: UserService,
     private val tokenService: TokenService,
     private val jwtService: JwtService,
