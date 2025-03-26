@@ -2,6 +2,7 @@ package io.dodn.springboot.core.domain.user
 
 import io.dodn.springboot.core.domain.user.dto.UserDeletionRequestDto
 import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
+import io.dodn.springboot.core.domain.user.password.PasswordPolicyService
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.storage.db.core.token.RefreshTokenRepository
@@ -22,6 +23,7 @@ class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
     private val refreshTokenRepository: RefreshTokenRepository,
+    private val passwordPolicyService: PasswordPolicyService,
 ) : UserDetailsService {
     override fun loadUserByUsername(email: String): UserDetails {
         val user = findByEmail(email)
@@ -56,20 +58,56 @@ class UserService(
 
     @Transactional
     fun register(request: UserRegisterRequest): UserInfo {
-        // Check if email already exists
+        // 중복 이메일 체크
         if (userRepository.existsByEmail(request.email)) {
             throw CoreException(ErrorType.EMAIL_ALREADY_EXISTS)
         }
 
-        // Create new user
+        // 비밀번호 정책 검증 (새 사용자는 이력 체크 필요 없음)
+        if (!passwordPolicyService.isValidPassword(request.password)) {
+            throw CoreException(ErrorType.WEAK_PASSWORD)
+        }
+
+        // 비밀번호 인코딩
+        val encodedPassword = passwordEncoder.encode(request.password)
+
+        // 사용자 생성
         val user = UserEntity(
             email = request.email,
-            password = passwordEncoder.encode(request.password),
+            password = encodedPassword,
             name = request.name,
+            status = UserStatus.PENDING_VERIFICATION, // 이메일 인증 필요
         )
 
         val savedUser = userRepository.save(user)
+
+        // 비밀번호 이력에 추가
+        passwordPolicyService.addPasswordToHistory(savedUser.id, encodedPassword)
+
         return savedUser.toUserInfo()
+    }
+
+    @Transactional
+    fun changePassword(email: String, currentPassword: String, newPassword: String): Boolean {
+        val user = userRepository.findByEmail(email)
+            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
+
+        // 현재 비밀번호 확인
+        if (!passwordEncoder.matches(currentPassword, user.password)) {
+            throw CoreException(ErrorType.INVALID_CREDENTIALS)
+        }
+
+        // 비밀번호 정책 검증 및 인코딩 (이력 체크 포함)
+        val encodedPassword = passwordPolicyService.validateAndEncodePassword(
+            userId = user.id,
+            password = newPassword,
+        )
+
+        // 비밀번호 업데이트
+        user.password = encodedPassword
+        userRepository.save(user)
+
+        return true
     }
 
     @Transactional

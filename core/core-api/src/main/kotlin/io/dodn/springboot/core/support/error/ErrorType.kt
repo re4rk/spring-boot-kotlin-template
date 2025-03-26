@@ -26,4 +26,8 @@ enum class ErrorType(val status: HttpStatus, val code: ErrorCode, val message: S
     USER_ALREADY_LOCKED(HttpStatus.BAD_REQUEST, ErrorCode.E400, "User is already locked", LogLevel.INFO),
     USER_ALREADY_ACTIVE(HttpStatus.BAD_REQUEST, ErrorCode.E400, "User is already active", LogLevel.INFO),
     USER_ALREADY_INACTIVE(HttpStatus.BAD_REQUEST, ErrorCode.E400, "User is already inactive", LogLevel.INFO),
+    WEAK_PASSWORD(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Password is too weak", LogLevel.WARN),
+    PASSWORD_REUSED(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Password has been used before", LogLevel.WARN),
+    EXPIRED_RESET_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Expired reset token", LogLevel.WARN),
+    INVALID_RESET_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Invalid reset token", LogLevel.WARN),
 }
