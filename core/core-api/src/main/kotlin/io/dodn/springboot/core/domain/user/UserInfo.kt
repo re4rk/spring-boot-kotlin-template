@@ -14,4 +14,3 @@ data class UserInfo(
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 )
-

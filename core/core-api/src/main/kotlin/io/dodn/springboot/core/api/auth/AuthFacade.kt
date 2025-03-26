@@ -4,8 +4,6 @@ import io.dodn.springboot.core.domain.token.JwtService
 import io.dodn.springboot.core.domain.token.TokenService
 import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.UserService
-import io.dodn.springboot.core.domain.user.dto.AuthResponse
-import io.dodn.springboot.core.domain.user.dto.RefreshTokenRequest
 import io.dodn.springboot.core.domain.user.dto.UserChangePasswordRequest
 import io.dodn.springboot.core.domain.user.dto.UserLoginRequest
 import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
@@ -30,24 +28,11 @@ class AuthFacade(
 ) {
 
     @Transactional
-    fun register(request: UserRegisterRequest): AuthResponse {
+    fun register(request: UserRegisterRequest): RegisterResponse {
         // Register user
         val userInfo = userService.register(request)
 
-        // Generate tokens
-        val userDetails = userDetailsService.loadUserByUsername(userInfo.email)
-        val accessToken = jwtService.generateToken(userDetails)
-        val refreshToken = jwtService.generateRefreshToken(userDetails)
-
-        // Save refresh token
-        val refreshExpiryDate = jwtService.extractClaim(refreshToken) { claims ->
-            LocalDateTime.ofInstant(claims.expiration.toInstant(), java.time.ZoneId.systemDefault())
-        }
-        tokenService.createRefreshToken(userInfo.email, refreshToken, refreshExpiryDate)
-
-        return AuthResponse(
-            accessToken = accessToken,
-            refreshToken = refreshToken,
+        return RegisterResponse(
             user = userInfo,
         )
     }
@@ -55,9 +40,13 @@ class AuthFacade(
     @Transactional
     fun login(request: UserLoginRequest): AuthResponse {
         // Authenticate user through Spring Security
-        authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(request.email, request.password),
-        )
+        try {
+            authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(request.email, request.password),
+            )
+        } catch (e: Exception) {
+            throw CoreException(ErrorType.INVALID_CREDENTIALS)
+        }
 
         // Verify credentials and update last login time
         val userInfo = userService.verifyCredentials(request.email, request.password)

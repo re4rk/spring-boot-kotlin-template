@@ -2,10 +2,10 @@ package io.dodn.springboot.core.domain.user.email
 
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
-import io.dodn.springboot.storage.db.core.user.email.EmailVerificationTokenEntity
-import io.dodn.springboot.storage.db.core.user.email.EmailVerificationTokenRepository
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
+import io.dodn.springboot.storage.db.core.user.email.EmailVerificationTokenEntity
+import io.dodn.springboot.storage.db.core.user.email.EmailVerificationTokenRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service

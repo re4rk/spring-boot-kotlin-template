@@ -28,9 +28,6 @@ class AdminUserService(
             throw CoreException(ErrorType.USER_ALREADY_ACTIVE)
         }
 
-        user.status = UserStatus.ACTIVE
-        userRepository.save(user)
-
         return true
     }
 
