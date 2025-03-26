@@ -1,8 +1,10 @@
 package io.dodn.springboot.core.domain.user
 
+import io.dodn.springboot.core.domain.user.dto.UserDeletionRequestDto
 import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
+import io.dodn.springboot.storage.db.core.token.RefreshTokenRepository
 import io.dodn.springboot.storage.db.core.user.UserEntity
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
@@ -19,6 +21,7 @@ import java.time.LocalDateTime
 class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val refreshTokenRepository: RefreshTokenRepository,
 ) : UserDetailsService {
     override fun loadUserByUsername(email: String): UserDetails {
         val user = findByEmail(email)
@@ -87,6 +90,31 @@ class UserService(
         val updatedUser = userRepository.save(user)
 
         return updatedUser.toUserInfo()
+    }
+
+    @Transactional
+    fun deleteAccount(email: String, request: UserDeletionRequestDto): Boolean {
+        val user = userRepository.findByEmail(email)
+            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
+
+        // 비밀번호 확인
+        if (!passwordEncoder.matches(request.password, user.password)) {
+            throw CoreException(ErrorType.INVALID_CREDENTIALS)
+        }
+
+        // 소프트 삭제 - 상태만 변경
+        user.status = UserStatus.DELETED
+        user.lastLoginAt = LocalDateTime.now() // 삭제 시간으로 사용
+
+        // 선택적: 삭제 이유 저장 (별도 테이블이 필요할 수 있음)
+
+        // 모든 리프레시 토큰 무효화
+        refreshTokenRepository.deleteAllByUserId(user.id)
+
+        // 변경된 사용자 저장
+        userRepository.save(user)
+
+        return true
     }
 
     // Extension function to convert UserEntity to UserInfo

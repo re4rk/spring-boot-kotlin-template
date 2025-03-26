@@ -19,4 +19,11 @@ enum class ErrorType(val status: HttpStatus, val code: ErrorCode, val message: S
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "Invalid email or password", LogLevel.WARN),
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, ErrorCode.E409, "Email already exists", LogLevel.WARN),
     USER_INACTIVE(HttpStatus.FORBIDDEN, ErrorCode.E403, "User account is not active", LogLevel.WARN),
+    EXPIRED_VERIFICATION_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Expired verification token", LogLevel.WARN),
+    INVALID_VERIFICATION_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Invalid verification token", LogLevel.INFO),
+    USER_NOT_DELETED(HttpStatus.BAD_REQUEST, ErrorCode.E400, "User is not deleted", LogLevel.WARN),
+    USER_ALREADY_VERIFIED(HttpStatus.BAD_REQUEST, ErrorCode.E400, "User is already verified", LogLevel.INFO),
+    USER_ALREADY_LOCKED(HttpStatus.BAD_REQUEST, ErrorCode.E400, "User is already locked", LogLevel.INFO),
+    USER_ALREADY_ACTIVE(HttpStatus.BAD_REQUEST, ErrorCode.E400, "User is already active", LogLevel.INFO),
+    USER_ALREADY_INACTIVE(HttpStatus.BAD_REQUEST, ErrorCode.E400, "User is already inactive", LogLevel.INFO),
 }
