@@ -1,5 +1,6 @@
 package io.dodn.springboot.core.api.auth
 
+import io.dodn.springboot.core.domain.token.TokenService
 import io.dodn.springboot.core.domain.user.AuthResponse
 import io.dodn.springboot.core.domain.user.RefreshTokenRequest
 import io.dodn.springboot.core.domain.user.UserInfo
@@ -20,9 +21,10 @@ import java.time.LocalDateTime
 @Service
 class AuthService(
     private val userService: UserService,
+    private val tokenService: TokenService,
     private val jwtService: JwtService,
     private val userDetailsService: UserDetailsService,
-    private val authenticationManager: AuthenticationManager,
+    private val authenticationManager: AuthenticationManager
 ) {
 
     @Transactional
@@ -39,12 +41,12 @@ class AuthService(
         val refreshExpiryDate = jwtService.extractClaim(refreshToken) { claims ->
             LocalDateTime.ofInstant(claims.expiration.toInstant(), java.time.ZoneId.systemDefault())
         }
-        userService.updateRefreshToken(userInfo.email, refreshToken, refreshExpiryDate)
+        tokenService.createRefreshToken(userInfo.email, refreshToken, refreshExpiryDate)
 
         return AuthResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
-            user = userInfo,
+            user = userInfo
         )
     }
 
@@ -52,7 +54,7 @@ class AuthService(
     fun login(request: UserLoginRequest): AuthResponse {
         // Authenticate user through Spring Security
         authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(request.email, request.password),
+            UsernamePasswordAuthenticationToken(request.email, request.password)
         )
 
         // Verify credentials and update last login time
@@ -67,42 +69,45 @@ class AuthService(
         val refreshExpiryDate = jwtService.extractClaim(refreshToken) { claims ->
             LocalDateTime.ofInstant(claims.expiration.toInstant(), java.time.ZoneId.systemDefault())
         }
-        userService.updateRefreshToken(userInfo.email, refreshToken, refreshExpiryDate)
+        tokenService.createRefreshToken(userInfo.email, refreshToken, refreshExpiryDate)
 
         return AuthResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
-            user = userInfo,
+            user = userInfo
         )
     }
 
     @Transactional
     fun refreshToken(request: RefreshTokenRequest): AuthResponse {
-        val username = jwtService.extractUsername(request.refreshToken)
+        try {
+            // Validate the refresh token and get the associated email
+            val username = tokenService.validateRefreshToken(request.refreshToken)
 
-        // Check if refresh token is valid in database
-        if (!userService.validateRefreshToken(username, request.refreshToken)) {
+            val userDetails = userDetailsService.loadUserByUsername(username)
+            val userInfo = userService.findByEmail(username)
+                ?: throw CoreException(ErrorType.USER_NOT_FOUND)
+
+            // Generate new tokens
+            val accessToken = jwtService.generateToken(userDetails)
+            val refreshToken = jwtService.generateRefreshToken(userDetails)
+
+            // Delete old refresh token and create new one
+            tokenService.deleteRefreshToken(request.refreshToken)
+
+            val refreshExpiryDate = jwtService.extractClaim(refreshToken) { claims ->
+                LocalDateTime.ofInstant(claims.expiration.toInstant(), java.time.ZoneId.systemDefault())
+            }
+            tokenService.createRefreshToken(username, refreshToken, refreshExpiryDate)
+
+            return AuthResponse(
+                accessToken = accessToken,
+                refreshToken = refreshToken,
+                user = userInfo
+            )
+        } catch (e: Exception) {
             throw CoreException(ErrorType.INVALID_CREDENTIALS)
         }
-
-        val userDetails = userDetailsService.loadUserByUsername(username)
-        val userInfo = userService.findByEmail(username)
-
-        // Generate new tokens
-        val accessToken = jwtService.generateToken(userDetails)
-        val refreshToken = jwtService.generateRefreshToken(userDetails)
-
-        // Save new refresh token
-        val refreshExpiryDate = jwtService.extractClaim(refreshToken) { claims ->
-            LocalDateTime.ofInstant(claims.expiration.toInstant(), java.time.ZoneId.systemDefault())
-        }
-        userService.updateRefreshToken(username, refreshToken, refreshExpiryDate)
-
-        return AuthResponse(
-            accessToken = accessToken,
-            refreshToken = refreshToken,
-            user = userInfo,
-        )
     }
 
     @Transactional
@@ -110,18 +115,16 @@ class AuthService(
         val authentication = SecurityContextHolder.getContext().authentication
         if (authentication != null && authentication.isAuthenticated) {
             val userDetails = authentication.principal as UserDetails
-            userService.invalidateRefreshToken(userDetails.username)
+            tokenService.deleteAllUserRefreshTokens(userDetails.username)
         }
     }
 
     fun getCurrentUser(): UserInfo {
         val authentication = SecurityContextHolder.getContext().authentication
-
-        if (authentication == null || !authentication.isAuthenticated) {
-            throw CoreException(ErrorType.UNAUTHORIZED)
+        if (authentication != null && authentication.isAuthenticated) {
+            val userDetails = authentication.principal as UserDetails
+            return userService.findByEmail(userDetails.username)
         }
-
-        val userDetails = authentication.principal as UserDetails
-        return userService.findByEmail(userDetails.username)
+        throw CoreException(ErrorType.UNAUTHORIZED)
     }
 }

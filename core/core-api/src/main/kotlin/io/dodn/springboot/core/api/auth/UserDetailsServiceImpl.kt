@@ -1,4 +1,4 @@
-package io.dodn.springboot.core.api.service
+package io.dodn.springboot.core.api.auth
 
 import io.dodn.springboot.core.domain.user.UserService
 import io.dodn.springboot.storage.db.core.user.UserRepository
@@ -18,7 +18,6 @@ class UserDetailsServiceImpl(
 
     override fun loadUserByUsername(email: String): UserDetails {
         val user = userService.findByEmail(email)
-            ?: throw UsernameNotFoundException("User not found with email: $email")
 
         if (user.status != UserStatus.ACTIVE) {
             throw UsernameNotFoundException("User is not active: $email")
