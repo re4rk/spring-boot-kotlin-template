@@ -1,5 +1,6 @@
 package io.dodn.springboot.core.api.auth
 
+import io.dodn.springboot.core.domain.token.JwtService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

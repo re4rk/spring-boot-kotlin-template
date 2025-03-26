@@ -6,6 +6,11 @@ import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.storage.db.core.user.UserEntity
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,7 +20,30 @@ import java.time.LocalDateTime
 class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-) {
+) : UserDetailsService {
+    override fun loadUserByUsername(email: String): UserDetails {
+        val user = findByEmail(email)
+
+        if (user.status != UserStatus.ACTIVE) {
+            throw UsernameNotFoundException("User is not active: $email")
+        }
+
+        val authorities = listOf(SimpleGrantedAuthority("ROLE_${user.role.name}"))
+
+        // We need to get the encoded password from the UserEntity
+        val userEntity = userRepository.findByEmail(email)
+            .orElseThrow { UsernameNotFoundException("User not found with email: $email") }
+
+        return User.builder()
+            .username(user.email)
+            .password(userEntity.password) // Use the encoded password from the entity
+            .authorities(authorities)
+            .accountExpired(false)
+            .accountLocked(user.status == UserStatus.LOCKED)
+            .credentialsExpired(false)
+            .disabled(user.status != UserStatus.ACTIVE)
+            .build()
+    }
 
     @Transactional(readOnly = true)
     fun findByEmail(email: String): UserInfo {

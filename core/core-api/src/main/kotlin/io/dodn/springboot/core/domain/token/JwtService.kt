@@ -1,4 +1,4 @@
-package io.dodn.springboot.core.api.auth
+package io.dodn.springboot.core.domain.token
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
