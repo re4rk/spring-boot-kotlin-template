@@ -1,9 +1,10 @@
 package io.dodn.springboot.core.api.controller.v1
 
 import io.dodn.springboot.core.api.auth.AuthFacade
+import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.dto.AuthResponse
 import io.dodn.springboot.core.domain.user.dto.RefreshTokenRequest
-import io.dodn.springboot.core.domain.user.UserInfo
+import io.dodn.springboot.core.domain.user.dto.UserChangePasswordRequest
 import io.dodn.springboot.core.domain.user.dto.UserLoginRequest
 import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
 import io.dodn.springboot.core.support.response.ApiResponse
@@ -40,6 +41,12 @@ class AuthController(private val authFacade: AuthFacade) {
     fun logout(): ResponseEntity<ApiResponse<Any>> {
         authFacade.logout()
         return ResponseEntity.ok(ApiResponse.success())
+    }
+
+    @PostMapping("/change-password")
+    fun changePassword(@RequestBody request: UserChangePasswordRequest): ResponseEntity<ApiResponse<Boolean>> {
+        val result = authFacade.changePassword(request)
+        return ResponseEntity.ok(ApiResponse.success(result))
     }
 
     @GetMapping("/me")

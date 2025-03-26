@@ -2,12 +2,13 @@ package io.dodn.springboot.core.api.auth
 
 import io.dodn.springboot.core.domain.token.JwtService
 import io.dodn.springboot.core.domain.token.TokenService
+import io.dodn.springboot.core.domain.user.UserInfo
+import io.dodn.springboot.core.domain.user.UserService
 import io.dodn.springboot.core.domain.user.dto.AuthResponse
 import io.dodn.springboot.core.domain.user.dto.RefreshTokenRequest
-import io.dodn.springboot.core.domain.user.UserInfo
+import io.dodn.springboot.core.domain.user.dto.UserChangePasswordRequest
 import io.dodn.springboot.core.domain.user.dto.UserLoginRequest
 import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
-import io.dodn.springboot.core.domain.user.UserService
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
 import org.springframework.security.authentication.AuthenticationManager
@@ -118,6 +119,20 @@ class AuthFacade(
             val userDetails = authentication.principal as UserDetails
             tokenService.deleteAllUserRefreshTokens(userDetails.username)
         }
+    }
+
+    @Transactional
+    fun changePassword(request: UserChangePasswordRequest): Boolean {
+        val authentication = SecurityContextHolder.getContext().authentication
+        if (authentication != null && authentication.isAuthenticated) {
+            val userDetails = authentication.principal as UserDetails
+            return userService.changePassword(
+                email = userDetails.username,
+                currentPassword = request.oldPassword,
+                newPassword = request.newPassword,
+            )
+        }
+        return true
     }
 
     fun getCurrentUser(): UserInfo {
