@@ -5,6 +5,7 @@ import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.storage.db.core.user.UserEntity
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -15,12 +16,15 @@ class UserService(
 ) {
 
     @Transactional(readOnly = true)
-    fun findByEmail(email: String): UserInfo = userRepository.findByEmail(email)
-        .map { it.toUserInfo() }
-        .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
+    fun findByEmail(email: String): UserInfo {
+        return userRepository.findByEmail(email)
+            .map { it.toUserInfo() }
+            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
+    }
 
     @Transactional
     fun register(request: UserRegisterRequest): UserInfo {
+        // Check if email already exists
         if (userRepository.existsByEmail(request.email)) {
             throw CoreException(ErrorType.EMAIL_ALREADY_EXISTS)
         }
@@ -45,8 +49,7 @@ class UserService(
             throw CoreException(ErrorType.USER_INACTIVE)
         }
 
-
-        if (password == user.password) {
+        if (password != user.password) {
             throw CoreException(ErrorType.INVALID_CREDENTIALS)
         }
 
@@ -55,36 +58,6 @@ class UserService(
         val updatedUser = userRepository.save(user)
 
         return updatedUser.toUserInfo()
-    }
-
-    @Transactional
-    fun updateRefreshToken(email: String, refreshToken: String, expiresAt: LocalDateTime) {
-        val user = userRepository.findByEmail(email)
-            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
-
-        user.refreshToken = refreshToken
-        user.refreshTokenExpiresAt = expiresAt
-        userRepository.save(user)
-    }
-
-    @Transactional(readOnly = true)
-    fun validateRefreshToken(email: String, refreshToken: String): Boolean {
-        val user = userRepository.findByEmail(email)
-            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
-
-        return user.refreshToken == refreshToken &&
-                user.refreshTokenExpiresAt != null &&
-                user.refreshTokenExpiresAt!!.isAfter(LocalDateTime.now())
-    }
-
-    @Transactional
-    fun invalidateRefreshToken(email: String) {
-        val user = userRepository.findByEmail(email)
-            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
-
-        user.refreshToken = null
-        user.refreshTokenExpiresAt = null
-        userRepository.save(user)
     }
 
     // Extension function to convert UserEntity to UserInfo
