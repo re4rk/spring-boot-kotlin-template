@@ -6,6 +6,7 @@ import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.storage.db.core.user.UserEntity
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -13,6 +14,7 @@ import java.time.LocalDateTime
 @Service
 class UserService(
     private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder,
 ) {
 
     @Transactional(readOnly = true)
@@ -32,7 +34,7 @@ class UserService(
         // Create new user
         val user = UserEntity(
             email = request.email,
-            password = request.password,
+            password = passwordEncoder.encode(request.password),
             name = request.name,
         )
 
@@ -49,7 +51,7 @@ class UserService(
             throw CoreException(ErrorType.USER_INACTIVE)
         }
 
-        if (password != user.password) {
+        if (!passwordEncoder.matches(password, user.password)) {
             throw CoreException(ErrorType.INVALID_CREDENTIALS)
         }
 
