@@ -30,11 +30,4 @@ class UserEntity(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val role: UserRole = UserRole.USER,
-
-    @Column(nullable = true)
-    var refreshToken: String? = null,
-
-    @Column(nullable = true)
-    var refreshTokenExpiresAt: LocalDateTime? = null
 ) : BaseEntity()
-

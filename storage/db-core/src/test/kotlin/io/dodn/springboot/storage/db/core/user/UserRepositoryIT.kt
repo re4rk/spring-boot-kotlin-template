@@ -17,11 +17,11 @@ class UserRepositoryIT : CoreDbContextTest() {
         val email = "test@example.com"
         val password = "encoded_password"
         val name = "Test User"
-        
+
         val user = UserEntity(
             email = email,
             password = password,
-            name = name
+            name = name,
         )
 
         // When
@@ -43,12 +43,12 @@ class UserRepositoryIT : CoreDbContextTest() {
         // Given
         val email = "find-test@example.com"
         val password = "encoded_password"
-        
+
         val user = UserEntity(
             email = email,
-            password = password
+            password = password,
         )
-        
+
         userRepository.save(user)
 
         // When
@@ -64,12 +64,12 @@ class UserRepositoryIT : CoreDbContextTest() {
         // Given
         val email = "exists-test@example.com"
         val password = "encoded_password"
-        
+
         val user = UserEntity(
             email = email,
-            password = password
+            password = password,
         )
-        
+
         userRepository.save(user)
 
         // When & Then
@@ -78,30 +78,28 @@ class UserRepositoryIT : CoreDbContextTest() {
     }
 
     @Test
-    fun testUpdateRefreshToken() {
+    fun testUpdateLastLoginAt() {
         // Given
-        val email = "refresh-token-test@example.com"
+        val email = "last-login-test@example.com"
         val password = "encoded_password"
-        
+
         val user = UserEntity(
             email = email,
-            password = password
+            password = password,
         )
-        
+
         val savedUser = userRepository.save(user)
+        assertThat(savedUser.lastLoginAt).isNull()
 
         // When
-        val refreshToken = "some-refresh-token"
-        val expiryDate = LocalDateTime.now().plusDays(7)
-        
-        savedUser.refreshToken = refreshToken
-        savedUser.refreshTokenExpiresAt = expiryDate
+        val loginTime = LocalDateTime.now()
+        savedUser.lastLoginAt = loginTime
         userRepository.save(savedUser)
 
         // Then
         val updatedUser = userRepository.findByEmail(email).get()
-        assertThat(updatedUser.refreshToken).isEqualTo(refreshToken)
-        assertThat(updatedUser.refreshTokenExpiresAt).isEqualToIgnoringNanos(expiryDate)
+        assertThat(updatedUser.lastLoginAt).isNotNull()
+        assertThat(updatedUser.lastLoginAt).isEqualToIgnoringNanos(loginTime)
     }
 
     @Test
@@ -109,12 +107,12 @@ class UserRepositoryIT : CoreDbContextTest() {
         // Given
         val email = "status-test@example.com"
         val password = "encoded_password"
-        
+
         val user = UserEntity(
             email = email,
-            password = password
+            password = password,
         )
-        
+
         val savedUser = userRepository.save(user)
         assertThat(savedUser.status).isEqualTo(UserStatus.ACTIVE)
 
