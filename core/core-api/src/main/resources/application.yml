@@ -4,11 +4,13 @@ spring.profiles.active: local
 spring:
   config:
     import:
+      - jwt.yml
       - monitoring.yml
       - logging.yml
       - db-core.yml
       - client-example.yml
       - client-payment.yml
+      - client-coolsms.yml
   web.resources.add-mappings: false
 
 server:

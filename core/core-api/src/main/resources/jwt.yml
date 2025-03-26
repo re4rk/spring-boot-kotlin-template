@@ -1,0 +1,8 @@
+# Add this to your application.yml file
+
+jwt:
+  secret: ${JWT_SECRET:0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF}
+  expiration: ${JWT_EXPIRATION:3600000}  # 1 hour in milliseconds
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}  # 7 days in milliseconds
+
+# Don't forget to add the JWT secret as an environment variable in production
