@@ -1,5 +1,6 @@
 package io.dodn.springboot.core.domain.order
 
+import io.dodn.springboot.core.domain.notification.NotificationSender
 import io.dodn.springboot.core.domain.payment.PaymentService
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
@@ -11,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class OrderService(
     private val orderRepository: OrderRepository,
-    private val paymentService: PaymentService
+    private val paymentService: PaymentService,
+    private val notificationSender: NotificationSender
 ) {
     @Transactional
     fun createOrder(orderData: OrderData): OrderResult {
@@ -82,6 +84,12 @@ class OrderService(
                 orderRepository.save(savedOrder)
                 throw CoreException(ErrorType.PAYMENT_FAILED)
             }
+
+            // 4. 알림 발송
+            notificationSender.sendSmsNotification(
+                phoneNumber = "01012345678",
+                message = "주문이 완료되었습니다."
+            )
 
             return OrderResult(
                 orderId = savedOrder.id,
