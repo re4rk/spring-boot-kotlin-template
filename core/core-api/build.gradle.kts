@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":core:core-enum"))
     implementation(project(":support:monitoring"))
     implementation(project(":support:logging"))
+    implementation(project(":support:notification:sms"))
     implementation(project(":storage:db-core"))
     implementation(project(":clients:client-example"))
     implementation(project(":clients:client-payment"))
@@ -17,4 +18,5 @@ dependencies {
     testImplementation(project(":tests:api-docs"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 }
