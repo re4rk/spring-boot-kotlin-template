@@ -15,23 +15,3 @@ data class UserInfo(
     val updatedAt: LocalDateTime,
 )
 
-data class UserLoginRequest(
-    val email: String,
-    val password: String,
-)
-
-data class UserRegisterRequest(
-    val email: String,
-    val password: String,
-    val name: String?,
-)
-
-data class AuthResponse(
-    val accessToken: String,
-    val refreshToken: String,
-    val user: UserInfo,
-)
-
-data class RefreshTokenRequest(
-    val refreshToken: String,
-)

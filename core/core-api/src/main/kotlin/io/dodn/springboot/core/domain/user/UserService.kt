@@ -1,5 +1,6 @@
 package io.dodn.springboot.core.domain.user
 
+import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.storage.db.core.user.UserEntity

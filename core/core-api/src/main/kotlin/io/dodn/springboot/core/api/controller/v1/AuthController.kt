@@ -1,11 +1,11 @@
 package io.dodn.springboot.core.api.controller.v1
 
 import io.dodn.springboot.core.api.auth.AuthService
-import io.dodn.springboot.core.domain.user.AuthResponse
-import io.dodn.springboot.core.domain.user.RefreshTokenRequest
+import io.dodn.springboot.core.domain.user.dto.AuthResponse
+import io.dodn.springboot.core.domain.user.dto.RefreshTokenRequest
 import io.dodn.springboot.core.domain.user.UserInfo
-import io.dodn.springboot.core.domain.user.UserLoginRequest
-import io.dodn.springboot.core.domain.user.UserRegisterRequest
+import io.dodn.springboot.core.domain.user.dto.UserLoginRequest
+import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
