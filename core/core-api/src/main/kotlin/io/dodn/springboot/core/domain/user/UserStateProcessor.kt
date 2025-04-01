@@ -36,30 +36,38 @@ class UserStateProcessor(
 
     @Transactional
     fun activate(userId: Long): Boolean {
-        val user = userRepository.findByIdWithOptimisticLock(userId)
-            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
+        try {
+            val user = userRepository.findByIdWithOptimisticLock(userId)
+                .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
 
-        if (user.status == UserStatus.ACTIVE) {
-            throw CoreException(ErrorType.USER_ALREADY_ACTIVE)
+            if (user.status == UserStatus.ACTIVE) {
+                throw CoreException(ErrorType.USER_ALREADY_ACTIVE)
+            }
+
+            user.status = UserStatus.ACTIVE
+            userRepository.save(user)
+            return true
+        } catch (e: ObjectOptimisticLockingFailureException) {
+            throw CoreException(ErrorType.CONCURRENT_MODIFICATION)
         }
-
-        user.status = UserStatus.ACTIVE
-        userRepository.save(user)
-        return true
     }
 
     @Transactional
     fun inactivate(userId: Long): Boolean {
-        val user = userRepository.findByIdWithOptimisticLock(userId)
-            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
+        try {
+            val user = userRepository.findByIdWithOptimisticLock(userId)
+                .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
 
-        if (user.status == UserStatus.INACTIVE) {
-            throw CoreException(ErrorType.USER_ALREADY_INACTIVE)
+            if (user.status == UserStatus.INACTIVE) {
+                throw CoreException(ErrorType.USER_ALREADY_INACTIVE)
+            }
+
+            user.status = UserStatus.INACTIVE
+            userRepository.save(user)
+            return true
+        } catch (e: ObjectOptimisticLockingFailureException) {
+            throw CoreException(ErrorType.CONCURRENT_MODIFICATION)
         }
-
-        user.status = UserStatus.INACTIVE
-        userRepository.save(user)
-        return true
     }
 
     @Transactional
@@ -100,15 +108,19 @@ class UserStateProcessor(
 
     @Transactional
     fun deleteAccount(userId: Long): Boolean {
-        val user = userRepository.findByIdWithOptimisticLock(userId)
-            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
+        try {
+            val user = userRepository.findByIdWithOptimisticLock(userId)
+                .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
 
-        user.status = UserStatus.DELETED
-        user.lastLoginAt = LocalDateTime.now()
+            user.status = UserStatus.DELETED
+            user.lastLoginAt = LocalDateTime.now()
 
-        userRepository.save(user)
+            userRepository.save(user)
 
-        return true
+            return true
+        } catch (e: ObjectOptimisticLockingFailureException) {
+            throw CoreException(ErrorType.CONCURRENT_MODIFICATION)
+        }
     }
 
     @Transactional
