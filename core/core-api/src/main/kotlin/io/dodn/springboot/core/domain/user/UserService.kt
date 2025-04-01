@@ -3,9 +3,10 @@ package io.dodn.springboot.core.domain.user
 import io.dodn.springboot.core.domain.user.dto.UserDeletionRequestDto
 import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
 import io.dodn.springboot.core.domain.user.password.PasswordManager
-import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
 import org.springframework.data.domain.Page
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
@@ -22,8 +23,19 @@ class UserService(
 ) : UserDetailsService {
 
     // 핵심 인증/계정 관련
+    @Transactional(readOnly = true)
     override fun loadUserByUsername(email: String): UserDetails {
-        return userFinder.createUserDetails(email)
+        val user = findByEmail(email)
+
+        return User.builder()
+            .username(user.email)
+            .password(user.password)
+            .authorities(listOf(SimpleGrantedAuthority("ROLE_${user.role.name}")))
+            .accountExpired(false)
+            .accountLocked(user.status == UserStatus.LOCKED)
+            .credentialsExpired(false)
+            .disabled(false)
+            .build()
     }
 
     @Transactional(readOnly = true)
@@ -43,7 +55,7 @@ class UserService(
     fun register(request: UserRegisterRequest): UserInfo {
         passwordManager.validateNewPassword(request.password)
         val user = userCreator.createUser(email = request.email, password = request.password, name = request.name)
-        userCreator.markAsActive(user.id)
+        userActivator.activate(user.id)
         return user
     }
 

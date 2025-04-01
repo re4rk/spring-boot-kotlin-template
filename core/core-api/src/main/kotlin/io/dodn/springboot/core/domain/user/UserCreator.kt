@@ -50,37 +50,4 @@ class UserCreator(
 
         return updatedUser.toUserInfo()
     }
-
-    fun markAsDeleted(userId: Long): UserInfo {
-        val user = userRepository.findById(userId)
-            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
-
-        user.status = UserStatus.DELETED
-        user.lastLoginAt = LocalDateTime.now() // 삭제 시간으로 사용
-
-        val updatedUser = userRepository.save(user)
-
-        return updatedUser.toUserInfo()
-    }
-
-    fun markAsActive(userId: Long): UserInfo {
-        val user = userRepository.findById(userId)
-            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
-
-        user.status = UserStatus.ACTIVE
-        val updatedUser = userRepository.save(user)
-
-        return updatedUser.toUserInfo()
-    }
-
-    private fun UserEntity.toUserInfo(): UserInfo = UserInfo(
-        id = this.id,
-        email = this.email,
-        name = this.name,
-        status = this.status,
-        role = this.role,
-        lastLoginAt = this.lastLoginAt,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt,
-    )
 }

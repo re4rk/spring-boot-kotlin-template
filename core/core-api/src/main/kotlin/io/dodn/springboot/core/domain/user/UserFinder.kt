@@ -38,40 +38,4 @@ class UserFinder(
         return userRepository.findByStatus(UserStatus.DELETED, pageable)
             .map { it.toUserInfo() }
     }
-
-    fun validateEmailNotExists(email: String) {
-        if (userRepository.existsByEmail(email)) {
-            throw CoreException(ErrorType.EMAIL_ALREADY_EXISTS)
-        }
-    }
-
-    fun createUserDetails(email: String): UserDetails {
-        val user = findByEmail(email)
-
-        val userEntity = userRepository.findByEmail(email)
-            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
-
-        val authorities = listOf(SimpleGrantedAuthority("ROLE_${user.role.name}"))
-
-        return User.builder()
-            .username(user.email)
-            .password(userEntity.password)
-            .authorities(authorities)
-            .accountExpired(false)
-            .accountLocked(user.status == UserStatus.LOCKED)
-            .credentialsExpired(false)
-            .disabled(false)
-            .build()
-    }
-
-    private fun UserEntity.toUserInfo(): UserInfo = UserInfo(
-        id = this.id,
-        email = this.email,
-        name = this.name,
-        status = this.status,
-        role = this.role,
-        lastLoginAt = this.lastLoginAt,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt,
-    )
 }

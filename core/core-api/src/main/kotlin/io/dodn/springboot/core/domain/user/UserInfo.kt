@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 data class UserInfo(
     val id: Long,
     val email: String,
+    val password: String,
     val name: String?,
     val status: UserStatus,
     val role: UserRole,
