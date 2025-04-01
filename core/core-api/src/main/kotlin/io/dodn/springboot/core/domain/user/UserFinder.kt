@@ -5,10 +5,13 @@ import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.storage.db.core.user.UserEntity
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class UserFinder(
@@ -28,6 +31,12 @@ class UserFinder(
         }
 
         return user
+    }
+
+    fun findDeletedUsers(page: Int, size: Int): Page<UserInfo> {
+        val pageable = PageRequest.of(page, size)
+        return userRepository.findByStatus(UserStatus.DELETED, pageable)
+            .map { it.toUserInfo() }
     }
 
     fun validateEmailNotExists(email: String) {
