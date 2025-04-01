@@ -115,11 +115,12 @@ class AuthFacade(
         val authentication = SecurityContextHolder.getContext().authentication
         if (authentication != null && authentication.isAuthenticated) {
             val userDetails = authentication.principal as UserDetails
-            return userService.changePassword(
+            userService.changePassword(
                 email = userDetails.username,
                 currentPassword = request.oldPassword,
                 newPassword = request.newPassword,
             )
+            return true
         }
         return true
     }

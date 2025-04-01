@@ -80,7 +80,6 @@ class PasswordPolicy(
         }
 
         val encodedPassword = passwordEncoder.encode(password)
-        addPasswordToHistory(userId, encodedPassword)
 
         return encodedPassword
     }

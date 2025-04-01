@@ -14,6 +14,13 @@ class UserFinder(
     private val userRepository: UserRepository,
 ) {
     @Transactional(readOnly = true)
+    fun findById(userId: Long): UserInfo {
+        return userRepository.findById(userId)
+            .map { it.toUserInfo() }
+            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
+    }
+
+    @Transactional(readOnly = true)
     fun findByEmail(email: String): UserInfo {
         return userRepository.findByEmail(email)
             .map { it.toUserInfo() }
