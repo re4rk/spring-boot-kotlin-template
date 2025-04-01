@@ -25,7 +25,9 @@ class UserService(
     @Transactional
     fun verifyCredentials(email: String, password: String): UserInfo {
         val user = userFinder.findByEmailAndStatus(email, UserStatus.ACTIVE)
+
         userPasswordManager.verifyPassword(password, user.id)
+
         return userStateProcessor.updateLastLogin(user.id)
     }
 
@@ -92,8 +94,11 @@ class UserService(
     @Transactional
     fun deleteAccount(userId: Long, request: UserDeletionRequestDto): Boolean {
         userPasswordManager.verifyPassword(request.password, userId)
+
         val result = userStateProcessor.deleteAccount(userId)
+
         tokenManager.invalidateAllTokens(userId)
+
         return result
     }
 
