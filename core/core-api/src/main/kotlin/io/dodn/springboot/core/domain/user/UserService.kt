@@ -33,9 +33,9 @@ class UserService(
     // 계정 생성/수정
     @Transactional
     fun register(request: UserRegisterRequest): UserInfo {
-        val encodedPassword = userPasswordManager.validateAndEncodeNewPassword(request.password)
+        val user = userCreator.createUser(email = request.email, password = "", name = request.name)
 
-        val user = userCreator.createUser(email = request.email, password = encodedPassword, name = request.name)
+        userPasswordManager.changePassword(user.id, request.password)
 
         userActivator.activate(user.id)
         return user
@@ -44,12 +44,10 @@ class UserService(
     @Transactional
     fun changePassword(email: String, currentPassword: String, newPassword: String): UserInfo {
         val user = userFinder.findByEmail(email)
-        val encodedPassword = userPasswordManager.validateAndEncodePasswordChange(
-            userId = user.id,
-            currentPassword = currentPassword,
-            newPassword = newPassword,
-        )
-        return userCreator.changePassword(user.id, encodedPassword)
+
+        userPasswordManager.verifyPassword(currentPassword, user.id)
+
+        return userPasswordManager.changePassword(user.id, newPassword)
     }
 
     // 계정 상태 관리

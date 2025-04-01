@@ -34,17 +34,6 @@ class UserCreator(
     }
 
     @Transactional
-    fun changePassword(userId: Long, password: String): UserInfo {
-        val user = userRepository.findById(userId)
-            .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
-
-        user.password = password
-        val updatedUser = userRepository.save(user)
-
-        return updatedUser.toUserInfo()
-    }
-
-    @Transactional
     fun updateLastLogin(userId: Long): UserInfo {
         val user = userRepository.findById(userId)
             .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
