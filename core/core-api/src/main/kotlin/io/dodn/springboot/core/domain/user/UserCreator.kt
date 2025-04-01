@@ -17,6 +17,11 @@ class UserCreator(
     private val passwordPolicyService: PasswordPolicyService,
 ) {
     fun createUser(email: String, password: String, name: String?): UserInfo {
+        // 이메일 중복 확인
+        if (userRepository.existsByEmail(email)) {
+            throw CoreException(ErrorType.EMAIL_ALREADY_EXISTS)
+        }
+
         // 비밀번호 인코딩
         val encodedPassword = passwordEncoder.encode(password)
 

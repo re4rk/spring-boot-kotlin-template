@@ -41,7 +41,6 @@ class UserService(
     // 계정 생성/수정
     @Transactional
     fun register(request: UserRegisterRequest): UserInfo {
-        userFinder.validateEmailNotExists(request.email)
         passwordManager.validateNewPassword(request.password)
         val user = userCreator.createUser(email = request.email, password = request.password, name = request.name)
         userCreator.markAsActive(user.id)
