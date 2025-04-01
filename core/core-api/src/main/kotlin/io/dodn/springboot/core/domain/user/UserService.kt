@@ -4,12 +4,14 @@ import io.dodn.springboot.core.domain.token.TokenManager
 import io.dodn.springboot.core.domain.user.dto.UserDeletionRequestDto
 import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
 import io.dodn.springboot.core.domain.user.password.PasswordManager
+import io.dodn.springboot.core.domain.user.password.PasswordPolicy
 import io.dodn.springboot.storage.db.core.user.UserStatus
 import org.springframework.data.domain.Page
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -22,6 +24,8 @@ class UserService(
     private val userDeleter: UserDeleter,
     private val passwordManager: PasswordManager,
     private val tokenManager: TokenManager,
+    private val passwordEncoder: PasswordEncoder,
+    private val passwordPolicy: PasswordPolicy,
 ) : UserDetailsService {
 
     // 핵심 인증/계정 관련
@@ -56,7 +60,13 @@ class UserService(
     @Transactional
     fun register(request: UserRegisterRequest): UserInfo {
         passwordManager.validateNewPassword(request.password)
-        val user = userCreator.createUser(email = request.email, password = request.password, name = request.name)
+
+        val encodedPassword = passwordEncoder.encode(request.password)
+
+        val user = userCreator.createUser(email = request.email, password = encodedPassword, name = request.name)
+
+        passwordPolicy.addPasswordToHistory(user.id, encodedPassword)
+
         userActivator.activate(user.id)
         return user
     }

@@ -14,8 +14,6 @@ import java.time.LocalDateTime
 @Component
 class UserCreator(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder,
-    private val passwordPolicy: PasswordPolicy,
 ) {
     @Transactional
     fun createUser(email: String, password: String, name: String?): UserInfo {
@@ -24,21 +22,15 @@ class UserCreator(
             throw CoreException(ErrorType.EMAIL_ALREADY_EXISTS)
         }
 
-        // 비밀번호 인코딩
-        val encodedPassword = passwordEncoder.encode(password)
-
         // 사용자 생성
         val user = UserEntity(
             email = email,
-            password = encodedPassword,
+            password = password,
             name = name,
             status = UserStatus.PENDING_VERIFICATION,
         )
 
         val savedUser = userRepository.save(user)
-
-        // 비밀번호 이력에 추가
-        passwordPolicy.addPasswordToHistory(savedUser.id, encodedPassword)
 
         return savedUser.toUserInfo()
     }
