@@ -1,5 +1,6 @@
 package io.dodn.springboot.core.domain.user
 
+import io.dodn.springboot.core.domain.token.TokenManager
 import io.dodn.springboot.core.domain.user.dto.UserDeletionRequestDto
 import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
 import io.dodn.springboot.core.domain.user.password.PasswordManager
@@ -20,6 +21,7 @@ class UserService(
     private val userActivator: UserActivator,
     private val userDeleter: UserDeleter,
     private val passwordManager: PasswordManager,
+    private val tokenManager: TokenManager,
 ) : UserDetailsService {
 
     // 핵심 인증/계정 관련
@@ -88,7 +90,11 @@ class UserService(
     // 계정 삭제 관련
     @Transactional
     fun deleteAccount(userId: Long, request: UserDeletionRequestDto): Boolean {
-        return userDeleter.deleteAccount(userId, request)
+        val result = userDeleter.deleteAccount(userId, request)
+
+        tokenManager.invalidateAllTokens(userId)
+
+        return result
     }
 
     @Transactional

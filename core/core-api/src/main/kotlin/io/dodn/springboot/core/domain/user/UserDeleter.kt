@@ -1,6 +1,5 @@
 package io.dodn.springboot.core.domain.user
 
-import io.dodn.springboot.core.domain.token.TokenManager
 import io.dodn.springboot.core.domain.user.dto.UserDeletionRequestDto
 import io.dodn.springboot.core.domain.user.password.PasswordManager
 import io.dodn.springboot.core.support.error.CoreException
@@ -15,7 +14,6 @@ import java.time.LocalDateTime
 class UserDeleter(
     private val userRepository: UserRepository,
     private val passwordManager: PasswordManager,
-    private val tokenManager: TokenManager,
 ) {
     @Transactional
     fun deleteAccount(userId: Long, request: UserDeletionRequestDto): Boolean {
@@ -29,7 +27,6 @@ class UserDeleter(
 
         userRepository.save(user)
 
-        tokenManager.invalidateAllTokens(user.id)
         return true
     }
 
