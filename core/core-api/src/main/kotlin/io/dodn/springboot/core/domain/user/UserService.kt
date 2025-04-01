@@ -7,10 +7,6 @@ import io.dodn.springboot.core.domain.user.password.PasswordManager
 import io.dodn.springboot.core.domain.user.password.PasswordPolicy
 import io.dodn.springboot.storage.db.core.user.UserStatus
 import org.springframework.data.domain.Page
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
-import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,24 +22,7 @@ class UserService(
     private val tokenManager: TokenManager,
     private val passwordEncoder: PasswordEncoder,
     private val passwordPolicy: PasswordPolicy,
-) : UserDetailsService {
-
-    // 핵심 인증/계정 관련
-    @Transactional(readOnly = true)
-    override fun loadUserByUsername(email: String): UserDetails {
-        val user = findByEmail(email)
-
-        return User.builder()
-            .username(user.email)
-            .password(user.password)
-            .authorities(listOf(SimpleGrantedAuthority("ROLE_${user.role.name}")))
-            .accountExpired(false)
-            .accountLocked(user.status == UserStatus.LOCKED)
-            .credentialsExpired(false)
-            .disabled(false)
-            .build()
-    }
-
+) {
     @Transactional(readOnly = true)
     fun findByEmail(email: String): UserInfo {
         return userFinder.findByEmail(email)
