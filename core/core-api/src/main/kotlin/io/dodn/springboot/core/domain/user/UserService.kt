@@ -3,6 +3,7 @@ package io.dodn.springboot.core.domain.user
 import io.dodn.springboot.core.domain.token.TokenManager
 import io.dodn.springboot.core.domain.user.dto.UserDeletionRequestDto
 import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
+import io.dodn.springboot.core.domain.user.password.PasswordResetManager
 import io.dodn.springboot.storage.db.core.user.UserStatus
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
@@ -14,6 +15,7 @@ class UserService(
     private val userPasswordManager: UserPasswordManager,
     private val userStateProcessor: UserStateProcessor,
     private val tokenManager: TokenManager,
+    private val passwordResetManager: PasswordResetManager,
 ) {
     @Transactional(readOnly = true)
     fun findByEmail(email: String): UserInfo {
@@ -45,6 +47,24 @@ class UserService(
         userPasswordManager.verifyPassword(currentPassword, user.id)
 
         return userPasswordManager.changePassword(user.id, newPassword)
+    }
+
+    @Transactional
+    fun requestPasswordReset(email: String): Boolean {
+        val user = userFinder.findByEmail(email)
+
+        return passwordResetManager.requestPasswordReset(user.id, user.email)
+    }
+
+    @Transactional
+    fun resetPassword(token: String, newPassword: String): Boolean {
+        val validResult = passwordResetManager.verifyPasswordResetToken(token)
+
+        val user = userFinder.findById(validResult.userId)
+
+        userPasswordManager.changePassword(user.id, newPassword)
+
+        return true
     }
 
     // 계정 상태 관리

@@ -36,6 +36,7 @@ enum class ErrorType(val status: HttpStatus, val code: ErrorCode, val message: S
     // Token Related Errors
     EXPIRED_VERIFICATION_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Expired verification token", LogLevel.WARN),
     INVALID_VERIFICATION_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Invalid verification token", LogLevel.INFO),
+    USED_RESET_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Used reset token", LogLevel.WARN),
     EXPIRED_RESET_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Expired reset token", LogLevel.WARN),
     INVALID_RESET_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Invalid reset token", LogLevel.WARN),
 

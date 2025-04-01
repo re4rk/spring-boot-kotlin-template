@@ -17,4 +17,7 @@ class PasswordResetTokenEntity(
 
     @Column(nullable = false)
     val expiresAt: LocalDateTime,
+
+    @Column(nullable = false)
+    var usedAt: LocalDateTime? = null,
 ) : BaseEntity()

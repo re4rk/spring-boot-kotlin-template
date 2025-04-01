@@ -1,9 +1,10 @@
 package io.dodn.springboot.core.api.controller.v1
 
+import io.dodn.springboot.core.domain.user.UserService
 import io.dodn.springboot.core.domain.user.password.PasswordPolicy
-import io.dodn.springboot.core.domain.user.password.PasswordResetRequestDto
-import io.dodn.springboot.core.domain.user.password.PasswordResetService
-import io.dodn.springboot.core.domain.user.password.PasswordResetVerifyDto
+import io.dodn.springboot.core.domain.user.password.dto.PasswordResetRequestDto
+import io.dodn.springboot.core.domain.user.password.PasswordResetManager
+import io.dodn.springboot.core.domain.user.password.dto.PasswordResetVerifyDto
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,19 +16,20 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/auth/password")
 class PasswordResetController(
-    private val passwordResetService: PasswordResetService,
+    private val passwordResetManager: PasswordResetManager,
     private val passwordPolicy: PasswordPolicy,
+    private val userService: UserService,
 ) {
 
     @PostMapping("/reset-request")
     fun requestPasswordReset(@RequestBody request: PasswordResetRequestDto): ResponseEntity<ApiResponse<Boolean>> {
-        val result = passwordResetService.requestPasswordReset(request)
+        val result = userService.requestPasswordReset(request.email)
         return ResponseEntity.ok(ApiResponse.success(result))
     }
 
     @PostMapping("/reset")
     fun resetPassword(@RequestBody request: PasswordResetVerifyDto): ResponseEntity<ApiResponse<Boolean>> {
-        val result = passwordResetService.resetPassword(request)
+        val result = userService.resetPassword(request.token, request.newPassword)
         return ResponseEntity.ok(ApiResponse.success(result))
     }
 
