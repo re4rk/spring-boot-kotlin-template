@@ -39,6 +39,7 @@ class UserService(
         userPasswordManager.changePassword(user.id, request.password)
 
         userStateProcessor.activate(user.id)
+
         return user
     }
 
