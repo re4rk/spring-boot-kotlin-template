@@ -11,12 +11,9 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserService(
     private val userFinder: UserFinder,
-    private val userCreator: UserCreator,
-    private val userLocker: UserLocker,
-    private val userActivator: UserActivator,
-    private val userDeleter: UserDeleter,
-    private val tokenManager: TokenManager,
     private val userPasswordManager: UserPasswordManager,
+    private val userStateProcessor: UserStateProcessor,
+    private val tokenManager: TokenManager,
 ) {
     @Transactional(readOnly = true)
     fun findByEmail(email: String): UserInfo {
@@ -27,17 +24,17 @@ class UserService(
     fun verifyCredentials(email: String, password: String): UserInfo {
         val user = userFinder.findByEmailAndStatus(email, UserStatus.ACTIVE)
         userPasswordManager.verifyPassword(password, user.id)
-        return userCreator.updateLastLogin(user.id)
+        return userStateProcessor.updateLastLogin(user.id)
     }
 
     // 계정 생성/수정
     @Transactional
     fun register(request: UserRegisterRequest): UserInfo {
-        val user = userCreator.createUser(email = request.email, password = "", name = request.name)
+        val user = userStateProcessor.createUser(email = request.email, password = "", name = request.name)
 
         userPasswordManager.changePassword(user.id, request.password)
 
-        userActivator.activate(user.id)
+        userStateProcessor.activate(user.id)
         return user
     }
 
@@ -53,36 +50,36 @@ class UserService(
     // 계정 상태 관리
     @Transactional
     fun activateUser(userId: Long): Boolean {
-        return userActivator.activate(userId)
+        return userStateProcessor.activate(userId)
     }
 
     @Transactional
     fun inactivateUser(userId: Long): Boolean {
-        return userActivator.inactivate(userId)
+        return userStateProcessor.inactivate(userId)
     }
 
     @Transactional
     fun lockUser(userId: Long): Boolean {
-        return userLocker.lock(userId)
+        return userStateProcessor.lock(userId)
     }
 
     @Transactional
     fun unlockUser(userId: Long): Boolean {
-        return userLocker.unlock(userId)
+        return userStateProcessor.unlock(userId)
     }
 
     // 계정 삭제 관련
     @Transactional
     fun deleteAccount(userId: Long, request: UserDeletionRequestDto): Boolean {
         userPasswordManager.verifyPassword(request.password, userId)
-        val result = userDeleter.deleteAccount(userId)
+        val result = userStateProcessor.deleteAccount(userId)
         tokenManager.invalidateAllTokens(userId)
         return result
     }
 
     @Transactional
     fun hardDeleteUser(userId: Long): Boolean {
-        return userDeleter.hardDelete(userId)
+        return userStateProcessor.hardDelete(userId)
     }
 
     @Transactional(readOnly = true)
