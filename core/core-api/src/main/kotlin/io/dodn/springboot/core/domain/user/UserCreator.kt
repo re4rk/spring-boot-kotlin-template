@@ -8,6 +8,7 @@ import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Component
@@ -16,6 +17,7 @@ class UserCreator(
     private val passwordEncoder: PasswordEncoder,
     private val passwordPolicyService: PasswordPolicyService,
 ) {
+    @Transactional
     fun createUser(email: String, password: String, name: String?): UserInfo {
         // 이메일 중복 확인
         if (userRepository.existsByEmail(email)) {
@@ -41,6 +43,7 @@ class UserCreator(
         return savedUser.toUserInfo()
     }
 
+    @Transactional
     fun updateLastLogin(userId: Long): UserInfo {
         val user = userRepository.findById(userId)
             .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }

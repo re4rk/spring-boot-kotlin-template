@@ -2,14 +2,10 @@ package io.dodn.springboot.core.domain.user
 
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
-import io.dodn.springboot.storage.db.core.user.UserEntity
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,12 +13,14 @@ import org.springframework.transaction.annotation.Transactional
 class UserFinder(
     private val userRepository: UserRepository,
 ) {
+    @Transactional(readOnly = true)
     fun findByEmail(email: String): UserInfo {
         return userRepository.findByEmail(email)
             .map { it.toUserInfo() }
             .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
     }
 
+    @Transactional(readOnly = true)
     fun findByEmailAndStatus(email: String, status: UserStatus): UserInfo {
         val user = findByEmail(email)
 
@@ -33,9 +31,10 @@ class UserFinder(
         return user
     }
 
-    fun findDeletedUsers(page: Int, size: Int): Page<UserInfo> {
+    @Transactional(readOnly = true)
+    fun findByStatus(status: UserStatus, page: Int, size: Int): Page<UserInfo> {
         val pageable = PageRequest.of(page, size)
-        return userRepository.findByStatus(UserStatus.DELETED, pageable)
+        return userRepository.findByStatus(status, pageable)
             .map { it.toUserInfo() }
     }
 }

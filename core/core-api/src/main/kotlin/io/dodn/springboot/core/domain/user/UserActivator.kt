@@ -2,17 +2,18 @@ package io.dodn.springboot.core.domain.user
 
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
-import io.dodn.springboot.storage.db.core.user.UserEntity
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class UserActivator(
     private val userRepository: UserRepository,
 ) {
+    @Transactional
     fun activate(userId: Long): Boolean {
-        val user = userRepository.findById(userId)
+        val user = userRepository.findByIdWithOptimisticLock(userId)
             .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
 
         if (user.status == UserStatus.ACTIVE) {
@@ -24,8 +25,9 @@ class UserActivator(
         return true
     }
 
+    @Transactional
     fun inactivate(userId: Long): Boolean {
-        val user = userRepository.findById(userId)
+        val user = userRepository.findByIdWithOptimisticLock(userId)
             .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
 
         if (user.status == UserStatus.INACTIVE) {

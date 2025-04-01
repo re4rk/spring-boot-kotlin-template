@@ -29,7 +29,7 @@ class UserController(
     fun deleteAccount(@RequestBody request: UserDeletionRequestDto): ResponseEntity<ApiResponse<Boolean>> {
         val currentUser = authFacade.getCurrentUser()
 
-        val result = userService.deleteAccount(currentUser.email, request)
+        val result = userService.deleteAccount(currentUser.id, request)
         return ResponseEntity.ok(ApiResponse.success(result))
     }
 }

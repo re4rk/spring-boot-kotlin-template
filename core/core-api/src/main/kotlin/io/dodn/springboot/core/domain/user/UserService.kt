@@ -87,8 +87,8 @@ class UserService(
 
     // 계정 삭제 관련
     @Transactional
-    fun deleteAccount(email: String, request: UserDeletionRequestDto): Boolean {
-        return userDeleter.deleteAccount(email, request)
+    fun deleteAccount(userId: Long, request: UserDeletionRequestDto): Boolean {
+        return userDeleter.deleteAccount(userId, request)
     }
 
     @Transactional
@@ -98,6 +98,6 @@ class UserService(
 
     @Transactional(readOnly = true)
     fun findDeletedUsers(page: Int, size: Int): Page<UserInfo> {
-        return userFinder.findDeletedUsers(page, size)
+        return userFinder.findByStatus(UserStatus.DELETED, page, size)
     }
 }

@@ -8,6 +8,7 @@ import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserStatus
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Component
@@ -16,9 +17,9 @@ class UserDeleter(
     private val passwordManager: PasswordManager,
     private val tokenManager: TokenManager,
 ) {
-
-    fun deleteAccount(email: String, request: UserDeletionRequestDto): Boolean {
-        val user = userRepository.findByEmail(email)
+    @Transactional
+    fun deleteAccount(userId: Long, request: UserDeletionRequestDto): Boolean {
+        val user = userRepository.findByIdWithOptimisticLock(userId)
             .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
 
         passwordManager.verifyPassword(request.password, user.id)
@@ -32,6 +33,7 @@ class UserDeleter(
         return true
     }
 
+    @Transactional
     fun hardDelete(userId: Long): Boolean {
         userRepository.deleteById(userId)
         return true

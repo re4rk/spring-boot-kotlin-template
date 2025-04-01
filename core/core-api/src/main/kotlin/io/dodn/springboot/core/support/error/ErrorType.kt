@@ -38,4 +38,7 @@ enum class ErrorType(val status: HttpStatus, val code: ErrorCode, val message: S
     INVALID_VERIFICATION_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Invalid verification token", LogLevel.INFO),
     EXPIRED_RESET_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Expired reset token", LogLevel.WARN),
     INVALID_RESET_TOKEN(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Invalid reset token", LogLevel.WARN),
+
+    //  Data Integrity Errors
+    CONCURRENT_MODIFICATION(HttpStatus.CONFLICT, ErrorCode.E409, "Concurrent modification detected", LogLevel.WARN),
 }
