@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.api.controller.v1
 
-import io.dodn.springboot.core.domain.user.password.PasswordPolicyService
+import io.dodn.springboot.core.domain.user.password.PasswordPolicy
 import io.dodn.springboot.core.domain.user.password.PasswordResetRequestDto
 import io.dodn.springboot.core.domain.user.password.PasswordResetService
 import io.dodn.springboot.core.domain.user.password.PasswordResetVerifyDto
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/auth/password")
 class PasswordResetController(
     private val passwordResetService: PasswordResetService,
-    private val passwordPolicyService: PasswordPolicyService,
+    private val passwordPolicy: PasswordPolicy,
 ) {
 
     @PostMapping("/reset-request")
@@ -46,7 +46,7 @@ class PasswordResetController(
 
     @PostMapping("/validate")
     fun validatePassword(@RequestBody password: String): ResponseEntity<ApiResponse<Map<String, Boolean>>> {
-        val validations = passwordPolicyService.validatePasswordStrength(password)
+        val validations = passwordPolicy.validatePasswordStrength(password)
         return ResponseEntity.ok(ApiResponse.success(validations))
     }
 }

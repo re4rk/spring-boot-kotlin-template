@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.domain.user
 
-import io.dodn.springboot.core.domain.user.password.PasswordPolicyService
+import io.dodn.springboot.core.domain.user.password.PasswordPolicy
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.storage.db.core.user.UserEntity
@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 class UserCreator(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val passwordPolicyService: PasswordPolicyService,
+    private val passwordPolicy: PasswordPolicy,
 ) {
     @Transactional
     fun createUser(email: String, password: String, name: String?): UserInfo {
@@ -38,7 +38,7 @@ class UserCreator(
         val savedUser = userRepository.save(user)
 
         // 비밀번호 이력에 추가
-        passwordPolicyService.addPasswordToHistory(savedUser.id, encodedPassword)
+        passwordPolicy.addPasswordToHistory(savedUser.id, encodedPassword)
 
         return savedUser.toUserInfo()
     }

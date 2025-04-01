@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component
 class PasswordManager(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val passwordPolicyService: PasswordPolicyService,
+    private val passwordPolicy: PasswordPolicy,
 ) {
     fun validateNewPassword(password: String) {
-        if (!passwordPolicyService.isValidPassword(password)) {
+        if (!passwordPolicy.isValidPassword(password)) {
             throw CoreException(ErrorType.WEAK_PASSWORD)
         }
     }
@@ -37,7 +37,7 @@ class PasswordManager(
         }
 
         // 비밀번호 정책 검증 및 인코딩 (이력 체크 포함)
-        val encodedPassword = passwordPolicyService.validateAndEncodePassword(
+        val encodedPassword = passwordPolicy.validateAndEncodePassword(
             userId = user.id,
             password = newPassword,
         )

@@ -18,7 +18,7 @@ import java.util.Base64
 class PasswordResetService(
     private val userRepository: UserRepository,
     private val passwordResetTokenRepository: PasswordResetTokenRepository,
-    private val passwordPolicyService: PasswordPolicyService,
+    private val passwordPolicy: PasswordPolicy,
     private val emailSender: EmailSender,
 ) {
 
@@ -65,7 +65,7 @@ class PasswordResetService(
             .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
 
         // 비밀번호 정책 검증 및 인코딩 (이력 체크 포함)
-        val encodedPassword = passwordPolicyService.validateAndEncodePassword(
+        val encodedPassword = passwordPolicy.validateAndEncodePassword(
             user.id,
             resetDto.newPassword,
         )

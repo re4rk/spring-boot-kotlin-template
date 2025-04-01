@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.regex.Pattern
 
 @Service
-class PasswordPolicyService(
+class PasswordPolicy(
     private val passwordHistoryRepository: PasswordHistoryRepository,
     private val passwordEncoder: PasswordEncoder,
 ) {
