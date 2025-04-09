@@ -1,0 +1,33 @@
+coolsms:
+  api:
+    url: https://api.coolsms.co.kr
+  apiKey: ${COOLSMS_API_KEY:your-api-key}
+  apiSecret: ${COOLSMS_API_SECRET:your-api-secret}
+  defaultSender: ${COOLSMS_DEFAULT_SENDER:your-default-sender}
+
+spring.cloud.openfeign:
+  client:
+    config:
+      coolsms-api:
+        connectTimeout: 2000
+        readTimeout: 5000
+        loggerLevel: full
+  compression:
+    response:
+      enabled: false
+  httpclient:
+    max-connections: 200
+    max-connections-per-route: 50
+
+---
+spring.config.activate.on-profile: local
+
+---
+spring.config.activate.on-profile:
+  - local-dev
+  - dev
+
+---
+spring.config.activate.on-profile:
+  - staging
+  - live
