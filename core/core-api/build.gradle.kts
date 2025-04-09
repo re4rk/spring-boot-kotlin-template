@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":storage:db-core"))
     implementation(project(":clients:client-example"))
     implementation(project(":clients:client-payment"))
+    implementation(project(":clients:client-openai"))
 
     testImplementation(project(":tests:api-docs"))
 
