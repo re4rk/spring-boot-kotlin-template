@@ -11,6 +11,7 @@ include(
     "clients:client-example",
     "clients:client-payment",
     "clients:client-coolsms",
+    "clients:client-openai"
 )
 
 pluginManagement {
