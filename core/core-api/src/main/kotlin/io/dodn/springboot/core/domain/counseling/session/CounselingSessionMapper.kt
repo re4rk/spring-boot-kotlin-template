@@ -1,6 +1,6 @@
-package io.dodn.springboot.core.domain.counselor.session
+package io.dodn.springboot.core.domain.counseling.session
 
-import io.dodn.springboot.storage.db.core.counselor.session.CounselingSessionEntity
+import io.dodn.springboot.storage.db.core.counseling.session.CounselingSessionEntity
 
 fun CounselingSessionEntity.toDomain(): CounselingSession = CounselingSession(
     id = this.id,

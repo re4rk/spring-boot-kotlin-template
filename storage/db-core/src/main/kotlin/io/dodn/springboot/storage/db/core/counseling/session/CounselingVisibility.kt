@@ -1,4 +1,4 @@
-package io.dodn.springboot.storage.db.core.counselor.session
+package io.dodn.springboot.storage.db.core.counseling.session
 
 enum class CounselingVisibility {
     PRIVATE,

@@ -1,4 +1,4 @@
-package io.dodn.springboot.storage.db.core.counselor.session
+package io.dodn.springboot.storage.db.core.counseling.session
 
 import io.dodn.springboot.storage.db.core.BaseEntity
 import jakarta.persistence.CollectionTable

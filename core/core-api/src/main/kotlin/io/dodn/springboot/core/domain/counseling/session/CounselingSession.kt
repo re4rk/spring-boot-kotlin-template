@@ -1,7 +1,6 @@
-package io.dodn.springboot.core.domain.counselor.session
+package io.dodn.springboot.core.domain.counseling.session
 
-import io.dodn.springboot.storage.db.core.counselor.session.CounselingSessionEntity
-import io.dodn.springboot.storage.db.core.counselor.session.CounselingVisibility
+import io.dodn.springboot.storage.db.core.counseling.session.CounselingVisibility
 import java.time.LocalDateTime
 
 data class CounselingSession(

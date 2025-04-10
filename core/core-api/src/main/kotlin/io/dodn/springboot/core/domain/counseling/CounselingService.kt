@@ -1,9 +1,9 @@
-package io.dodn.springboot.core.domain.counselor
+package io.dodn.springboot.core.domain.counseling
 
-import io.dodn.springboot.core.domain.counselor.dto.*
-import io.dodn.springboot.core.domain.counselor.session.CounselingSession
-import io.dodn.springboot.core.domain.counselor.session.CounselingSessionStore
-import io.dodn.springboot.storage.db.core.counselor.session.CounselingVisibility
+import io.dodn.springboot.core.domain.counseling.dto.*
+import io.dodn.springboot.core.domain.counseling.session.CounselingSession
+import io.dodn.springboot.core.domain.counseling.session.CounselingSessionStore
+import io.dodn.springboot.storage.db.core.counseling.session.CounselingVisibility
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
