@@ -1,6 +1,11 @@
 package io.dodn.springboot.core.domain.counseling
 
-import io.dodn.springboot.core.domain.counseling.dto.*
+import io.dodn.springboot.core.domain.counseling.counselor.AiCounselorClient
+import io.dodn.springboot.core.domain.counseling.counselor.dto.CounselingRequest
+import io.dodn.springboot.core.domain.counseling.counselor.dto.CounselingResponse
+import io.dodn.springboot.core.domain.counseling.counselor.dto.EmotionTagRequest
+import io.dodn.springboot.core.domain.counseling.counselor.dto.SummaryRequest
+import io.dodn.springboot.core.domain.counseling.counselor.dto.SummaryResponse
 import io.dodn.springboot.core.domain.counseling.session.CounselingSession
 import io.dodn.springboot.core.domain.counseling.session.CounselingSessionStore
 import io.dodn.springboot.storage.db.core.counseling.session.CounselingVisibility

@@ -1,13 +1,13 @@
-package io.dodn.springboot.core.domain.counseling
+package io.dodn.springboot.core.domain.counseling.counselor
 
 import io.dodn.springboot.client.openai.GptRequest
 import io.dodn.springboot.client.openai.OpenAiApiClient
-import io.dodn.springboot.core.domain.counseling.dto.CounselingRequest
-import io.dodn.springboot.core.domain.counseling.dto.CounselingResponse
-import io.dodn.springboot.core.domain.counseling.dto.EmotionTagRequest
-import io.dodn.springboot.core.domain.counseling.dto.EmotionTagResponse
-import io.dodn.springboot.core.domain.counseling.dto.SummaryRequest
-import io.dodn.springboot.core.domain.counseling.dto.SummaryResponse
+import io.dodn.springboot.core.domain.counseling.counselor.dto.CounselingRequest
+import io.dodn.springboot.core.domain.counseling.counselor.dto.CounselingResponse
+import io.dodn.springboot.core.domain.counseling.counselor.dto.EmotionTagRequest
+import io.dodn.springboot.core.domain.counseling.counselor.dto.EmotionTagResponse
+import io.dodn.springboot.core.domain.counseling.counselor.dto.SummaryRequest
+import io.dodn.springboot.core.domain.counseling.counselor.dto.SummaryResponse
 import org.springframework.stereotype.Component
 
 @Component
