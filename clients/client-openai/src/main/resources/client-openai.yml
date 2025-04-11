@@ -1,9 +1,8 @@
-coolsms:
+openai:
   api:
-    url: https://api.coolsms.co.kr
-  apiKey: ${COOLSMS_API_KEY:your-api-key}
-  apiSecret: ${COOLSMS_API_SECRET:your-api-secret}
-  defaultSender: ${COOLSMS_DEFAULT_SENDER:your-default-sender}
+    key: ${OPENAI_API_KEY:your-api-key}
+    url: https://api.openai.com/v1
+  model: ${OPENAI_MODEL:gpt-4o-mini}
 
 spring.cloud.openfeign:
   client:
