@@ -79,9 +79,4 @@ class WorryService(
         val tagResponse = aiCounselorClient.extractEmotionTags(tagRequest)
         return tagResponse.tags
     }
-
-    @Transactional
-    fun updateWorrySharedStatus(worryId: Long, isShared: Boolean): Worry {
-        return worryStorage.updateWorrySharedStatus(worryId, isShared)
-    }
 }

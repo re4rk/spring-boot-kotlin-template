@@ -32,7 +32,7 @@ class CounselorMapper {
 
     fun toSummaryRequest(worry: Worry): SummaryRequest {
         val conversationText = when (worry.mode) {
-            WorryMode.LETTER -> worry.content ?: ""
+            WorryMode.LETTER -> worry.content
             WorryMode.CONVO -> buildConversationText(worry.steps)
         }
 
@@ -41,7 +41,7 @@ class CounselorMapper {
 
     fun toEmotionTagRequest(worry: Worry): EmotionTagRequest {
         val content = when (worry.mode) {
-            WorryMode.LETTER -> worry.content ?: ""
+            WorryMode.LETTER -> worry.content
             WorryMode.CONVO -> buildConversationText(worry.steps)
         }
 
@@ -50,7 +50,7 @@ class CounselorMapper {
 
     private fun toCounselingRequestForLetter(worry: Worry): CounselingRequest {
         return CounselingRequest(
-            userInput = worry.content ?: "",
+            userInput = worry.content,
             emotion = worry.emotion,
             category = worry.category,
             options = worry.options.map { "${it.label}. ${it.text}" },

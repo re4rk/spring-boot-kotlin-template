@@ -93,20 +93,6 @@ class WorryStorage(
         }
     }
 
-    @Transactional(readOnly = true)
-    fun getWorrySteps(worryId: Long): List<WorryStep> {
-        val steps = worryStepRepository.findByWorryIdOrderByStepOrder(worryId)
-
-        return steps.map { entity ->
-            WorryStep(
-                id = entity.id,
-                role = StepRole.valueOf(entity.role.name),
-                content = entity.content,
-                stepOrder = entity.stepOrder,
-            )
-        }
-    }
-
     @Transactional
     fun saveWorryOptions(worryId: Long, options: List<WorryOption>): List<WorryOption> {
         val worryEntity = worryRepository.findById(worryId)
@@ -123,19 +109,6 @@ class WorryStorage(
         }
 
         return optionEntities.map { entity ->
-            WorryOption(
-                id = entity.id,
-                label = entity.label,
-                text = entity.text,
-            )
-        }
-    }
-
-    @Transactional(readOnly = true)
-    fun getWorryOptions(worryId: Long): List<WorryOption> {
-        val options = worryOptionRepository.findByWorryId(worryId)
-
-        return options.map { entity ->
             WorryOption(
                 id = entity.id,
                 label = entity.label,
@@ -171,21 +144,6 @@ class WorryStorage(
             feedback = aiFeedbackEntity.feedback,
             tone = aiFeedbackEntity.tone,
             tags = tags.map { it.tag },
-        )
-    }
-
-    @Transactional(readOnly = true)
-    fun getAiFeedback(feedbackId: Long): AiFeedback {
-        val aiFeedbackEntity = aiFeedbackRepository.findById(feedbackId)
-            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "AI Feedback not found") }
-
-        val tags = feedbackTagRepository.findByFeedbackId(feedbackId).map { it.tag }
-
-        return AiFeedback(
-            id = aiFeedbackEntity.id,
-            feedback = aiFeedbackEntity.feedback,
-            tone = aiFeedbackEntity.tone,
-            tags = tags,
         )
     }
 
