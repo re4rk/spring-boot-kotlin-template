@@ -5,9 +5,7 @@ import io.dodn.springboot.core.domain.worry.AiFeedbackResponseDto
 import io.dodn.springboot.core.domain.worry.CreateAiFeedbackRequestDto
 import io.dodn.springboot.core.domain.worry.CreateConvoWorryRequestDto
 import io.dodn.springboot.core.domain.worry.CreateLetterWorryRequestDto
-import io.dodn.springboot.core.domain.worry.EmpathyResponseDto
-import io.dodn.springboot.core.domain.worry.FeedResponseDto
-import io.dodn.springboot.core.domain.worry.FeedSummaryResponseDto
+import io.dodn.springboot.core.domain.feed.FeedService
 import io.dodn.springboot.core.domain.worry.ShareWorryRequestDto
 import io.dodn.springboot.core.domain.worry.WorryResponseDto
 import io.dodn.springboot.core.domain.worry.WorryService
@@ -17,13 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1")
 class WorryController(
     private val worryService: WorryService,
+    private val feedService: FeedService,
 ) {
     @PostMapping("/worries/letter")
     fun createLetterWorry(@RequestBody request: CreateLetterWorryRequestDto): ApiResponse<Map<String, Long>> {
@@ -77,7 +75,7 @@ class WorryController(
             )
         }
 
-        val feed = worryService.shareWorry(worryId, aiFeedback.id)
+        val feed = feedService.shareWorry(worryId, aiFeedback.id)
         return ApiResponse.success(
             mapOf(
                 "status" to "shared",
@@ -92,33 +90,5 @@ class WorryController(
         worryService.getWorry(worryId) // Verify it exists
         return ApiResponse.success(mapOf("status" to "saved"))
     }
-
-    @GetMapping("/feed")
-    fun getFeeds(
-        @RequestParam(required = false) emotion: String?,
-        @RequestParam(required = false) tag: String?,
-    ): ApiResponse<List<FeedSummaryResponseDto>> {
-        val feeds = worryService.getFeeds(emotion, tag)
-        return ApiResponse.success(feeds.map { FeedSummaryResponseDto.from(it) })
-    }
-
-    @GetMapping("/feed/{feedId}")
-    fun getFeed(@PathVariable feedId: Long): ApiResponse<FeedResponseDto> {
-        val feed = worryService.getFeed(feedId)
-        return ApiResponse.success(FeedResponseDto.from(feed))
-    }
-
-    @PostMapping("/feed/{feedId}/empathy")
-    fun addEmpathy(
-        @PathVariable feedId: Long,
-        @RequestParam(required = false) userId: Long?,
-    ): ApiResponse<EmpathyResponseDto> {
-        val count = worryService.addEmpathy(feedId, userId)
-        return ApiResponse.success(
-            EmpathyResponseDto(
-                status = "liked",
-                count = count,
-            ),
-        )
-    }
 }
+

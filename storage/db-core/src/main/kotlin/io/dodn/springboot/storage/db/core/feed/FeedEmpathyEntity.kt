@@ -1,4 +1,4 @@
-package io.dodn.springboot.storage.db.core.worry
+package io.dodn.springboot.storage.db.core.feed
 
 import io.dodn.springboot.storage.db.core.BaseEntity
 import jakarta.persistence.Column
@@ -8,7 +8,6 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
-import java.util.UUID
 
 @Entity
 @Table(

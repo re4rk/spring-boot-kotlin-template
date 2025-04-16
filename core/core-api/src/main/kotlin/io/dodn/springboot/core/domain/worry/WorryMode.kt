@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.domain.worry
 
-import java.util.UUID
+import java.time.LocalDateTime
 
 enum class WorryMode {
     LETTER,
@@ -49,4 +49,5 @@ data class Feed(
     val worry: Worry,
     val feedback: AiFeedback,
     val empathyCount: Long = 0,
+    val sharedAt: LocalDateTime,
 )

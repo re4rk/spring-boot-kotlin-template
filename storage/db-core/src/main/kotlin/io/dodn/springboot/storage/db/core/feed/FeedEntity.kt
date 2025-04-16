@@ -1,6 +1,8 @@
-package io.dodn.springboot.storage.db.core.worry
+package io.dodn.springboot.storage.db.core.feed
 
 import io.dodn.springboot.storage.db.core.BaseEntity
+import io.dodn.springboot.storage.db.core.worry.AiFeedbackEntity
+import io.dodn.springboot.storage.db.core.worry.WorryEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType

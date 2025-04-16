@@ -17,13 +17,3 @@ interface AiFeedbackRepository : JpaRepository<AiFeedbackEntity, Long> {
 interface FeedbackTagRepository : JpaRepository<FeedbackTagEntity, Long> {
     fun findByFeedbackId(feedbackId: Long): List<FeedbackTagEntity>
 }
-
-interface FeedRepository : JpaRepository<FeedEntity, Long> {
-    fun findAllByOrderBySharedAtDesc(): List<FeedEntity>
-    fun findByWorryId(worryId: Long): FeedEntity?
-}
-
-interface FeedEmpathyRepository : JpaRepository<FeedEmpathyEntity, Long> {
-    fun countByFeedId(feedId: Long): Long
-    fun findByFeedIdAndUserId(feedId: Long, userId: Long): FeedEmpathyEntity?
-}
