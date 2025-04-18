@@ -1,7 +1,7 @@
 package io.dodn.springboot.core.domain.worry.counselor
 
-import io.dodn.springboot.client.openai.GptRequest
-import io.dodn.springboot.client.openai.OpenAiApiClient
+import io.dodn.springboot.client.openai.OpenAiClient
+import io.dodn.springboot.client.openai.model.Message
 import io.dodn.springboot.core.domain.worry.counselor.dto.CounselingRequest
 import io.dodn.springboot.core.domain.worry.counselor.dto.CounselingResponse
 import io.dodn.springboot.core.domain.worry.counselor.dto.EmotionTagRequest
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class OpenAiCounselorClient(
-    private val openAiApiClient: OpenAiApiClient,
+    private val openAiClient: OpenAiClient,
 ) : AiCounselorClient {
 
     override fun getCounseling(request: CounselingRequest): CounselingResponse {
@@ -23,12 +23,15 @@ class OpenAiCounselorClient(
         }
 
         val messages = listOf(
-            mapOf("role" to "system", "content" to SYSTEM_PROMPT),
-            mapOf("role" to "user", "content" to promptContent),
+            Message(role = "system", content = SYSTEM_PROMPT),
+            Message(role = "user", content = promptContent),
         )
 
-        val response = openAiApiClient.callGpt(GptRequest(messages = messages))
-        val feedback = response.choices.firstOrNull()?.message?.content ?: "죄송합니다, 답변을 생성하는 데 문제가 있었습니다."
+        val feedback = openAiClient.createChatCompletion(messages)
+            .choices
+            .firstOrNull()
+            ?.message
+            ?.content ?: "죄송합니다, 답변을 생성하는 데 문제가 있었습니다."
 
         return CounselingResponse(feedback)
     }
@@ -43,12 +46,16 @@ class OpenAiCounselorClient(
         """.trimIndent()
 
         val messages = listOf(
-            mapOf("role" to "system", "content" to SYSTEM_PROMPT),
-            mapOf("role" to "user", "content" to summaryPrompt),
+            Message(role = "system", content = SYSTEM_PROMPT),
+            Message(role = "user", content = summaryPrompt),
         )
 
-        val result = openAiApiClient.callGpt(GptRequest(messages = messages))
-        val content = result.choices.firstOrNull()?.message?.content ?: ""
+        val content = openAiClient.createChatCompletion(messages)
+            .choices
+            .firstOrNull()
+            ?.message
+            ?.content ?: ""
+
         val parts = content.split("\n")
 
         return SummaryResponse(
@@ -67,12 +74,15 @@ class OpenAiCounselorClient(
         """.trimIndent()
 
         val messages = listOf(
-            mapOf("role" to "system", "content" to SYSTEM_PROMPT),
-            mapOf("role" to "user", "content" to tagPrompt),
+            Message(role = "system", content = SYSTEM_PROMPT),
+            Message(role = "user", content = tagPrompt),
         )
 
-        val result = openAiApiClient.callGpt(GptRequest(messages = messages))
-        val raw = result.choices.firstOrNull()?.message?.content ?: ""
+        val raw = openAiClient.createChatCompletion(messages)
+            .choices
+            .firstOrNull()
+            ?.message
+            ?.content ?: ""
 
         // Extract tags, handling both comma-separated and hashtag format
         val tags = raw.split(",", " ", "\n")
