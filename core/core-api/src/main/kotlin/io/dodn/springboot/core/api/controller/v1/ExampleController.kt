@@ -1,7 +1,7 @@
 package io.dodn.springboot.core.api.controller.v1
 
-import io.dodn.springboot.core.api.controller.v1.request.ExampleRequestDto
-import io.dodn.springboot.core.api.controller.v1.response.ExampleResponseDto
+import io.dodn.springboot.core.api.controller.v1.request.ExampleRequest
+import io.dodn.springboot.core.api.controller.v1.response.ExampleResponse
 import io.dodn.springboot.core.domain.ExampleData
 import io.dodn.springboot.core.domain.ExampleService
 import io.dodn.springboot.core.support.response.ApiResponse
@@ -20,16 +20,16 @@ class ExampleController(
     fun exampleGet(
         @PathVariable exampleValue: String,
         @RequestParam exampleParam: String,
-    ): ApiResponse<ExampleResponseDto> {
+    ): ApiResponse<ExampleResponse> {
         val result = exampleExampleService.processExample(ExampleData(exampleValue, exampleParam))
-        return ApiResponse.success(ExampleResponseDto(result.data))
+        return ApiResponse.success(ExampleResponse(result.data))
     }
 
     @PostMapping("/post")
     fun examplePost(
-        @RequestBody request: ExampleRequestDto,
-    ): ApiResponse<ExampleResponseDto> {
+        @RequestBody request: ExampleRequest,
+    ): ApiResponse<ExampleResponse> {
         val result = exampleExampleService.processExample(request.toExampleData())
-        return ApiResponse.success(ExampleResponseDto(result.data))
+        return ApiResponse.success(ExampleResponse(result.data))
     }
 }

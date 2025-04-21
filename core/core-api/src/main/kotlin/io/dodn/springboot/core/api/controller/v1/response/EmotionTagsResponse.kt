@@ -1,5 +1,5 @@
 package io.dodn.springboot.core.api.controller.v1.response
 
-class EmotionTagsResponseDto(
+class EmotionTagsResponse(
     val tags: List<String>,
 )

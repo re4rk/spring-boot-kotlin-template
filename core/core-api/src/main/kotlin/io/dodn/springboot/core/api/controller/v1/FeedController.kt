@@ -1,8 +1,8 @@
 package io.dodn.springboot.core.api.controller.v1
 
-import io.dodn.springboot.core.api.controller.v1.response.EmpathyResponseDto
-import io.dodn.springboot.core.api.controller.v1.response.FeedResponseDto
-import io.dodn.springboot.core.api.controller.v1.response.FeedSummaryResponseDto
+import io.dodn.springboot.core.api.controller.v1.response.EmpathyResponse
+import io.dodn.springboot.core.api.controller.v1.response.FeedResponse
+import io.dodn.springboot.core.api.controller.v1.response.FeedSummaryResponse
 import io.dodn.springboot.core.domain.feed.FeedService
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,25 +21,25 @@ class FeedController(
     fun getFeeds(
         @RequestParam(required = false) emotion: String?,
         @RequestParam(required = false) tag: String?,
-    ): ApiResponse<List<FeedSummaryResponseDto>> {
+    ): ApiResponse<List<FeedSummaryResponse>> {
         val feeds = feedService.getFeeds(emotion, tag)
-        return ApiResponse.success(feeds.map { FeedSummaryResponseDto.from(it) })
+        return ApiResponse.success(feeds.map { FeedSummaryResponse.from(it) })
     }
 
     @GetMapping("/{feedId}")
-    fun getFeed(@PathVariable feedId: Long): ApiResponse<FeedResponseDto> {
+    fun getFeed(@PathVariable feedId: Long): ApiResponse<FeedResponse> {
         val feed = feedService.getFeed(feedId)
-        return ApiResponse.success(FeedResponseDto.from(feed))
+        return ApiResponse.success(FeedResponse.from(feed))
     }
 
     @PostMapping("/{feedId}/empathy")
     fun addEmpathy(
         @PathVariable feedId: Long,
         @RequestParam(required = false) userId: Long?,
-    ): ApiResponse<EmpathyResponseDto> {
+    ): ApiResponse<EmpathyResponse> {
         val count = feedService.addEmpathy(feedId, userId)
         return ApiResponse.success(
-            EmpathyResponseDto(
+            EmpathyResponse(
                 status = "liked",
                 count = count,
             ),

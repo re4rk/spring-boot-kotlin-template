@@ -3,7 +3,7 @@ package io.dodn.springboot.core.api.controller.v1
 import io.dodn.springboot.core.api.auth.AuthFacade
 import io.dodn.springboot.core.api.auth.AuthResponse
 import io.dodn.springboot.core.api.auth.RefreshTokenRequest
-import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequestDto
+import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequest
 import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.UserRegisterParams
 import io.dodn.springboot.storage.db.core.user.UserRole
@@ -107,7 +107,7 @@ class AuthControllerTest : RestDocsTest() {
     @Test
     fun loginTest() {
         // Given
-        val loginRequest = UserLoginRequestDto(
+        val loginRequest = UserLoginRequest(
             email = "test@example.com",
             password = "password123",
         )

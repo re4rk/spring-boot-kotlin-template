@@ -4,11 +4,11 @@ import io.dodn.springboot.core.domain.worry.Worry
 import io.dodn.springboot.core.domain.worry.WorryMode
 import io.dodn.springboot.core.domain.worry.WorryStep
 
-data class CreateConvoWorryRequestDto(
+data class CreateConvoWorryRequest(
     val userId: Long,
     val emotion: String,
     val category: String,
-    val steps: List<StepDto>,
+    val steps: List<StepRequest>,
 ) {
     fun toWorry(): Worry {
         return Worry(

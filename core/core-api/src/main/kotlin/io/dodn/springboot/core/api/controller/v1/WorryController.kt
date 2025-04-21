@@ -1,12 +1,12 @@
 package io.dodn.springboot.core.api.controller.v1
 
-import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequestDto
-import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequestDto
-import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequestDto
-import io.dodn.springboot.core.api.controller.v1.request.SummaryResponseDto
-import io.dodn.springboot.core.api.controller.v1.response.EmotionTagsResponseDto
-import io.dodn.springboot.core.api.controller.v1.response.FeedbackResponseDto
-import io.dodn.springboot.core.api.controller.v1.response.WorryResponseDto
+import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequest
+import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
+import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequest
+import io.dodn.springboot.core.api.controller.v1.request.SummaryResponse
+import io.dodn.springboot.core.api.controller.v1.response.EmotionTagsResponse
+import io.dodn.springboot.core.api.controller.v1.response.FeedbackResponse
+import io.dodn.springboot.core.api.controller.v1.response.WorryResponse
 import io.dodn.springboot.core.domain.worry.Feedback
 import io.dodn.springboot.core.domain.worry.WorryService
 import io.dodn.springboot.core.support.response.ApiResponse
@@ -26,28 +26,28 @@ class WorryController(
     private val worryService: WorryService,
 ) {
     @PostMapping("/letter")
-    fun createLetterWorry(@RequestBody request: CreateLetterWorryRequestDto): ApiResponse<Map<String, Long>> {
+    fun createLetterWorry(@RequestBody request: CreateLetterWorryRequest): ApiResponse<Map<String, Long>> {
         val worry = worryService.createLetterWorry(request.toWorry())
         return ApiResponse.success(mapOf("worryId" to worry.id))
     }
 
     @PostMapping("/convo")
-    fun createConvoWorry(@RequestBody request: CreateConvoWorryRequestDto): ApiResponse<Map<String, Long>> {
+    fun createConvoWorry(@RequestBody request: CreateConvoWorryRequest): ApiResponse<Map<String, Long>> {
         val worry = worryService.createConvoWorry(request.toWorry())
         return ApiResponse.success(mapOf("worryId" to worry.id))
     }
 
     @GetMapping("/{worryId}")
-    fun getWorry(@PathVariable worryId: Long): ApiResponse<WorryResponseDto> {
+    fun getWorry(@PathVariable worryId: Long): ApiResponse<WorryResponse> {
         val worry = worryService.getWorry(worryId)
-        return ApiResponse.success(WorryResponseDto.from(worry))
+        return ApiResponse.success(WorryResponse.from(worry))
     }
 
     @PostMapping("/{worryId}/ai-feedback")
     fun createFeedback(
         @PathVariable worryId: Long,
-        @RequestBody request: CreateFeedbackRequestDto?,
-    ): ApiResponse<FeedbackResponseDto> {
+        @RequestBody request: CreateFeedbackRequest?,
+    ): ApiResponse<FeedbackResponse> {
         val feedback = if (request != null) {
             // Manual feedback provided
             worryService.createFeedback(
@@ -63,19 +63,19 @@ class WorryController(
             worryService.requestFeedback(worryId)
         }
 
-        return ApiResponse.success(FeedbackResponseDto.from(feedback))
+        return ApiResponse.success(FeedbackResponse.from(feedback))
     }
 
     @GetMapping("/{worryId}/summary")
-    fun getWorrySummary(@PathVariable worryId: Long): ApiResponse<SummaryResponseDto> {
+    fun getWorrySummary(@PathVariable worryId: Long): ApiResponse<SummaryResponse> {
         val summary = worryService.generateSummary(worryId)
-        return ApiResponse.success(SummaryResponseDto(summary))
+        return ApiResponse.success(SummaryResponse(summary))
     }
 
     @GetMapping("/{worryId}/emotion-tags")
-    fun getWorryEmotionTags(@PathVariable worryId: Long): ApiResponse<EmotionTagsResponseDto> {
+    fun getWorryEmotionTags(@PathVariable worryId: Long): ApiResponse<EmotionTagsResponse> {
         val tags = worryService.extractEmotionTags(worryId)
-        return ApiResponse.success(EmotionTagsResponseDto(tags))
+        return ApiResponse.success(EmotionTagsResponse(tags))
     }
 
     @PostMapping("/{worryId}/save")

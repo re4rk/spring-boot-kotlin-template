@@ -2,7 +2,7 @@ package io.dodn.springboot.core.api.controller.v1.request
 
 import io.dodn.springboot.core.domain.order.OrderData
 
-data class CreateOrderRequestDto(
+data class CreateOrderRequest(
     val userId: Long,
     val productId: Long,
     val quantity: Int,

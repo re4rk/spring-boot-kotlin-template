@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.api.controller.v1
 
-import io.dodn.springboot.core.api.controller.v1.request.ExampleRequestDto
+import io.dodn.springboot.core.api.controller.v1.request.ExampleRequest
 import io.dodn.springboot.core.domain.ExampleResult
 import io.dodn.springboot.core.domain.ExampleService
 import io.dodn.springboot.test.api.RestDocsTest
@@ -68,7 +68,7 @@ class ExampleControllerTest : RestDocsTest() {
 
         given()
             .contentType(ContentType.JSON)
-            .body(ExampleRequestDto("HELLO_BODY"))
+            .body(ExampleRequest("HELLO_BODY"))
             .post("/post")
             .then()
             .status(HttpStatus.OK)

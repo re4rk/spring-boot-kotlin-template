@@ -1,7 +1,7 @@
 package io.dodn.springboot.core.api.auth
 
-import io.dodn.springboot.core.api.controller.v1.request.UserChangePasswordRequestDto
-import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequestDto
+import io.dodn.springboot.core.api.controller.v1.request.UserChangePasswordRequest
+import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequest
 import io.dodn.springboot.core.domain.token.JwtService
 import io.dodn.springboot.core.domain.token.TokenService
 import io.dodn.springboot.core.domain.user.UserInfo
@@ -38,7 +38,7 @@ class AuthFacade(
     }
 
     @Transactional
-    fun login(request: UserLoginRequestDto): AuthResponse {
+    fun login(request: UserLoginRequest): AuthResponse {
         // Authenticate user through Spring Security
         try {
             authenticationManager.authenticate(
@@ -111,7 +111,7 @@ class AuthFacade(
     }
 
     @Transactional
-    fun changePassword(request: UserChangePasswordRequestDto): Boolean {
+    fun changePassword(request: UserChangePasswordRequest): Boolean {
         val authentication = SecurityContextHolder.getContext().authentication
         if (authentication != null && authentication.isAuthenticated) {
             val userDetails = authentication.principal as UserDetails

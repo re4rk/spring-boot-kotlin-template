@@ -4,12 +4,12 @@ import io.dodn.springboot.core.domain.worry.Worry
 import io.dodn.springboot.core.domain.worry.WorryMode
 import io.dodn.springboot.core.domain.worry.WorryOption
 
-data class CreateLetterWorryRequestDto(
+data class CreateLetterWorryRequest(
     val userId: Long,
     val emotion: String,
     val content: String,
     val category: String,
-    val options: List<OptionDto>? = null,
+    val options: List<OptionReqeust>? = null,
 ) {
     fun toWorry(): Worry {
         return Worry(
