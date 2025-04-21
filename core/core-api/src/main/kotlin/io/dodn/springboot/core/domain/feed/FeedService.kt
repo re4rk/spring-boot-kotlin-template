@@ -69,7 +69,8 @@ class FeedService(
 
     @Transactional
     fun addEmpathy(feedId: Long, userId: Long): Long {
-        return empathyCounter.addEmpathy(feedId, userId)
+        val feed = feedStorage.getFeed(feedId)
+        return empathyCounter.addEmpathy(feed.id, userId)
     }
 
     @Transactional
