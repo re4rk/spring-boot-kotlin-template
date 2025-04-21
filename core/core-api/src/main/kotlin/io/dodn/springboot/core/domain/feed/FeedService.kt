@@ -1,5 +1,6 @@
 package io.dodn.springboot.core.domain.feed
 
+import io.dodn.springboot.core.domain.feed.empathy.EmpathyCounter
 import io.dodn.springboot.core.domain.worry.WorryStorage
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType

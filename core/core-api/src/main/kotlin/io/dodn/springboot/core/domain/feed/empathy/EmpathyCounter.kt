@@ -1,4 +1,4 @@
-package io.dodn.springboot.core.domain.feed
+package io.dodn.springboot.core.domain.feed.empathy
 
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType

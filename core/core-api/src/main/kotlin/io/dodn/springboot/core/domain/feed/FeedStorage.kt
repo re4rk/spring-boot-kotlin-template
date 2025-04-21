@@ -1,9 +1,9 @@
 package io.dodn.springboot.core.domain.feed
 
+import io.dodn.springboot.core.domain.feed.empathy.EmpathyCounter
 import io.dodn.springboot.core.domain.worry.WorryStorage
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
-import io.dodn.springboot.storage.db.core.feed.FeedEmpathyRepository
 import io.dodn.springboot.storage.db.core.feed.FeedEntity
 import io.dodn.springboot.storage.db.core.feed.FeedRepository
 import org.springframework.stereotype.Repository
@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class FeedStorage(
     private val feedRepository: FeedRepository,
-    private val feedEmpathyRepository: FeedEmpathyRepository,
     private val worryStorage: WorryStorage,
     private val empathyCounter: EmpathyCounter,
 ) {
