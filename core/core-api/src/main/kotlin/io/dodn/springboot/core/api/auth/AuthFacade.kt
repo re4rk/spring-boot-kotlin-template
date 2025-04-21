@@ -1,7 +1,5 @@
 package io.dodn.springboot.core.api.auth
 
-import io.dodn.springboot.core.api.controller.v1.request.UserChangePasswordRequest
-import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequest
 import io.dodn.springboot.core.domain.token.JwtService
 import io.dodn.springboot.core.domain.token.TokenService
 import io.dodn.springboot.core.domain.user.UserInfo
@@ -38,18 +36,21 @@ class AuthFacade(
     }
 
     @Transactional
-    fun login(request: UserLoginRequest): AuthResponse {
+    fun login(
+        email: String,
+        password: String,
+    ): AuthResponse {
         // Authenticate user through Spring Security
         try {
             authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(request.email, request.password),
+                UsernamePasswordAuthenticationToken(email, password),
             )
         } catch (e: Exception) {
             throw CoreException(ErrorType.INVALID_CREDENTIALS)
         }
 
         // Verify credentials and update last login time
-        val userInfo = userService.verifyCredentials(request.email, request.password)
+        val userInfo = userService.verifyCredentials(email, password)
 
         // Generate tokens
         val userDetails = userDetailsService.loadUserByUsername(userInfo.email)
@@ -111,14 +112,14 @@ class AuthFacade(
     }
 
     @Transactional
-    fun changePassword(request: UserChangePasswordRequest): Boolean {
+    fun changePassword(oldPassword: String, newPassword: String): Boolean {
         val authentication = SecurityContextHolder.getContext().authentication
         if (authentication != null && authentication.isAuthenticated) {
             val userDetails = authentication.principal as UserDetails
             userService.changePassword(
                 email = userDetails.username,
-                currentPassword = request.oldPassword,
-                newPassword = request.newPassword,
+                currentPassword = oldPassword,
+                newPassword = newPassword,
             )
             return true
         }

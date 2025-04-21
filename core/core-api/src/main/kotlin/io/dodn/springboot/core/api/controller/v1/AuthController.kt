@@ -28,7 +28,7 @@ class AuthController(private val authFacade: AuthFacade) {
 
     @PostMapping("/login")
     fun login(@RequestBody request: UserLoginRequest): ResponseEntity<ApiResponse<AuthResponse>> {
-        val authResponse = authFacade.login(request)
+        val authResponse = authFacade.login(email = request.email, password = request.password)
         return ResponseEntity.ok(ApiResponse.success(authResponse))
     }
 
@@ -46,7 +46,7 @@ class AuthController(private val authFacade: AuthFacade) {
 
     @PostMapping("/change-password")
     fun changePassword(@RequestBody request: UserChangePasswordRequest): ResponseEntity<ApiResponse<Boolean>> {
-        val result = authFacade.changePassword(request)
+        val result = authFacade.changePassword(oldPassword = request.oldPassword, newPassword = request.newPassword)
         return ResponseEntity.ok(ApiResponse.success(result))
     }
 
