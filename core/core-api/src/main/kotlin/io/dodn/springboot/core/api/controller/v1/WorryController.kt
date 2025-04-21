@@ -3,11 +3,11 @@ package io.dodn.springboot.core.api.controller.v1
 import io.dodn.springboot.core.api.controller.v1.request.SummaryResponseDto
 import io.dodn.springboot.core.api.controller.v1.response.EmotionTagsResponseDto
 import io.dodn.springboot.core.domain.worry.AiFeedback
-import io.dodn.springboot.core.domain.worry.AiFeedbackResponseDto
-import io.dodn.springboot.core.domain.worry.CreateAiFeedbackRequestDto
-import io.dodn.springboot.core.domain.worry.CreateConvoWorryRequestDto
-import io.dodn.springboot.core.domain.worry.CreateLetterWorryRequestDto
-import io.dodn.springboot.core.domain.worry.WorryResponseDto
+import io.dodn.springboot.core.domain.worry.dto.AiFeedbackResponseDto
+import io.dodn.springboot.core.domain.worry.dto.CreateAiFeedbackRequestDto
+import io.dodn.springboot.core.domain.worry.dto.CreateConvoWorryRequestDto
+import io.dodn.springboot.core.domain.worry.dto.CreateLetterWorryRequestDto
+import io.dodn.springboot.core.domain.worry.dto.WorryResponseDto
 import io.dodn.springboot.core.domain.worry.WorryService
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.GetMapping
