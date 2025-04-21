@@ -1,7 +1,7 @@
 package io.dodn.springboot.client.openai
 
 import feign.Response
-import io.dodn.springboot.client.ClientOpenAiContextTest
+import io.dodn.springboot.client.ClientOpenAiDevelopTest
 import io.dodn.springboot.client.openai.model.ChatCompletionChoice
 import io.dodn.springboot.client.openai.model.ChatCompletionRequest
 import io.dodn.springboot.client.openai.model.ChatCompletionResponse
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
 
-class OpenAiClientTest : ClientOpenAiContextTest() {
+class OpenAiClientTest : ClientOpenAiDevelopTest() {
 
     private lateinit var openAiApi: OpenAiApi
     private lateinit var openAiClient: OpenAiClient

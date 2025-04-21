@@ -3,6 +3,7 @@ package io.dodn.springboot.core.api.controller.v1
 import io.dodn.springboot.core.api.auth.AuthFacade
 import io.dodn.springboot.core.api.auth.AuthResponse
 import io.dodn.springboot.core.api.auth.RefreshTokenRequest
+import io.dodn.springboot.core.api.auth.RegisterResponse
 import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequest
 import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.UserRegisterParams
@@ -30,6 +31,7 @@ class AuthControllerTest : RestDocsTest() {
 
     private lateinit var mockUserInfo: UserInfo
     private lateinit var mockAuthResponse: AuthResponse
+    private lateinit var mockRegisterRequest: RegisterResponse
 
     @BeforeEach
     fun setUp() {
@@ -67,7 +69,7 @@ class AuthControllerTest : RestDocsTest() {
             name = "Test User",
         )
 
-        every { authFacade.register(registerRequest) } returns mockAuthResponse
+        every { authFacade.register(registerRequest) } returns mockRegisterRequest
 
         // When & Then
         given()
@@ -95,7 +97,8 @@ class AuthControllerTest : RestDocsTest() {
                         fieldWithPath("data.user.name").type(JsonFieldType.STRING).description("사용자 이름").optional(),
                         fieldWithPath("data.user.status").type(JsonFieldType.STRING).description("사용자 상태"),
                         fieldWithPath("data.user.role").type(JsonFieldType.STRING).description("사용자 역할"),
-                        fieldWithPath("data.user.lastLoginAt").type(JsonFieldType.STRING).description("마지막 로그인 시간").optional(),
+                        fieldWithPath("data.user.lastLoginAt").type(JsonFieldType.STRING).description("마지막 로그인 시간")
+                            .optional(),
                         fieldWithPath("data.user.createdAt").type(JsonFieldType.STRING).description("생성 시간"),
                         fieldWithPath("data.user.updatedAt").type(JsonFieldType.STRING).description("수정 시간"),
                         fieldWithPath("error").type(JsonFieldType.NULL).description("에러 정보").optional(),
@@ -112,7 +115,7 @@ class AuthControllerTest : RestDocsTest() {
             password = "password123",
         )
 
-        every { authFacade.login(loginRequest) } returns mockAuthResponse
+        every { authFacade.login(loginRequest.email, loginRequest.password) } returns mockAuthResponse
 
         // When & Then
         given()
@@ -139,7 +142,8 @@ class AuthControllerTest : RestDocsTest() {
                         fieldWithPath("data.user.name").type(JsonFieldType.STRING).description("사용자 이름").optional(),
                         fieldWithPath("data.user.status").type(JsonFieldType.STRING).description("사용자 상태"),
                         fieldWithPath("data.user.role").type(JsonFieldType.STRING).description("사용자 역할"),
-                        fieldWithPath("data.user.lastLoginAt").type(JsonFieldType.STRING).description("마지막 로그인 시간").optional(),
+                        fieldWithPath("data.user.lastLoginAt").type(JsonFieldType.STRING).description("마지막 로그인 시간")
+                            .optional(),
                         fieldWithPath("data.user.createdAt").type(JsonFieldType.STRING).description("생성 시간"),
                         fieldWithPath("data.user.updatedAt").type(JsonFieldType.STRING).description("수정 시간"),
                         fieldWithPath("error").type(JsonFieldType.NULL).description("에러 정보").optional(),
@@ -181,7 +185,8 @@ class AuthControllerTest : RestDocsTest() {
                         fieldWithPath("data.user.name").type(JsonFieldType.STRING).description("사용자 이름").optional(),
                         fieldWithPath("data.user.status").type(JsonFieldType.STRING).description("사용자 상태"),
                         fieldWithPath("data.user.role").type(JsonFieldType.STRING).description("사용자 역할"),
-                        fieldWithPath("data.user.lastLoginAt").type(JsonFieldType.STRING).description("마지막 로그인 시간").optional(),
+                        fieldWithPath("data.user.lastLoginAt").type(JsonFieldType.STRING).description("마지막 로그인 시간")
+                            .optional(),
                         fieldWithPath("data.user.createdAt").type(JsonFieldType.STRING).description("생성 시간"),
                         fieldWithPath("data.user.updatedAt").type(JsonFieldType.STRING).description("수정 시간"),
                         fieldWithPath("error").type(JsonFieldType.NULL).description("에러 정보").optional(),
@@ -238,7 +243,8 @@ class AuthControllerTest : RestDocsTest() {
                         fieldWithPath("data.name").type(JsonFieldType.STRING).description("사용자 이름").optional(),
                         fieldWithPath("data.status").type(JsonFieldType.STRING).description("사용자 상태"),
                         fieldWithPath("data.role").type(JsonFieldType.STRING).description("사용자 역할"),
-                        fieldWithPath("data.lastLoginAt").type(JsonFieldType.STRING).description("마지막 로그인 시간").optional(),
+                        fieldWithPath("data.lastLoginAt").type(JsonFieldType.STRING).description("마지막 로그인 시간")
+                            .optional(),
                         fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("생성 시간"),
                         fieldWithPath("data.updatedAt").type(JsonFieldType.STRING).description("수정 시간"),
                         fieldWithPath("error").type(JsonFieldType.NULL).description("에러 정보").optional(),

@@ -1,7 +1,7 @@
 package io.dodn.springboot.client.openai
 
 import feign.Response
-import io.dodn.springboot.client.ClientOpenAiContextTest
+import io.dodn.springboot.client.ClientOpenAiDevelopTest
 import io.dodn.springboot.client.openai.model.ChatCompletionRequest
 import io.dodn.springboot.client.openai.model.Message
 import org.junit.jupiter.api.Test
@@ -13,7 +13,7 @@ import java.io.InputStreamReader
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class OpenAiApiTest internal constructor(
     private val openAiApi: OpenAiApi,
-) : ClientOpenAiContextTest() {
+) : ClientOpenAiDevelopTest() {
 
     @Test
     fun `OpenAI API 호출을 성공한다`() {

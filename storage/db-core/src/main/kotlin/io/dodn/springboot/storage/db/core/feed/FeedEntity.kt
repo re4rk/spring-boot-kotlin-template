@@ -3,7 +3,6 @@ package io.dodn.springboot.storage.db.core.feed
 import io.dodn.springboot.storage.db.core.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.OneToMany
 import java.time.LocalDateTime
 
 @Entity

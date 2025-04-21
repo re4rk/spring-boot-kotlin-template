@@ -16,7 +16,7 @@ class GominUserDetails(
     val role: UserRole,
     val lastLoginAt: LocalDateTime?,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) : UserDetails {
 
     override fun getAuthorities(): Collection<GrantedAuthority> {

@@ -6,7 +6,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestConstructor
 
 @ActiveProfiles("local")
-@Tag("context")
+@Tag("develop")
 @SpringBootTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-abstract class ClientOpenAiContextTest
+abstract class ClientOpenAiDevelopTest
