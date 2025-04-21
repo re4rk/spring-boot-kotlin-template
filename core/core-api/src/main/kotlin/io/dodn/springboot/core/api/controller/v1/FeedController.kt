@@ -77,4 +77,18 @@ class FeedController(
             ),
         )
     }
+
+    @DeleteMapping("/{feedId}/empathy")
+    fun removeEmpathy(
+        @PathVariable feedId: Long,
+        @RequestParam(required = false) userId: Long,
+    ): ApiResponse<EmpathyResponse> {
+        val count = feedService.removeEmpathy(feedId, userId)
+        return ApiResponse.success(
+            EmpathyResponse(
+                status = "unliked",
+                count = count,
+            ),
+        )
+    }
 }

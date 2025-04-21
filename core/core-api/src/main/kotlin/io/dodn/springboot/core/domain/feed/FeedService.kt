@@ -70,4 +70,9 @@ class FeedService(
     fun addEmpathy(feedId: Long, userId: Long?): Long {
         return empathyCounter.addEmpathy(feedId, userId)
     }
+
+    @Transactional
+    fun removeEmpathy(feedId: Long, userId: Long): Long {
+        return empathyCounter.removeEmpathy(feedId, userId)
+    }
 }

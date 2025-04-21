@@ -27,6 +27,19 @@ class EmpathyCounter(
         return getEmpathyCount(feedId)
     }
 
+    @Transactional
+    fun removeEmpathy(feedId: Long, userId: Long): Long {
+        val feedEntity = feedRepository.findById(feedId)
+            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Feed not found") }
+
+        val empathyEntity = feedEmpathyRepository.findByFeedIdAndUserId(feedId, userId)
+            ?: throw CoreException(ErrorType.DEFAULT_ERROR, "Like not found")
+
+        feedEmpathyRepository.delete(empathyEntity)
+
+        return getEmpathyCount(feedId)
+    }
+
     @Transactional(readOnly = true)
     fun getEmpathyCount(feedId: Long): Long {
         return feedEmpathyRepository.countByFeedId(feedId)
