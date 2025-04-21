@@ -1,7 +1,6 @@
 package io.dodn.springboot.core.domain.feed
 
 import io.dodn.springboot.core.domain.worry.AiFeedback
-import io.dodn.springboot.core.domain.worry.Feed
 import io.dodn.springboot.core.domain.worry.StepRole
 import io.dodn.springboot.core.domain.worry.Worry
 import io.dodn.springboot.core.domain.worry.WorryMode

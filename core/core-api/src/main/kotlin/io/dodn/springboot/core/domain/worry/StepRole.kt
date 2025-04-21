@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.domain.worry
 
-enum class WorryMode {
-    LETTER,
-    CONVO,
+enum class StepRole {
+    USER,
+    AI,
 }

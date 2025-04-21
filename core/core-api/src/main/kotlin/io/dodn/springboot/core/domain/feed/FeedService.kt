@@ -1,6 +1,5 @@
 package io.dodn.springboot.core.domain.feed
 
-import io.dodn.springboot.core.domain.worry.Feed
 import io.dodn.springboot.core.domain.worry.WorryStorage
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
