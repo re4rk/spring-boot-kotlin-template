@@ -1,8 +1,6 @@
 package io.dodn.springboot.core.domain.user
 
 import io.dodn.springboot.core.domain.token.TokenManager
-import io.dodn.springboot.core.domain.user.dto.UserDeletionRequestDto
-import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
 import io.dodn.springboot.core.domain.user.password.PasswordResetManager
 import io.dodn.springboot.storage.db.core.user.UserStatus
 import org.springframework.data.domain.Page
@@ -93,7 +91,7 @@ class UserService(
 
     // 계정 삭제 관련
     @Transactional
-    fun deleteAccount(userId: Long, request: UserDeletionRequestDto): Boolean {
+    fun deleteAccount(userId: Long, request: UserDeletionRequest): Boolean {
         userPasswordManager.verifyPassword(request.password, userId)
 
         val result = userStateProcessor.deleteAccount(userId)

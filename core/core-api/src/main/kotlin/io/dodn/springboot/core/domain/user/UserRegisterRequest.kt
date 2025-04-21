@@ -1,4 +1,4 @@
-package io.dodn.springboot.core.domain.user.dto
+package io.dodn.springboot.core.domain.user
 
 data class UserRegisterRequest(
     val email: String,

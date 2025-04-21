@@ -3,7 +3,7 @@ package io.dodn.springboot.core.api.controller.v1
 import io.dodn.springboot.core.api.auth.AuthFacade
 import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.UserService
-import io.dodn.springboot.core.domain.user.dto.UserDeletionRequestDto
+import io.dodn.springboot.core.domain.user.UserDeletionRequest
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -26,7 +26,7 @@ class UserController(
     }
 
     @DeleteMapping("/me")
-    fun deleteAccount(@RequestBody request: UserDeletionRequestDto): ResponseEntity<ApiResponse<Boolean>> {
+    fun deleteAccount(@RequestBody request: UserDeletionRequest): ResponseEntity<ApiResponse<Boolean>> {
         val currentUser = authFacade.getCurrentUser()
 
         val result = userService.deleteAccount(currentUser.id, request)

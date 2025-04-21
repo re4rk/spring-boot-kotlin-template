@@ -4,9 +4,9 @@ import io.dodn.springboot.core.domain.token.JwtService
 import io.dodn.springboot.core.domain.token.TokenService
 import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.UserService
-import io.dodn.springboot.core.domain.user.dto.UserChangePasswordRequest
-import io.dodn.springboot.core.domain.user.dto.UserLoginRequest
-import io.dodn.springboot.core.domain.user.dto.UserRegisterRequest
+import io.dodn.springboot.core.api.controller.v1.request.UserChangePasswordRequestDto
+import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequestDto
+import io.dodn.springboot.core.domain.user.UserRegisterRequest
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
 import org.springframework.security.authentication.AuthenticationManager
@@ -38,7 +38,7 @@ class AuthFacade(
     }
 
     @Transactional
-    fun login(request: UserLoginRequest): AuthResponse {
+    fun login(request: UserLoginRequestDto): AuthResponse {
         // Authenticate user through Spring Security
         try {
             authenticationManager.authenticate(
@@ -111,7 +111,7 @@ class AuthFacade(
     }
 
     @Transactional
-    fun changePassword(request: UserChangePasswordRequest): Boolean {
+    fun changePassword(request: UserChangePasswordRequestDto): Boolean {
         val authentication = SecurityContextHolder.getContext().authentication
         if (authentication != null && authentication.isAuthenticated) {
             val userDetails = authentication.principal as UserDetails
