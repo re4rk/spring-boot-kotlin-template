@@ -5,7 +5,7 @@ import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequestDto
 import io.dodn.springboot.core.domain.token.JwtService
 import io.dodn.springboot.core.domain.token.TokenService
 import io.dodn.springboot.core.domain.user.UserInfo
-import io.dodn.springboot.core.domain.user.UserRegisterRequest
+import io.dodn.springboot.core.domain.user.UserRegisterParams
 import io.dodn.springboot.core.domain.user.UserService
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
@@ -28,7 +28,7 @@ class AuthFacade(
 ) {
 
     @Transactional
-    fun register(request: UserRegisterRequest): RegisterResponse {
+    fun register(request: UserRegisterParams): RegisterResponse {
         // Register user
         val userInfo = userService.register(request)
 

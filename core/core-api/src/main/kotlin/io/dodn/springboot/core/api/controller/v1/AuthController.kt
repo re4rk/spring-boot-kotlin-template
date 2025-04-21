@@ -7,7 +7,7 @@ import io.dodn.springboot.core.api.auth.RegisterResponse
 import io.dodn.springboot.core.api.controller.v1.request.UserChangePasswordRequestDto
 import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequestDto
 import io.dodn.springboot.core.domain.user.UserInfo
-import io.dodn.springboot.core.domain.user.UserRegisterRequest
+import io.dodn.springboot.core.domain.user.UserRegisterParams
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(private val authFacade: AuthFacade) {
 
     @PostMapping("/register")
-    fun register(@RequestBody request: UserRegisterRequest): ResponseEntity<ApiResponse<RegisterResponse>> {
+    fun register(@RequestBody request: UserRegisterParams): ResponseEntity<ApiResponse<RegisterResponse>> {
         val authResponse = authFacade.register(request)
         return ResponseEntity.ok(ApiResponse.success(authResponse))
     }

@@ -5,7 +5,7 @@ import io.dodn.springboot.core.api.auth.AuthResponse
 import io.dodn.springboot.core.api.auth.RefreshTokenRequest
 import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequestDto
 import io.dodn.springboot.core.domain.user.UserInfo
-import io.dodn.springboot.core.domain.user.UserRegisterRequest
+import io.dodn.springboot.core.domain.user.UserRegisterParams
 import io.dodn.springboot.storage.db.core.user.UserRole
 import io.dodn.springboot.storage.db.core.user.UserStatus
 import io.dodn.springboot.test.api.RestDocsTest
@@ -48,6 +48,7 @@ class AuthControllerTest : RestDocsTest() {
             lastLoginAt = LocalDateTime.now(),
             createdAt = LocalDateTime.now(),
             updatedAt = LocalDateTime.now(),
+            password = "hashed-password",
         )
 
         mockAuthResponse = AuthResponse(
@@ -60,7 +61,7 @@ class AuthControllerTest : RestDocsTest() {
     @Test
     fun registerTest() {
         // Given
-        val registerRequest = UserRegisterRequest(
+        val registerRequest = UserRegisterParams(
             email = "test@example.com",
             password = "password123",
             name = "Test User",

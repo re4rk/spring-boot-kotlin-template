@@ -1,4 +1,4 @@
-package io.dodn.springboot.core.domain.user
+package io.dodn.springboot.core.api.controller.v1.request
 
 data class UserDeletionRequest(
     val password: String,

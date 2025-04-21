@@ -31,7 +31,7 @@ class UserService(
 
     // 계정 생성/수정
     @Transactional
-    fun register(request: UserRegisterRequest): UserInfo {
+    fun register(request: UserRegisterParams): UserInfo {
         val user = userStateProcessor.createUser(email = request.email, password = "", name = request.name)
 
         userPasswordManager.changePassword(user.id, request.password)
@@ -91,8 +91,12 @@ class UserService(
 
     // 계정 삭제 관련
     @Transactional
-    fun deleteAccount(userId: Long, request: UserDeletionRequest): Boolean {
-        userPasswordManager.verifyPassword(request.password, userId)
+    fun deleteAccount(
+        userId: Long,
+        password: String,
+        reason: String? = null,
+    ): Boolean {
+        userPasswordManager.verifyPassword(password, userId)
 
         val result = userStateProcessor.deleteAccount(userId)
 

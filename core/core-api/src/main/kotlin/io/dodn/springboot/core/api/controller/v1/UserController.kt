@@ -1,7 +1,7 @@
 package io.dodn.springboot.core.api.controller.v1
 
 import io.dodn.springboot.core.api.auth.AuthFacade
-import io.dodn.springboot.core.domain.user.UserDeletionRequest
+import io.dodn.springboot.core.api.controller.v1.request.UserDeletionRequest
 import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.UserService
 import io.dodn.springboot.core.support.response.ApiResponse
@@ -29,7 +29,8 @@ class UserController(
     fun deleteAccount(@RequestBody request: UserDeletionRequest): ResponseEntity<ApiResponse<Boolean>> {
         val currentUser = authFacade.getCurrentUser()
 
-        val result = userService.deleteAccount(currentUser.id, request)
+        val result =
+            userService.deleteAccount(userId = currentUser.id, password = request.password, reason = request.reason)
         return ResponseEntity.ok(ApiResponse.success(result))
     }
 }

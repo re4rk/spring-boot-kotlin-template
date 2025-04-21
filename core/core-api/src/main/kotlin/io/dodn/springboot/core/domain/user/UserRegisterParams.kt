@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.domain.user
 
-data class UserRegisterRequest(
+data class UserRegisterParams(
     val email: String,
     val password: String,
     val name: String?,
