@@ -3,9 +3,6 @@ package io.dodn.springboot.storage.db.core.feed
 import io.dodn.springboot.storage.db.core.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 
@@ -16,9 +13,8 @@ import jakarta.persistence.UniqueConstraint
     ],
 )
 class FeedEmpathyEntity(
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "feed_id")
-    val feed: FeedEntity,
+    @Column(name = "feed_id", insertable = false, updatable = false)
+    val feedId: Long,
 
     @Column
     val userId: Long?,

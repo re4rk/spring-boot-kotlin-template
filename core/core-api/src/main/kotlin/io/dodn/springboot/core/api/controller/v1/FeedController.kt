@@ -67,7 +67,7 @@ class FeedController(
     @PostMapping("/{feedId}/empathy")
     fun addEmpathy(
         @PathVariable feedId: Long,
-        @RequestParam(required = false) userId: Long?,
+        @RequestParam userId: Long,
     ): ApiResponse<EmpathyResponse> {
         val count = feedService.addEmpathy(feedId, userId)
         return ApiResponse.success(
@@ -81,7 +81,7 @@ class FeedController(
     @DeleteMapping("/{feedId}/empathy")
     fun removeEmpathy(
         @PathVariable feedId: Long,
-        @RequestParam(required = false) userId: Long,
+        @RequestParam userId: Long,
     ): ApiResponse<EmpathyResponse> {
         val count = feedService.removeEmpathy(feedId, userId)
         return ApiResponse.success(

@@ -14,24 +14,21 @@ class EmpathyCounter(
     private val feedEmpathyRepository: FeedEmpathyRepository,
 ) {
     @Transactional
-    fun addEmpathy(feedId: Long, userId: Long?): Long {
+    fun addEmpathy(feedId: Long, userId: Long): Long {
         val feedEntity = feedRepository.findById(feedId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Feed not found") }
 
-        if (userId != null && hasUserEmpathized(feedId, userId)) {
+        if (hasUserEmpathized(feedId, userId)) {
             throw CoreException(ErrorType.DEFAULT_ERROR, "Already liked")
         }
 
-        feedEmpathyRepository.save(FeedEmpathyEntity(feed = feedEntity, userId = userId))
+        feedEmpathyRepository.save(FeedEmpathyEntity(feedId = feedEntity.id, userId = userId))
 
         return getEmpathyCount(feedId)
     }
 
     @Transactional
     fun removeEmpathy(feedId: Long, userId: Long): Long {
-        val feedEntity = feedRepository.findById(feedId)
-            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Feed not found") }
-
         val empathyEntity = feedEmpathyRepository.findByFeedIdAndUserId(feedId, userId)
             ?: throw CoreException(ErrorType.DEFAULT_ERROR, "Like not found")
 
