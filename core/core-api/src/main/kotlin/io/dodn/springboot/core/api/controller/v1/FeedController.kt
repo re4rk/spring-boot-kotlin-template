@@ -5,7 +5,6 @@ import io.dodn.springboot.core.api.controller.v1.response.FeedResponse
 import io.dodn.springboot.core.api.controller.v1.response.FeedSummaryResponse
 import io.dodn.springboot.core.domain.feed.FeedService
 import io.dodn.springboot.core.support.auth.GominUserDetails
-import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
@@ -42,12 +41,7 @@ class FeedController(
         @PathVariable ownerId: Long,
         @AuthenticationPrincipal userDetails: GominUserDetails,
     ): ApiResponse<List<FeedSummaryResponse>> {
-        // TODO : Check if the user is the owner of the feed
-        if (userDetails.username.toLong() != ownerId) {
-            return ApiResponse.error(ErrorType.UNAUTHORIZED, "Unauthorized access")
-        }
-
-        val feeds = feedService.getFeedByOwnerId(ownerId)
+        val feeds = feedService.getFeedByOwnerId(userDetails, ownerId)
         return ApiResponse.success(feeds.map { FeedSummaryResponse.from(it) })
     }
 

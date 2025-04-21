@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 class FeedService(
     private val feedStorage: FeedStorage,
     private val worryStorage: WorryStorage,
+    private val empathyCounter: EmpathyCounter,
 ) {
     @Transactional
     fun createFeedByWorry(userDetails: UserDetails, worryId: Long, feedbackId: Long): Feed {
@@ -67,10 +68,6 @@ class FeedService(
 
     @Transactional
     fun addEmpathy(feedId: Long, userId: Long?): Long {
-        if (userId != null && feedStorage.hasUserEmpathized(feedId, userId)) {
-            throw CoreException(ErrorType.FEED_ALREADY_EMPATHIZED)
-        }
-
-        return feedStorage.saveEmpathy(feedId, userId)
+        return empathyCounter.addEmpathy(feedId, userId)
     }
 }
