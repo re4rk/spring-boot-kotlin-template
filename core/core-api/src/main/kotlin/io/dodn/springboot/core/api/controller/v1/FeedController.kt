@@ -4,6 +4,7 @@ import io.dodn.springboot.core.api.controller.v1.response.EmpathyResponse
 import io.dodn.springboot.core.api.controller.v1.response.FeedResponse
 import io.dodn.springboot.core.api.controller.v1.response.FeedSummaryResponse
 import io.dodn.springboot.core.domain.feed.FeedService
+import io.dodn.springboot.core.support.auth.GominUserDetails
 import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -39,7 +40,7 @@ class FeedController(
     @GetMapping("/owner/{ownerId}")
     fun getFeedByOwnerId(
         @PathVariable ownerId: Long,
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userDetails: GominUserDetails,
     ): ApiResponse<List<FeedSummaryResponse>> {
         // TODO : Check if the user is the owner of the feed
         if (userDetails.username.toLong() != ownerId) {
@@ -54,7 +55,7 @@ class FeedController(
     fun shareWorry(
         @PathVariable worryId: Long,
         @PathVariable feedbackId: Long,
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userDetails: GominUserDetails,
     ): ApiResponse<FeedResponse> {
         val feed = feedService.shareWorry(userDetails, worryId, feedbackId)
         return ApiResponse.success(FeedResponse.from(feed))

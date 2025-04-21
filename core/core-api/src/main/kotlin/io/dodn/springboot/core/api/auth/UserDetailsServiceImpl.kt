@@ -1,9 +1,7 @@
 package io.dodn.springboot.core.api.auth
 
 import io.dodn.springboot.core.domain.user.UserService
-import io.dodn.springboot.storage.db.core.user.UserStatus
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
+import io.dodn.springboot.core.support.auth.GominUserDetails
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
@@ -15,16 +13,18 @@ class UserDetailsServiceImpl(
 ) : UserDetailsService {
     @Transactional(readOnly = true)
     override fun loadUserByUsername(email: String): UserDetails {
-        val user = userService.findByEmail(email)
+        val userInfo = userService.findByEmail(email)
 
-        return User.builder()
-            .username(user.email)
-            .password(user.password)
-            .authorities(listOf(SimpleGrantedAuthority("ROLE_${user.role.name}")))
-            .accountExpired(false)
-            .accountLocked(user.status == UserStatus.LOCKED)
-            .credentialsExpired(false)
-            .disabled(false)
-            .build()
+        return GominUserDetails(
+            id = userInfo.id,
+            email = userInfo.email,
+            encodedPassword = userInfo.password,
+            name = userInfo.name,
+            status = userInfo.status,
+            role = userInfo.role,
+            lastLoginAt = userInfo.lastLoginAt,
+            createdAt = userInfo.createdAt,
+            updatedAt = userInfo.updatedAt,
+        )
     }
 }
