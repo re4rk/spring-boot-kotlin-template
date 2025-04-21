@@ -38,7 +38,7 @@ class WorryService(
     }
 
     @Transactional
-    fun requestAiFeedback(worryId: Long): AiFeedback {
+    fun requestFeedback(worryId: Long): Feedback {
         val worry = worryStorage.getWorry(worryId)
 
         // Convert domain object to client DTOs
@@ -52,16 +52,16 @@ class WorryService(
         // Determine the tone of the feedback
         val tone = counselorMapper.determineTone(aiCounselorClient, counselingResponse.feedback)
 
-        // Create AiFeedback from responses
-        val aiFeedback = counselorMapper.toAiFeedback(counselingResponse, tagResponse, tone)
+        // Create Feedback from responses
+        val feedback = counselorMapper.toFeedback(counselingResponse, tagResponse, tone)
 
         // Save and return the feedback
-        return worryStorage.saveAiFeedback(worryId, aiFeedback)
+        return worryStorage.saveFeedback(worryId, feedback)
     }
 
     @Transactional
-    fun createAiFeedback(worryId: Long, aiFeedback: AiFeedback): AiFeedback {
-        return worryStorage.saveAiFeedback(worryId, aiFeedback)
+    fun createFeedback(worryId: Long, feedback: Feedback): Feedback {
+        return worryStorage.saveFeedback(worryId, feedback)
     }
 
     @Transactional(readOnly = true)

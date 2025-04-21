@@ -2,9 +2,9 @@ package io.dodn.springboot.core.api.controller.v1
 
 import io.dodn.springboot.core.api.controller.v1.request.SummaryResponseDto
 import io.dodn.springboot.core.api.controller.v1.response.EmotionTagsResponseDto
-import io.dodn.springboot.core.domain.worry.AiFeedback
-import io.dodn.springboot.core.domain.worry.dto.AiFeedbackResponseDto
-import io.dodn.springboot.core.domain.worry.dto.CreateAiFeedbackRequestDto
+import io.dodn.springboot.core.domain.worry.Feedback
+import io.dodn.springboot.core.domain.worry.dto.FeedbackResponseDto
+import io.dodn.springboot.core.domain.worry.dto.CreateFeedbackRequestDto
 import io.dodn.springboot.core.domain.worry.dto.CreateConvoWorryRequestDto
 import io.dodn.springboot.core.domain.worry.dto.CreateLetterWorryRequestDto
 import io.dodn.springboot.core.domain.worry.dto.WorryResponseDto
@@ -44,26 +44,26 @@ class WorryController(
     }
 
     @PostMapping("/{worryId}/ai-feedback")
-    fun createAiFeedback(
+    fun createFeedback(
         @PathVariable worryId: Long,
-        @RequestBody request: CreateAiFeedbackRequestDto?,
-    ): ApiResponse<AiFeedbackResponseDto> {
-        val aiFeedback = if (request != null) {
+        @RequestBody request: CreateFeedbackRequestDto?,
+    ): ApiResponse<FeedbackResponseDto> {
+        val feedback = if (request != null) {
             // Manual feedback provided
-            worryService.createAiFeedback(
+            worryService.createFeedback(
                 worryId,
-                AiFeedback(
-                    feedback = request.feedback,
+                Feedback(
+                    content = request.feedback,
                     tone = request.tone,
                     tags = request.tags ?: emptyList(),
                 ),
             )
         } else {
             // Auto-generate feedback using AI
-            worryService.requestAiFeedback(worryId)
+            worryService.requestFeedback(worryId)
         }
 
-        return ApiResponse.success(AiFeedbackResponseDto.from(aiFeedback))
+        return ApiResponse.success(FeedbackResponseDto.from(feedback))
     }
 
     @GetMapping("/{worryId}/summary")

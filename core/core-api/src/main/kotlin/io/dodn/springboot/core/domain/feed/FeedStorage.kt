@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.domain.feed
 
-import io.dodn.springboot.core.domain.worry.AiFeedback
+import io.dodn.springboot.core.domain.worry.Feedback
 import io.dodn.springboot.core.domain.worry.StepRole
 import io.dodn.springboot.core.domain.worry.Worry
 import io.dodn.springboot.core.domain.worry.WorryMode
@@ -12,7 +12,7 @@ import io.dodn.springboot.storage.db.core.feed.FeedEmpathyEntity
 import io.dodn.springboot.storage.db.core.feed.FeedEmpathyRepository
 import io.dodn.springboot.storage.db.core.feed.FeedEntity
 import io.dodn.springboot.storage.db.core.feed.FeedRepository
-import io.dodn.springboot.storage.db.core.worry.AiFeedbackRepository
+import io.dodn.springboot.storage.db.core.worry.FeedbackRepository
 import io.dodn.springboot.storage.db.core.worry.FeedbackTagRepository
 import io.dodn.springboot.storage.db.core.worry.WorryEntity
 import io.dodn.springboot.storage.db.core.worry.WorryOptionEntity
@@ -28,7 +28,7 @@ class FeedStorage(
     private val worryRepository: WorryRepository,
     private val worryStepRepository: WorryStepRepository,
     private val worryOptionRepository: WorryOptionRepository,
-    private val aiFeedbackRepository: AiFeedbackRepository,
+    private val feedbackRepository: FeedbackRepository,
     private val feedbackTagRepository: FeedbackTagRepository,
     private val feedRepository: FeedRepository,
     private val feedEmpathyRepository: FeedEmpathyRepository,
@@ -39,10 +39,10 @@ class FeedStorage(
         val worryEntity = worryRepository.findById(worryId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
 
-        val aiFeedbackEntity = aiFeedbackRepository.findById(feedbackId)
+        val feedbackEntity = feedbackRepository.findById(feedbackId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "AI Feedback not found") }
 
-        val feedEntity = feedRepository.save(FeedEntity(worry = worryEntity, feedback = aiFeedbackEntity))
+        val feedEntity = feedRepository.save(FeedEntity(worry = worryEntity, feedback = feedbackEntity))
 
         return mapToFeed(feedEntity)
     }
@@ -96,16 +96,16 @@ class FeedStorage(
     }
 
     @Transactional(readOnly = true)
-    fun getAiFeedback(feedbackId: Long): AiFeedback {
-        val aiFeedbackEntity = aiFeedbackRepository.findById(feedbackId)
+    fun getFeedback(feedbackId: Long): Feedback {
+        val feedbackEntity = feedbackRepository.findById(feedbackId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "AI Feedback not found") }
 
         val tags = feedbackTagRepository.findByFeedbackId(feedbackId).map { it.tag }
 
-        return AiFeedback(
-            id = aiFeedbackEntity.id,
-            feedback = aiFeedbackEntity.feedback,
-            tone = aiFeedbackEntity.tone,
+        return Feedback(
+            id = feedbackEntity.id,
+            content = feedbackEntity.feedback,
+            tone = feedbackEntity.tone,
             tags = tags,
         )
     }
@@ -148,13 +148,13 @@ class FeedStorage(
 
     private fun mapToFeed(feedEntity: FeedEntity): Feed {
         val worry = getWorry(feedEntity.worry.id)
-        val aiFeedback = getAiFeedback(feedEntity.feedback.id)
+        val feedback = getFeedback(feedEntity.feedback.id)
         val empathyCount = getEmpathyCount(feedEntity.id)
 
         return Feed(
             id = feedEntity.id,
             worry = worry,
-            feedback = aiFeedback,
+            feedback = feedback,
             empathyCount = empathyCount,
             sharedAt = feedEntity.sharedAt,
         )

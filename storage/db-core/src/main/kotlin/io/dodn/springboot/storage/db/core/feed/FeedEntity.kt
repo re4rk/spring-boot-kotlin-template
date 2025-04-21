@@ -1,7 +1,7 @@
 package io.dodn.springboot.storage.db.core.feed
 
 import io.dodn.springboot.storage.db.core.BaseEntity
-import io.dodn.springboot.storage.db.core.worry.AiFeedbackEntity
+import io.dodn.springboot.storage.db.core.worry.FeedbackEntity
 import io.dodn.springboot.storage.db.core.worry.WorryEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -19,7 +19,7 @@ class FeedEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "feedback_id")
-    val feedback: AiFeedbackEntity,
+    val feedback: FeedbackEntity,
 
     @Column(nullable = false)
     val sharedAt: LocalDateTime = LocalDateTime.now(),

@@ -11,7 +11,7 @@ import jakarta.persistence.ManyToOne
 class FeedbackTagEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "feedback_id")
-    val feedback: AiFeedbackEntity,
+    val feedback: FeedbackEntity,
 
     @Column(nullable = false)
     val tag: String,

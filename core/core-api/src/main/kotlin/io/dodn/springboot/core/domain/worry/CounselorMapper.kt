@@ -22,9 +22,9 @@ class CounselorMapper {
         }
     }
 
-    fun toAiFeedback(response: CounselingResponse, tagResponse: EmotionTagResponse, tone: String): AiFeedback {
-        return AiFeedback(
-            feedback = response.feedback,
+    fun toFeedback(response: CounselingResponse, tagResponse: EmotionTagResponse, tone: String): Feedback {
+        return Feedback(
+            content = response.feedback,
             tone = tone,
             tags = tagResponse.tags,
         )

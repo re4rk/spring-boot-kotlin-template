@@ -1,8 +1,8 @@
 package io.dodn.springboot.core.domain.worry
 
-data class AiFeedback(
+data class Feedback(
     val id: Long = 0,
-    val feedback: String,
+    val content: String,
     val tone: String? = null,
     val tags: List<String> = emptyList(),
 )

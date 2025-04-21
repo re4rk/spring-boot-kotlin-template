@@ -10,10 +10,10 @@ class FeedService(
     private val worryStorage: WorryStorage,
 ) {
     @Transactional
-    fun shareWorry(worryId: Long, aiFeedbackId: Long): Feed {
+    fun shareWorry(worryId: Long, feedbackId: Long): Feed {
         worryStorage.updateWorrySharedStatus(worryId, true)
 
-        return feedStorage.saveFeed(worryId, aiFeedbackId)
+        return feedStorage.saveFeed(worryId, feedbackId)
     }
 
     @Transactional(readOnly = true)

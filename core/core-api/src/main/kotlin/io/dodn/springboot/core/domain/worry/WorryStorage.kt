@@ -2,8 +2,8 @@ package io.dodn.springboot.core.domain.worry
 
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
-import io.dodn.springboot.storage.db.core.worry.AiFeedbackEntity
-import io.dodn.springboot.storage.db.core.worry.AiFeedbackRepository
+import io.dodn.springboot.storage.db.core.worry.FeedbackEntity
+import io.dodn.springboot.storage.db.core.worry.FeedbackRepository
 import io.dodn.springboot.storage.db.core.worry.FeedbackTagEntity
 import io.dodn.springboot.storage.db.core.worry.FeedbackTagRepository
 import io.dodn.springboot.storage.db.core.worry.WorryEntity
@@ -22,7 +22,7 @@ class WorryStorage(
     private val worryRepository: WorryRepository,
     private val worryStepRepository: WorryStepRepository,
     private val worryOptionRepository: WorryOptionRepository,
-    private val aiFeedbackRepository: AiFeedbackRepository,
+    private val feedbackRepository: FeedbackRepository,
     private val feedbackTagRepository: FeedbackTagRepository,
 ) {
 
@@ -118,14 +118,14 @@ class WorryStorage(
     }
 
     @Transactional
-    fun saveAiFeedback(worryId: Long, feedback: AiFeedback): AiFeedback {
+    fun saveFeedback(worryId: Long, feedback: Feedback): Feedback {
         val worryEntity = worryRepository.findById(worryId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
 
-        val aiFeedbackEntity = aiFeedbackRepository.save(
-            AiFeedbackEntity(
+        val feedbackEntity = feedbackRepository.save(
+            FeedbackEntity(
                 worry = worryEntity,
-                feedback = feedback.feedback,
+                feedback = feedback.content,
                 tone = feedback.tone,
             ),
         )
@@ -133,16 +133,16 @@ class WorryStorage(
         val tags = feedback.tags.map { tag ->
             feedbackTagRepository.save(
                 FeedbackTagEntity(
-                    feedback = aiFeedbackEntity,
+                    feedback = feedbackEntity,
                     tag = tag,
                 ),
             )
         }
 
-        return AiFeedback(
-            id = aiFeedbackEntity.id,
-            feedback = aiFeedbackEntity.feedback,
-            tone = aiFeedbackEntity.tone,
+        return Feedback(
+            id = feedbackEntity.id,
+            content = feedbackEntity.feedback,
+            tone = feedbackEntity.tone,
             tags = tags.map { it.tag },
         )
     }

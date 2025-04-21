@@ -9,7 +9,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 
 @Entity
-class AiFeedbackEntity(
+class FeedbackEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worry_id")
     val worry: WorryEntity,

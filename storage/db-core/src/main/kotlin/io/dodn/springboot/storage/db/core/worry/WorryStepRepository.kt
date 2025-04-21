@@ -10,8 +10,8 @@ interface WorryOptionRepository : JpaRepository<WorryOptionEntity, Long> {
     fun findByWorryId(worryId: Long): List<WorryOptionEntity>
 }
 
-interface AiFeedbackRepository : JpaRepository<AiFeedbackEntity, Long> {
-    fun findByWorryId(worryId: Long): List<AiFeedbackEntity>
+interface FeedbackRepository : JpaRepository<FeedbackEntity, Long> {
+    fun findByWorryId(worryId: Long): List<FeedbackEntity>
 }
 
 interface FeedbackTagRepository : JpaRepository<FeedbackTagEntity, Long> {
