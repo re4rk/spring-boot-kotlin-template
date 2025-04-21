@@ -55,7 +55,7 @@ class OpenAiClient internal constructor(
             topP = topP,
             frequencyPenalty = frequencyPenalty,
             presencePenalty = presencePenalty,
-            stream = true, // 스트리밍은 항상 true로 설정
+            stream = true,
         )
 
         return openAiApi.createStreamingChatCompletion(request)

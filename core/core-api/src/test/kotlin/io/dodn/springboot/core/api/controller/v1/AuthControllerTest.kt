@@ -3,8 +3,8 @@ package io.dodn.springboot.core.api.controller.v1
 import io.dodn.springboot.core.api.auth.AuthFacade
 import io.dodn.springboot.core.api.auth.AuthResponse
 import io.dodn.springboot.core.api.auth.RefreshTokenRequest
-import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequestDto
+import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.UserRegisterRequest
 import io.dodn.springboot.storage.db.core.user.UserRole
 import io.dodn.springboot.storage.db.core.user.UserStatus

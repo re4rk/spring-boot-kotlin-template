@@ -4,9 +4,9 @@ import io.dodn.springboot.core.api.auth.AuthFacade
 import io.dodn.springboot.core.api.auth.AuthResponse
 import io.dodn.springboot.core.api.auth.RefreshTokenRequest
 import io.dodn.springboot.core.api.auth.RegisterResponse
-import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.api.controller.v1.request.UserChangePasswordRequestDto
 import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequestDto
+import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.UserRegisterRequest
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.http.ResponseEntity

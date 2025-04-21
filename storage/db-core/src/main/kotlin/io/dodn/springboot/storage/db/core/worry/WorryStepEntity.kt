@@ -25,4 +25,3 @@ class WorryStepEntity(
     @Column(nullable = false)
     val stepOrder: Int,
 ) : BaseEntity()
-
