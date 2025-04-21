@@ -13,7 +13,7 @@ class FeedService(
     private val worryStorage: WorryStorage,
 ) {
     @Transactional
-    fun shareWorry(userDetails: UserDetails, worryId: Long, feedbackId: Long): Feed {
+    fun createFeedByWorry(userDetails: UserDetails, worryId: Long, feedbackId: Long): Feed {
         val worry = worryStorage.getWorry(worryId)
 
         val isOwner = userDetails.username.toLong() == worry.userId
@@ -55,7 +55,13 @@ class FeedService(
     }
 
     @Transactional(readOnly = true)
-    fun getFeedByOwnerId(ownerId: Long): List<Feed> {
+    fun getFeedByOwnerId(userDetails: UserDetails, ownerId: Long): List<Feed> {
+        if (userDetails.username.toLong() != ownerId &&
+            !userDetails.authorities.any { it.authority == "ROLE_ADMIN" }
+        ) {
+            throw CoreException(ErrorType.FEED_PERMISSION_DENIED)
+        }
+
         return feedStorage.getFeedByOwnerId(ownerId)
     }
 

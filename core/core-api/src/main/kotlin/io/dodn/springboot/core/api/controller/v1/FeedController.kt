@@ -57,7 +57,7 @@ class FeedController(
         @PathVariable feedbackId: Long,
         @AuthenticationPrincipal userDetails: GominUserDetails,
     ): ApiResponse<FeedResponse> {
-        val feed = feedService.shareWorry(userDetails, worryId, feedbackId)
+        val feed = feedService.createFeedByWorry(userDetails, worryId, feedbackId)
         return ApiResponse.success(FeedResponse.from(feed))
     }
 
