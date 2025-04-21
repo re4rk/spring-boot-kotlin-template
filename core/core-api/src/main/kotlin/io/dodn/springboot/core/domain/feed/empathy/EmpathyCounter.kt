@@ -13,7 +13,7 @@ class EmpathyCounter(
 ) {
     @Transactional
     fun addEmpathy(feedId: Long, userId: Long): Long {
-        if (hasUserEmpathized(feedId, userId)) {
+        if (feedEmpathyRepository.findByFeedIdAndOwnerId(feedId, userId) != null) {
             throw CoreException(ErrorType.DEFAULT_ERROR, "Already liked")
         }
 
@@ -35,9 +35,5 @@ class EmpathyCounter(
     @Transactional(readOnly = true)
     fun getEmpathyCount(feedId: Long): Long {
         return feedEmpathyRepository.countByFeedId(feedId)
-    }
-
-    private fun hasUserEmpathized(feedId: Long, userId: Long): Boolean {
-        return feedEmpathyRepository.findByFeedIdAndOwnerId(feedId, userId) != null
     }
 }
