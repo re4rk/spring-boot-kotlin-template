@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 @Component
 class OpenAiCounselorClient(
     private val openAiClient: OpenAiClient,
-) : AiCounselorClient {
+) : CounselorClient {
 
     override fun getCounseling(request: CounselingRequest): CounselingResponse {
         val promptContent = if (request.conversationHistory.isEmpty()) {

@@ -11,7 +11,7 @@ import io.dodn.springboot.core.domain.worry.counselor.dto.SummaryResponse
  * Interface for AI counseling services
  * Domain agnostic client interface
  */
-interface AiCounselorClient {
+interface CounselorClient {
     /**
      * Generate AI counseling feedback
      */

@@ -1,13 +1,13 @@
 package io.dodn.springboot.core.domain.worry
 
-import io.dodn.springboot.core.domain.worry.counselor.AiCounselorClient
+import io.dodn.springboot.core.domain.worry.counselor.CounselorClient
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class WorryService(
     private val worryStorage: WorryStorage,
-    private val aiCounselorClient: AiCounselorClient,
+    private val counselorClient: CounselorClient,
     private val counselorMapper: CounselorMapper,
 ) {
     @Transactional
@@ -46,11 +46,11 @@ class WorryService(
         val tagRequest = counselorMapper.toEmotionTagRequest(worry)
 
         // Get responses from AI service
-        val counselingResponse = aiCounselorClient.getCounseling(counselingRequest)
-        val tagResponse = aiCounselorClient.extractEmotionTags(tagRequest)
+        val counselingResponse = counselorClient.getCounseling(counselingRequest)
+        val tagResponse = counselorClient.extractEmotionTags(tagRequest)
 
         // Determine the tone of the feedback
-        val tone = counselorMapper.determineTone(aiCounselorClient, counselingResponse.feedback)
+        val tone = counselorMapper.determineTone(counselorClient, counselingResponse.feedback)
 
         // Create Feedback from responses
         val feedback = counselorMapper.toFeedback(counselingResponse, tagResponse, tone)
@@ -68,7 +68,7 @@ class WorryService(
     fun generateSummary(worryId: Long): String {
         val worry = worryStorage.getWorry(worryId)
         val summaryRequest = counselorMapper.toSummaryRequest(worry)
-        val summaryResponse = aiCounselorClient.summarizeConversation(summaryRequest)
+        val summaryResponse = counselorClient.summarizeConversation(summaryRequest)
         return summaryResponse.summary
     }
 
@@ -76,7 +76,7 @@ class WorryService(
     fun extractEmotionTags(worryId: Long): List<String> {
         val worry = worryStorage.getWorry(worryId)
         val tagRequest = counselorMapper.toEmotionTagRequest(worry)
-        val tagResponse = aiCounselorClient.extractEmotionTags(tagRequest)
+        val tagResponse = counselorClient.extractEmotionTags(tagRequest)
         return tagResponse.tags
     }
 }

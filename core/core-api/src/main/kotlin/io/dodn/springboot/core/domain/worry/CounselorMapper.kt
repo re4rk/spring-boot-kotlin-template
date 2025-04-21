@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.domain.worry
 
-import io.dodn.springboot.core.domain.worry.counselor.AiCounselorClient
+import io.dodn.springboot.core.domain.worry.counselor.CounselorClient
 import io.dodn.springboot.core.domain.worry.counselor.dto.ConversationStep
 import io.dodn.springboot.core.domain.worry.counselor.dto.CounselingRequest
 import io.dodn.springboot.core.domain.worry.counselor.dto.CounselingResponse
@@ -88,7 +88,7 @@ class CounselorMapper {
     /**
      * Determine the tone of the AI feedback
      */
-    fun determineTone(client: AiCounselorClient, feedback: String): String {
+    fun determineTone(client: CounselorClient, feedback: String): String {
         val toneRequest = CounselingRequest(
             userInput = """
                 다음 상담 답변의 어조를 한 단어로 표현해주세요.
