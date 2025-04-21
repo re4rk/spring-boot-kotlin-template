@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface FeedRepository : JpaRepository<FeedEntity, Long> {
     fun findAllByOrderBySharedAtDesc(): List<FeedEntity>
-    fun findByWorryId(worryId: Long): FeedEntity?
+    fun findByOwnerId(ownerId: Long): List<FeedEntity>
 }

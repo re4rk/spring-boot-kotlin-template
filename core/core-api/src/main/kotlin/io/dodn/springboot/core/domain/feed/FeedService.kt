@@ -1,6 +1,9 @@
 package io.dodn.springboot.core.domain.feed
 
 import io.dodn.springboot.core.domain.worry.WorryStorage
+import io.dodn.springboot.core.support.error.CoreException
+import io.dodn.springboot.core.support.error.ErrorType
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -10,10 +13,30 @@ class FeedService(
     private val worryStorage: WorryStorage,
 ) {
     @Transactional
-    fun shareWorry(worryId: Long, feedbackId: Long): Feed {
-        worryStorage.updateWorrySharedStatus(worryId, true)
+    fun shareWorry(userDetails: UserDetails, worryId: Long, feedbackId: Long): Feed {
+        val worry = worryStorage.getWorry(worryId)
 
-        return feedStorage.saveFeed(worryId, feedbackId)
+        val isOwner = userDetails.username.toLong() == worry.userId
+
+        if (!isOwner) {
+            throw CoreException(ErrorType.FEED_PERMISSION_DENIED)
+        }
+
+        return feedStorage.shareWorry(worryId, feedbackId)
+    }
+
+    @Transactional
+    fun deleteFeed(userDetails: UserDetails, feedId: Long) {
+        val feed = feedStorage.getFeed(feedId)
+
+        val isOwner = userDetails.username.toLong() == feed.ownerId
+        val isAdmin = userDetails.authorities.any { it.authority == "ROLE_ADMIN" }
+
+        if (!isOwner && !isAdmin) {
+            throw CoreException(ErrorType.FEED_PERMISSION_DENIED)
+        }
+
+        feedStorage.deleteFeed(feedId)
     }
 
     @Transactional(readOnly = true)
@@ -31,10 +54,15 @@ class FeedService(
         return feedStorage.getFeed(feedId)
     }
 
+    @Transactional(readOnly = true)
+    fun getFeedByOwnerId(ownerId: Long): List<Feed> {
+        return feedStorage.getFeedByOwnerId(ownerId)
+    }
+
     @Transactional
     fun addEmpathy(feedId: Long, userId: Long?): Long {
         if (userId != null && feedStorage.hasUserEmpathized(feedId, userId)) {
-            throw IllegalStateException("User has already empathized with this feed")
+            throw CoreException(ErrorType.FEED_ALREADY_EMPATHIZED)
         }
 
         return feedStorage.saveEmpathy(feedId, userId)

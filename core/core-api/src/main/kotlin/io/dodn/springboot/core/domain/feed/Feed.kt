@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 
 data class Feed(
     val id: Long = 0,
+    val ownerId: Long,
     val worry: Worry,
     val feedback: Feedback,
     val empathyCount: Long = 0,

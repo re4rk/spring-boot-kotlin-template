@@ -4,7 +4,11 @@ import io.dodn.springboot.core.api.controller.v1.response.EmpathyResponse
 import io.dodn.springboot.core.api.controller.v1.response.FeedResponse
 import io.dodn.springboot.core.api.controller.v1.response.FeedSummaryResponse
 import io.dodn.springboot.core.domain.feed.FeedService
+import io.dodn.springboot.core.support.error.ErrorType
 import io.dodn.springboot.core.support.response.ApiResponse
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -30,6 +34,39 @@ class FeedController(
     fun getFeed(@PathVariable feedId: Long): ApiResponse<FeedResponse> {
         val feed = feedService.getFeed(feedId)
         return ApiResponse.success(FeedResponse.from(feed))
+    }
+
+    @GetMapping("/owner/{ownerId}")
+    fun getFeedByOwnerId(
+        @PathVariable ownerId: Long,
+        @AuthenticationPrincipal userDetails: UserDetails,
+    ): ApiResponse<List<FeedSummaryResponse>> {
+        // TODO : Check if the user is the owner of the feed
+        if (userDetails.username.toLong() != ownerId) {
+            return ApiResponse.error(ErrorType.UNAUTHORIZED, "Unauthorized access")
+        }
+
+        val feeds = feedService.getFeedByOwnerId(ownerId)
+        return ApiResponse.success(feeds.map { FeedSummaryResponse.from(it) })
+    }
+
+    @PostMapping("/worry/{worryId}/feedback/{feedbackId}")
+    fun shareWorry(
+        @PathVariable worryId: Long,
+        @PathVariable feedbackId: Long,
+        @AuthenticationPrincipal userDetails: UserDetails,
+    ): ApiResponse<FeedResponse> {
+        val feed = feedService.shareWorry(userDetails, worryId, feedbackId)
+        return ApiResponse.success(FeedResponse.from(feed))
+    }
+
+    @DeleteMapping("/{feedId}")
+    fun deleteFeed(
+        @PathVariable feedId: Long,
+        @AuthenticationPrincipal userDetails: UserDetails,
+    ): ApiResponse<Any> {
+        feedService.deleteFeed(userDetails, feedId)
+        return ApiResponse.success()
     }
 
     @PostMapping("/{feedId}/empathy")

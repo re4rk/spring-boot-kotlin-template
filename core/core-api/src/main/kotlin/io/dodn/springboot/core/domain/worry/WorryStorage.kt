@@ -12,12 +12,12 @@ import io.dodn.springboot.storage.db.core.worry.WorryOptionRepository
 import io.dodn.springboot.storage.db.core.worry.WorryRepository
 import io.dodn.springboot.storage.db.core.worry.WorryStepEntity
 import io.dodn.springboot.storage.db.core.worry.WorryStepRepository
-import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import io.dodn.springboot.storage.db.core.worry.StepRole as DbStepRole
 import io.dodn.springboot.storage.db.core.worry.WorryMode as DbWorryMode
 
-@Repository
+@Component
 class WorryStorage(
     private val worryRepository: WorryRepository,
     private val worryStepRepository: WorryStepRepository,
@@ -35,7 +35,6 @@ class WorryStorage(
                 emotion = worry.emotion,
                 category = worry.category,
                 content = worry.content,
-                isShared = worry.isShared,
             ),
         )
 
@@ -51,20 +50,6 @@ class WorryStorage(
         val options = worryOptionRepository.findByWorryId(worryId)
 
         return mapToWorry(worryEntity, steps, options)
-    }
-
-    @Transactional
-    fun updateWorrySharedStatus(worryId: Long, isShared: Boolean): Worry {
-        val worryEntity = worryRepository.findById(worryId)
-            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
-
-        worryEntity.isShared = isShared
-        val updatedEntity = worryRepository.save(worryEntity)
-
-        val steps = worryStepRepository.findByWorryIdOrderByStepOrder(worryId)
-        val options = worryOptionRepository.findByWorryId(worryId)
-
-        return mapToWorry(updatedEntity, steps, options)
     }
 
     @Transactional
@@ -147,6 +132,21 @@ class WorryStorage(
         )
     }
 
+    @Transactional(readOnly = true)
+    fun getFeedback(feedbackId: Long): Feedback {
+        val feedbackEntity = feedbackRepository.findById(feedbackId)
+            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "AI Feedback not found") }
+
+        val tags = feedbackTagRepository.findByFeedbackId(feedbackId).map { it.tag }
+
+        return Feedback(
+            id = feedbackEntity.id,
+            content = feedbackEntity.feedback,
+            tone = feedbackEntity.tone,
+            tags = tags,
+        )
+    }
+
     private fun mapToWorry(
         worryEntity: WorryEntity,
         stepEntities: List<WorryStepEntity>,
@@ -176,7 +176,6 @@ class WorryStorage(
             emotion = worryEntity.emotion,
             category = worryEntity.category,
             content = worryEntity.content,
-            isShared = worryEntity.isShared,
             steps = steps,
             options = options,
         )

@@ -21,5 +21,5 @@ class FeedbackEntity(
     val tone: String?,
 
     @OneToMany(mappedBy = "feedback")
-    val tags: MutableList<FeedbackTagEntity> = mutableListOf(),
+    val tags: List<FeedbackTagEntity> = mutableListOf(),
 ) : BaseEntity()
