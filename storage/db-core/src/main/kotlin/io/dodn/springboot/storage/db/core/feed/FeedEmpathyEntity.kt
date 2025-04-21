@@ -9,13 +9,13 @@ import jakarta.persistence.UniqueConstraint
 @Entity
 @Table(
     uniqueConstraints = [
-        UniqueConstraint(columnNames = ["feed_id", "user_id"]),
+        UniqueConstraint(columnNames = ["feed_id", "owner_id"]),
     ],
 )
 class FeedEmpathyEntity(
     @Column(name = "feed_id", insertable = false, updatable = false)
     val feedId: Long,
 
-    @Column
-    val userId: Long?,
+    @Column(name = "owner_id", insertable = false, updatable = false)
+    val ownerId: Long?,
 ) : BaseEntity()

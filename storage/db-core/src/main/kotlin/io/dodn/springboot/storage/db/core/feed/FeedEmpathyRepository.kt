@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.Lock
 interface FeedEmpathyRepository : JpaRepository<FeedEmpathyEntity, Long> {
     fun countByFeedId(feedId: Long): Long
     @Lock(LockModeType.OPTIMISTIC)
-    fun findByFeedIdAndUserId(feedId: Long, userId: Long): FeedEmpathyEntity?
+    fun findByFeedIdAndOwnerId(feedId: Long, userId: Long): FeedEmpathyEntity?
 }

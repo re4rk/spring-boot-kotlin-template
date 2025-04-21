@@ -16,7 +16,4 @@ class FeedEntity(
 
     @Column(nullable = false)
     val sharedAt: LocalDateTime = LocalDateTime.now(),
-
-    @OneToMany(mappedBy = "feed")
-    val empathies: MutableList<FeedEmpathyEntity> = mutableListOf(),
 ) : BaseEntity()
