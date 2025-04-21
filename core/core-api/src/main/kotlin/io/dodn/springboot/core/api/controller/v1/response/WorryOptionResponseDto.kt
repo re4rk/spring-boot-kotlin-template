@@ -1,4 +1,4 @@
-package io.dodn.springboot.core.domain.worry.dto
+package io.dodn.springboot.core.api.controller.v1.response
 
 import io.dodn.springboot.core.domain.worry.WorryOption
 

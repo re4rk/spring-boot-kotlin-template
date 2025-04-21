@@ -1,9 +1,9 @@
 package io.dodn.springboot.core.api.controller.v1
 
-import io.dodn.springboot.core.domain.worry.dto.EmpathyResponseDto
-import io.dodn.springboot.core.domain.worry.dto.FeedResponseDto
+import io.dodn.springboot.core.api.controller.v1.response.EmpathyResponseDto
+import io.dodn.springboot.core.api.controller.v1.response.FeedResponseDto
 import io.dodn.springboot.core.domain.feed.FeedService
-import io.dodn.springboot.core.domain.worry.dto.FeedSummaryResponseDto
+import io.dodn.springboot.core.api.controller.v1.response.FeedSummaryResponseDto
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
