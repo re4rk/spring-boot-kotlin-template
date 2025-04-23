@@ -164,7 +164,7 @@ class WorryControllerIntegrationTest {
 
         // when & then
         mockMvc.perform(
-            post("/api/worries/$worryId/ai-feedback")
+            post("/api/worries/$worryId/feedback")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(feedbackRequest)),
