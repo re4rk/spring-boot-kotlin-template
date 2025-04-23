@@ -151,7 +151,7 @@ class AuthControllerIntegrationTest {
 
         // when & then
         mockMvc.perform(
-            get("/api/v1/auth/me")
+            get("/api/v1/users/profile")
                 .header("Authorization", "Bearer $accessToken"),
         )
             .andExpect(status().isOk)

@@ -6,13 +6,11 @@ import io.dodn.springboot.core.api.auth.RefreshTokenRequest
 import io.dodn.springboot.core.api.auth.RegisterResponse
 import io.dodn.springboot.core.api.controller.v1.request.UserChangePasswordRequest
 import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequest
-import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.UserRegisterParams
 import io.dodn.springboot.core.support.auth.GominUserDetails
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -59,13 +57,5 @@ class AuthController(private val authFacade: AuthFacade) {
             newPassword = request.newPassword,
         )
         return ResponseEntity.ok(ApiResponse.success(result))
-    }
-
-    @GetMapping("/me")
-    fun getCurrentUser(
-        @AuthenticationPrincipal userDetails: GominUserDetails,
-    ): ResponseEntity<ApiResponse<UserInfo>> {
-        val userInfo = authFacade.getCurrentUser(userDetails = userDetails)
-        return ResponseEntity.ok(ApiResponse.success(userInfo))
     }
 }
