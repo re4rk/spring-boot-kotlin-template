@@ -103,12 +103,8 @@ class AuthFacade(
     }
 
     @Transactional
-    fun logout() {
-        val authentication = SecurityContextHolder.getContext().authentication
-        if (authentication != null && authentication.isAuthenticated) {
-            val userDetails = authentication.principal as UserDetails
-            tokenService.deleteAllUserRefreshTokens(userDetails.username)
-        }
+    fun logout(userDetails: UserDetails) {
+        tokenService.deleteAllUserRefreshTokens(userDetails.username)
     }
 
     @Transactional

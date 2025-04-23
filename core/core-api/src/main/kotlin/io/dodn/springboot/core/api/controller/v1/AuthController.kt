@@ -8,8 +8,11 @@ import io.dodn.springboot.core.api.controller.v1.request.UserChangePasswordReque
 import io.dodn.springboot.core.api.controller.v1.request.UserLoginRequest
 import io.dodn.springboot.core.domain.user.UserInfo
 import io.dodn.springboot.core.domain.user.UserRegisterParams
+import io.dodn.springboot.core.support.auth.GominUserDetails
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -39,8 +42,10 @@ class AuthController(private val authFacade: AuthFacade) {
     }
 
     @PostMapping("/logout")
-    fun logout(): ResponseEntity<ApiResponse<Any>> {
-        authFacade.logout()
+    fun logout(
+        @AuthenticationPrincipal userDetails: GominUserDetails,
+    ): ResponseEntity<ApiResponse<Any>> {
+        authFacade.logout(userDetails)
         return ResponseEntity.ok(ApiResponse.success())
     }
 

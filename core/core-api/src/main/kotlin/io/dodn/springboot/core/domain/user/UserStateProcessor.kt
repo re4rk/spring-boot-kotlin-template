@@ -35,7 +35,7 @@ class UserStateProcessor(
     }
 
     @Transactional
-    fun activate(userId: Long): Boolean {
+    fun activate(userId: Long): UserInfo {
         try {
             val user = userRepository.findByIdWithOptimisticLock(userId)
                 .orElseThrow { CoreException(ErrorType.USER_NOT_FOUND) }
@@ -45,8 +45,7 @@ class UserStateProcessor(
             }
 
             user.status = UserStatus.ACTIVE
-            userRepository.save(user)
-            return true
+            return userRepository.save(user).toUserInfo()
         } catch (e: ObjectOptimisticLockingFailureException) {
             throw CoreException(ErrorType.CONCURRENT_MODIFICATION)
         }

@@ -36,9 +36,9 @@ class UserService(
 
         userPasswordManager.changePassword(user.id, request.password)
 
-        userStateProcessor.activate(user.id)
+        val updatedUser = userStateProcessor.activate(user.id)
 
-        return user
+        return updatedUser
     }
 
     @Transactional
@@ -70,7 +70,7 @@ class UserService(
 
     // 계정 상태 관리
     @Transactional
-    fun activateUser(userId: Long): Boolean {
+    fun activateUser(userId: Long): UserInfo {
         return userStateProcessor.activate(userId)
     }
 

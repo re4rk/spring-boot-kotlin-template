@@ -21,7 +21,7 @@ class AdminUserController(
     private val userService: UserService,
 ) {
     @PostMapping("/{userId}/activate")
-    fun activateUser(@PathVariable userId: Long): ResponseEntity<ApiResponse<Boolean>> {
+    fun activateUser(@PathVariable userId: Long): ResponseEntity<ApiResponse<UserInfo>> {
         val result = userService.activateUser(userId)
         return ResponseEntity.ok(ApiResponse.success(result))
     }
