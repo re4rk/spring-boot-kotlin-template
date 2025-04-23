@@ -109,11 +109,11 @@ class WorryControllerStreamingTest {
                     when {
                         line!!.startsWith("event:") -> {
                             currentEvent = line!!.substring(6).trim()
-                            println("\n이벤트 타입: $currentEvent")
+//                            println("\n이벤트 타입: $currentEvent")
                         }
 
                         line!!.startsWith("data:") -> {
-                            val data = line!!.substring(5).trim()
+                            val data = line!!.substring(5)
 
                             if (currentEvent == "chunk") {
                                 // 청크 이벤트는 연속해서 출력

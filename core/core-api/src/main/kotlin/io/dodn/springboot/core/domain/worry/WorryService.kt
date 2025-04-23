@@ -47,11 +47,11 @@ class WorryService(
         val counselingResponse = counselorClient.getCounseling(counselorMapper.toRequest(worry))
         val tagResponse = counselorClient.extractEmotionTags(counselorMapper.toEmotionTagRequest(worry))
 
-        val tone = counselorMapper.determineTone(counselorClient, counselingResponse.feedback)
+//        val tone = counselorMapper.determineTone(counselorClient, counselingResponse.feedback)
 
         return worryStorage.saveFeedback(
             worryId = worryId,
-            feedback = counselorMapper.toFeedback(counselingResponse, tagResponse, tone),
+            feedback = counselorMapper.toFeedback(counselingResponse, tagResponse, tone = "TODO"),
         )
     }
 
@@ -79,9 +79,9 @@ class WorryService(
 
                             val tagResponse = counselorClient.extractEmotionTags(tagRequest)
 
-                            val tone = counselorMapper.determineTone(counselorClient, fullResponse)
+//                            val tone = counselorMapper.determineTone(counselorClient, fullResponse)
 
-                            val feedback = Feedback(content = fullResponse, tone = tone, tags = tagResponse.tags)
+                            val feedback = Feedback(content = fullResponse, tone = "TODO", tags = tagResponse.tags)
 
                             val savedFeedback = saveStreamingFeedback(worryId, feedback)
 
