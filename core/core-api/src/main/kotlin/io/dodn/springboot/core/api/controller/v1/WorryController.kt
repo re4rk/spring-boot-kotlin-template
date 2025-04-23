@@ -44,7 +44,7 @@ class WorryController(
         return ApiResponse.success(WorryResponse.from(worry))
     }
 
-    @PostMapping("/{worryId}/ai-feedback")
+    @PostMapping("/{worryId}/feedback")
     fun createFeedback(
         @PathVariable worryId: Long,
         @RequestBody request: CreateFeedbackRequest?,
