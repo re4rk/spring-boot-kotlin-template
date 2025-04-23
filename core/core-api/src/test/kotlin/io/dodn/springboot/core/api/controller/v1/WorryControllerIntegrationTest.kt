@@ -94,7 +94,7 @@ class WorryControllerIntegrationTest {
 
         // when & then
         mockMvc.perform(
-            post("/api/worries/letter")
+            post("/api/v1/worries/letter")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(letterWorryRequest)),
@@ -121,7 +121,7 @@ class WorryControllerIntegrationTest {
 
         // when & then
         mockMvc.perform(
-            post("/api/worries/convo")
+            post("/api/v1/worries/convo")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(convoWorryRequest)),
@@ -140,7 +140,7 @@ class WorryControllerIntegrationTest {
 
         // when & then
         mockMvc.perform(
-            get("/api/worries/$worryId")
+            get("/api/v1/worries/$worryId")
                 .header("Authorization", "Bearer $accessToken"),
         )
             .andExpect(status().isOk)
@@ -164,7 +164,7 @@ class WorryControllerIntegrationTest {
 
         // when & then
         mockMvc.perform(
-            post("/api/worries/$worryId/feedback")
+            post("/api/v1/worries/$worryId/feedback")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(feedbackRequest)),
@@ -184,7 +184,7 @@ class WorryControllerIntegrationTest {
 
         // when & then
         mockMvc.perform(
-            get("/api/worries/$worryId/summary")
+            get("/api/v1/worries/$worryId/summary")
                 .header("Authorization", "Bearer $accessToken"),
         )
             .andExpect(status().isOk)
@@ -200,7 +200,7 @@ class WorryControllerIntegrationTest {
 
         // when & then
         mockMvc.perform(
-            get("/api/worries/$worryId/emotion-tags")
+            get("/api/v1/worries/$worryId/emotion-tags")
                 .header("Authorization", "Bearer $accessToken"),
         )
             .andExpect(status().isOk)
@@ -216,7 +216,7 @@ class WorryControllerIntegrationTest {
 
         // when & then
         mockMvc.perform(
-            post("/api/worries/$worryId/save")
+            post("/api/v1/worries/$worryId/save")
                 .header("Authorization", "Bearer $accessToken"),
         )
             .andExpect(status().isOk)
@@ -272,7 +272,7 @@ class WorryControllerIntegrationTest {
         )
 
         val result = mockMvc.perform(
-            post("/api/worries/letter")
+            post("/api/v1/worries/letter")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(letterWorryRequest)),

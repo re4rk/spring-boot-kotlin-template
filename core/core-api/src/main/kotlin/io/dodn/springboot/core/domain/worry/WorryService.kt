@@ -1,14 +1,17 @@
 package io.dodn.springboot.core.domain.worry
 
 import io.dodn.springboot.core.domain.worry.counselor.CounselorClient
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
 @Service
 class WorryService(
     private val worryStorage: WorryStorage,
     private val counselorClient: CounselorClient,
     private val counselorMapper: CounselorMapper,
+    private val executor: ThreadPoolTaskExecutor,
 ) {
     @Transactional
     fun createLetterWorry(worry: Worry): Worry {
@@ -50,6 +53,61 @@ class WorryService(
             worryId = worryId,
             feedback = counselorMapper.toFeedback(counselingResponse, tagResponse, tone),
         )
+    }
+
+    fun requestStreamingFeedback(worryId: Long, emitter: SseEmitter) {
+        executor.submit {
+            try {
+                val worry = worryStorage.getWorry(worryId)
+
+                val counselingRequest = counselorMapper.toRequest(worry)
+                val tagRequest = counselorMapper.toEmotionTagRequest(worry)
+
+                counselorClient.createStreamingChatCompletion(
+                    counselingRequest,
+                    onChunk = { partialResponse ->
+                        try {
+                            emitter.send(SseEmitter.event().name("chunk").data(partialResponse))
+                        } catch (e: Exception) {
+                            println("Error sending chunk: ${e.message}")
+                        }
+                    },
+                    // 완료 콜백
+                    onComplete = { fullResponse ->
+                        try {
+                            emitter.send(SseEmitter.event().name("processing").data("Analyzing emotions and tone..."))
+
+                            val tagResponse = counselorClient.extractEmotionTags(tagRequest)
+
+                            val tone = counselorMapper.determineTone(counselorClient, fullResponse)
+
+                            val feedback = Feedback(content = fullResponse, tone = tone, tags = tagResponse.tags)
+
+                            val savedFeedback = saveStreamingFeedback(worryId, feedback)
+
+                            emitter.send(SseEmitter.event().name("complete").data(FeedbackDto.from(savedFeedback)))
+
+                            emitter.complete()
+                        } catch (e: Exception) {
+                            emitter.send(SseEmitter.event().name("error").data("Error processing feedback: ${e.message}"))
+                            emitter.completeWithError(e)
+                        }
+                    },
+                )
+            } catch (e: Exception) {
+                try {
+                    emitter.send(SseEmitter.event().name("error").data("Error generating feedback: ${e.message}"))
+                    emitter.completeWithError(e)
+                } catch (ex: Exception) {
+                    println("Error on already closed emitter: ${ex.message}")
+                }
+            }
+        }
+    }
+
+    @Transactional
+    fun saveStreamingFeedback(worryId: Long, feedback: Feedback): Feedback {
+        return worryStorage.saveFeedback(worryId, feedback)
     }
 
     @Transactional

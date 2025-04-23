@@ -95,6 +95,8 @@ class CounselorMapper {
                 예: 공감적, 위로하는, 격려하는, 질문하는, 분석적, 조언하는 등
                 [답변]
                 $feedback
+                [응답 예시]
+                공감적, 위로하는
             """.trimIndent(),
             emotion = "",
             category = "",

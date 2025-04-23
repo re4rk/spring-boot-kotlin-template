@@ -36,6 +36,35 @@ class OpenAiCounselorClient(
         return CounselingResponse(feedback)
     }
 
+    override fun createStreamingChatCompletion(
+        request: CounselingRequest,
+        onChunk: (String) -> Unit,
+        onComplete: (String) -> Unit,
+    ) {
+        val promptContent = if (request.conversationHistory.isEmpty()) {
+            buildLetterPrompt(request)
+        } else {
+            buildConvoPrompt(request)
+        }
+
+        val messages = listOf(
+            Message(role = "system", content = SYSTEM_PROMPT),
+            Message(role = "user", content = promptContent),
+        )
+
+        // 개선된 OpenAiClient의 콜백 기반 메서드 사용
+        openAiClient.createStreamingChatCompletion(
+            messages = messages,
+            onChunk = onChunk,
+            onComplete = onComplete,
+            onError = { error ->
+                println("Error in counseling streaming completion: ${error.message}")
+                // 에러 발생 시 완료 콜백에 기본 메시지 전달
+                onComplete("죄송합니다, 답변을 생성하는 중에 오류가 발생했습니다.")
+            },
+        )
+    }
+
     override fun summarizeConversation(request: SummaryRequest): SummaryResponse {
         val summaryPrompt = """
             다음은 사용자의 고민 내용과 AI의 상담 내용입니다.

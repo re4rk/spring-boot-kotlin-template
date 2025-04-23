@@ -1,19 +1,23 @@
 package io.dodn.springboot.client.openai
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import feign.Response
 import io.dodn.springboot.client.openai.model.ChatCompletionRequest
 import io.dodn.springboot.client.openai.model.ChatCompletionResponse
 import io.dodn.springboot.client.openai.model.Message
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Component
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
 
 @Component
 class OpenAiClient internal constructor(
     private val openAiApi: OpenAiApi,
     private val openAiProperties: OpenAiProperties,
+    private val objectMapper: ObjectMapper,
+    private val executor: ThreadPoolTaskExecutor,
 ) {
-    /**
-     * 일반 채팅 완성 요청
-     */
     fun createChatCompletion(
         messages: List<Message>,
         temperature: Double = 0.7,
@@ -36,9 +40,6 @@ class OpenAiClient internal constructor(
         return openAiApi.createChatCompletion(request)
     }
 
-    /**
-     * 스트리밍 채팅 완성 요청
-     */
     fun createStreamingChatCompletion(
         messages: List<Message>,
         temperature: Double = 0.7,
@@ -46,7 +47,10 @@ class OpenAiClient internal constructor(
         topP: Double? = null,
         frequencyPenalty: Double? = null,
         presencePenalty: Double? = null,
-    ): Response {
+        onChunk: (String) -> Unit,
+        onComplete: (String) -> Unit,
+        onError: (Throwable) -> Unit = { error -> println("Error in streaming completion: ${error.message}") },
+    ) {
         val request = ChatCompletionRequest(
             model = openAiProperties.model,
             messages = messages,
@@ -58,7 +62,68 @@ class OpenAiClient internal constructor(
             stream = true,
         )
 
-        return openAiApi.createStreamingChatCompletion(request)
+        // 비동기로 처리
+        executor.submit {
+            var response: Response? = null
+            try {
+                response = openAiApi.createStreamingChatCompletion(request)
+                val reader = BufferedReader(InputStreamReader(response.body().asInputStream(), StandardCharsets.UTF_8))
+
+                // 전체 응답을 구성하기 위한 StringBuilder
+                val completeResponse = StringBuilder()
+
+                // 라인별로 스트림 처리
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    // 빈 라인 스킵
+                    if (line.isNullOrBlank() || !line!!.startsWith("data:")) {
+                        continue
+                    }
+
+                    // "data:" 프리픽스 제거
+                    val data = line!!.substring(5).trim()
+
+                    // 스트림 종료 표시
+                    if (data == "[DONE]") {
+                        break
+                    }
+
+                    try {
+                        // JSON 파싱
+                        val jsonNode = objectMapper.readTree(data)
+                        val choices = jsonNode.get("choices")
+
+                        // delta 콘텐츠 추출
+                        if (choices != null && choices.isArray && choices.size() > 0) {
+                            val delta = choices.get(0).get("delta")
+                            if (delta != null && delta.has("content")) {
+                                val content = delta.get("content").asText()
+                                if (content.isNotEmpty()) {
+                                    // 콘텐츠 청크 처리
+                                    onChunk(content)
+                                    completeResponse.append(content)
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // JSON 파싱 오류, 무시하고 계속 진행
+                        println("Error parsing SSE data: ${e.message}")
+                    }
+                }
+
+                // 완료 콜백 호출
+                onComplete(completeResponse.toString())
+            } catch (e: Exception) {
+                onError(e)
+            } finally {
+                // 응답 닫기
+                try {
+                    response?.body()?.close()
+                } catch (e: Exception) {
+                    println("Error closing response: ${e.message}")
+                }
+            }
+        }
     }
 
     /**
@@ -77,12 +142,5 @@ class OpenAiClient internal constructor(
         val response = createChatCompletion(messages, temperature)
         return response.choices.firstOrNull()?.message?.content
             ?: throw RuntimeException("No response content received")
-    }
-
-    // JSON 응답에서 콘텐츠 추출하는 간단한 방법
-    // 실제 구현에서는 Jackson ObjectMapper를 사용하는 것이 좋음
-    private fun extractContentFromStreamJson(json: String): String {
-        val contentMatch = "\"content\":\"([^\"]*?)\"".toRegex().find(json)
-        return contentMatch?.groupValues?.getOrNull(1)?.replace("\\n", "\n")?.replace("\\\"", "\"") ?: ""
     }
 }

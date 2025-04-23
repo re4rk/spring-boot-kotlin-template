@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
 /**
  * Controller for worry-related endpoints
  */
 @RestController
-@RequestMapping("/api/worries")
+@RequestMapping("/api/v1/worries")
 class WorryController(
     private val worryService: WorryService,
 ) {
@@ -43,7 +44,7 @@ class WorryController(
         return ApiResponse.success(WorryResponse.from(worry))
     }
 
-    @PostMapping("/{worryId}/feedback")
+    @PostMapping("/{worryId}/ai-feedback")
     fun createFeedback(
         @PathVariable worryId: Long,
         @RequestBody request: CreateFeedbackRequest?,
@@ -64,6 +65,17 @@ class WorryController(
         }
 
         return ApiResponse.success(FeedbackResponse.from(feedback))
+    }
+
+    @PostMapping("/{worryId}/streaming-feedback")
+    fun createStreamingFeedback(@PathVariable worryId: Long): SseEmitter {
+        // SseEmitter 인스턴스 생성 (타임아웃 5분)
+        val emitter = SseEmitter(300000L)
+
+        // 비동기적으로 처리하여 즉시 응답
+        worryService.requestStreamingFeedback(worryId, emitter)
+
+        return emitter
     }
 
     @GetMapping("/{worryId}/summary")

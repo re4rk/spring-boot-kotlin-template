@@ -15,10 +15,10 @@ class FeedbackEntity(
     @JoinColumn(name = "worry_id")
     val worry: WorryEntity,
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT", length = 10000)
     val feedback: String,
 
-    @Column
+    @Column(length = 10000)
     val tone: String?,
 
     @OneToMany(mappedBy = "feedback")

@@ -7,23 +7,16 @@ import io.dodn.springboot.core.domain.worry.counselor.dto.EmotionTagResponse
 import io.dodn.springboot.core.domain.worry.counselor.dto.SummaryRequest
 import io.dodn.springboot.core.domain.worry.counselor.dto.SummaryResponse
 
-/**
- * Interface for AI counseling services
- * Domain agnostic client interface
- */
 interface CounselorClient {
-    /**
-     * Generate AI counseling feedback
-     */
     fun getCounseling(request: CounselingRequest): CounselingResponse
 
-    /**
-     * Generate a summary for a conversation
-     */
+    fun createStreamingChatCompletion(
+        request: CounselingRequest,
+        onChunk: (String) -> Unit,
+        onComplete: (String) -> Unit,
+    )
+
     fun summarizeConversation(request: SummaryRequest): SummaryResponse
 
-    /**
-     * Extract emotion tags from content
-     */
     fun extractEmotionTags(request: EmotionTagRequest): EmotionTagResponse
 }
