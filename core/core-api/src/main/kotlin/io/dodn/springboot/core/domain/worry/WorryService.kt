@@ -25,8 +25,8 @@ class WorryService(
     fun createConvoWorry(worry: Worry): Worry {
         val savedWorry = worryStorage.saveWorry(worry)
 
-        if (worry.steps.isNotEmpty()) {
-            worryStorage.saveWorrySteps(savedWorry.id, worry.steps)
+        if (savedWorry.steps.isNotEmpty()) {
+            worryStorage.saveWorrySteps(savedWorry.id, savedWorry.steps)
         }
 
         return worryStorage.getWorry(savedWorry.id)
