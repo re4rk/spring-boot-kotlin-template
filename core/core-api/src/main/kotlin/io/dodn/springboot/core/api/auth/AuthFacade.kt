@@ -9,7 +9,6 @@ import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
@@ -108,26 +107,20 @@ class AuthFacade(
     }
 
     @Transactional
-    fun changePassword(oldPassword: String, newPassword: String): Boolean {
-        val authentication = SecurityContextHolder.getContext().authentication
-        if (authentication != null && authentication.isAuthenticated) {
-            val userDetails = authentication.principal as UserDetails
-            userService.changePassword(
-                email = userDetails.username,
-                currentPassword = oldPassword,
-                newPassword = newPassword,
-            )
-            return true
-        }
+    fun changePassword(
+        userDetails: UserDetails,
+        oldPassword: String,
+        newPassword: String,
+    ): Boolean {
+        userService.changePassword(
+            email = userDetails.username,
+            currentPassword = oldPassword,
+            newPassword = newPassword,
+        )
         return true
     }
 
-    fun getCurrentUser(): UserInfo {
-        val authentication = SecurityContextHolder.getContext().authentication
-        if (authentication != null && authentication.isAuthenticated) {
-            val userDetails = authentication.principal as UserDetails
-            return userService.findByEmail(userDetails.username)
-        }
-        throw CoreException(ErrorType.UNAUTHORIZED)
+    fun getCurrentUser(userDetails: UserDetails): UserInfo {
+        return userService.findByEmail(userDetails.username)
     }
 }

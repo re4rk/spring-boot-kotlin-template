@@ -12,7 +12,6 @@ import io.dodn.springboot.core.support.auth.GominUserDetails
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -50,14 +49,23 @@ class AuthController(private val authFacade: AuthFacade) {
     }
 
     @PostMapping("/change-password")
-    fun changePassword(@RequestBody request: UserChangePasswordRequest): ResponseEntity<ApiResponse<Boolean>> {
-        val result = authFacade.changePassword(oldPassword = request.oldPassword, newPassword = request.newPassword)
+    fun changePassword(
+        @RequestBody request: UserChangePasswordRequest,
+        @AuthenticationPrincipal userDetails: GominUserDetails,
+    ): ResponseEntity<ApiResponse<Boolean>> {
+        val result = authFacade.changePassword(
+            userDetails = userDetails,
+            oldPassword = request.oldPassword,
+            newPassword = request.newPassword,
+        )
         return ResponseEntity.ok(ApiResponse.success(result))
     }
 
     @GetMapping("/me")
-    fun getCurrentUser(): ResponseEntity<ApiResponse<UserInfo>> {
-        val userInfo = authFacade.getCurrentUser()
+    fun getCurrentUser(
+        @AuthenticationPrincipal userDetails: GominUserDetails,
+    ): ResponseEntity<ApiResponse<UserInfo>> {
+        val userInfo = authFacade.getCurrentUser(userDetails = userDetails)
         return ResponseEntity.ok(ApiResponse.success(userInfo))
     }
 }
