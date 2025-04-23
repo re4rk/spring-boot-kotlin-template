@@ -1,6 +1,7 @@
 package io.dodn.springboot.storage.db.core.worry
 
 import io.dodn.springboot.storage.db.core.BaseEntity
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -11,7 +12,7 @@ import jakarta.persistence.ManyToOne
 
 @Entity
 class WorryStepEntity(
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "worry_id", nullable = false)
     val worry: WorryEntity? = null,
 

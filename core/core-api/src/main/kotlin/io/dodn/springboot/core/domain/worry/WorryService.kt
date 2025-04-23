@@ -14,8 +14,8 @@ class WorryService(
     fun createLetterWorry(worry: Worry): Worry {
         val savedWorry = worryStorage.saveWorry(worry)
 
-        if (worry.options.isNotEmpty()) {
-            worryStorage.saveWorryOptions(savedWorry.id, worry.options)
+        if (savedWorry.options.isNotEmpty()) {
+            worryStorage.saveWorryOptions(savedWorry.id, savedWorry.options)
         }
 
         return worryStorage.getWorry(savedWorry.id)
