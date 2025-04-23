@@ -109,7 +109,7 @@ class WorryControllerStreamingTest {
                     when {
                         line!!.startsWith("event:") -> {
                             currentEvent = line!!.substring(6).trim()
-//                            println("\n이벤트 타입: $currentEvent")
+                            println("\n이벤트 타입: $currentEvent")
                         }
 
                         line!!.startsWith("data:") -> {
