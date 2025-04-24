@@ -15,6 +15,10 @@ class WorryService(
     fun createLetterWorry(worry: Worry): Worry {
         val savedWorry = worryStorage.saveWorry(worry)
 
+        if (savedWorry.steps.isNotEmpty()) {
+            worryStorage.saveWorrySteps(savedWorry.id, savedWorry.steps)
+        }
+
         if (savedWorry.options.isNotEmpty()) {
             worryStorage.saveWorryOptions(savedWorry.id, savedWorry.options)
         }
@@ -30,6 +34,10 @@ class WorryService(
             worryStorage.saveWorrySteps(savedWorry.id, savedWorry.steps)
         }
 
+        if (savedWorry.options.isNotEmpty()) {
+            worryStorage.saveWorryOptions(savedWorry.id, savedWorry.options)
+        }
+
         return worryStorage.getWorry(savedWorry.id)
     }
 
@@ -39,7 +47,7 @@ class WorryService(
     }
 
     @Transactional
-    fun requestFeedback(worryId: Long): Feedback {
+    fun requestFeedback(worryId: Long): WorryStep {
         val worry = worryStorage.getWorry(worryId)
 
         val counselingResponse = counselorClient.getCounseling(counselorMapper.toRequest(worry))
@@ -47,9 +55,13 @@ class WorryService(
 
 //        val tone = counselorMapper.determineTone(counselorClient, counselingResponse.feedback)
 
-        return worryStorage.saveFeedback(
+        return worryStorage.addWorryStep(
             worryId = worryId,
-            feedback = counselorMapper.toFeedback(counselingResponse, tagResponse, tone = "TODO"),
+            step = WorryStep(
+                role = StepRole.AI,
+                content = counselingResponse.feedback,
+                stepOrder = 1,
+            ),
         )
     }
 
@@ -74,15 +86,9 @@ class WorryService(
                     try {
                         emitter.send(SseEmitter.event().name("processing").data("Analyzing emotions and tone..."))
 
-                        val tagResponse = counselorClient.extractEmotionTags(tagRequest)
+                        val worryStep = saveWorryStep(worryId, fullResponse)
 
-//                            val tone = counselorMapper.determineTone(counselorClient, fullResponse)
-
-                        val feedback = Feedback(content = fullResponse, tone = "TODO", tags = tagResponse.tags)
-
-                        val savedFeedback = saveStreamingFeedback(worryId, feedback)
-
-                        emitter.send(SseEmitter.event().name("complete").data(FeedbackDto.from(savedFeedback)))
+                        emitter.send(SseEmitter.event().name("complete").data(worryStep))
 
                         emitter.complete()
                     } catch (e: Exception) {
@@ -102,13 +108,8 @@ class WorryService(
     }
 
     @Transactional
-    fun saveStreamingFeedback(worryId: Long, feedback: Feedback): Feedback {
-        return worryStorage.saveFeedback(worryId, feedback)
-    }
-
-    @Transactional
-    fun createFeedback(worryId: Long, feedback: Feedback): Feedback {
-        return worryStorage.saveFeedback(worryId, feedback)
+    fun saveWorryStep(worryId: Long, content: String): WorryStep {
+        return worryStorage.addWorryStep(worryId, WorryStep(role = StepRole.AI, content = content, stepOrder = 1))
     }
 
     @Transactional(readOnly = true)

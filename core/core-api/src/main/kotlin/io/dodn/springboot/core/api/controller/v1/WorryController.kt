@@ -2,12 +2,11 @@ package io.dodn.springboot.core.api.controller.v1
 
 import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
+import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackResponse
 import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.SummaryResponse
 import io.dodn.springboot.core.api.controller.v1.response.EmotionTagsResponse
-import io.dodn.springboot.core.api.controller.v1.response.FeedbackResponse
 import io.dodn.springboot.core.api.controller.v1.response.WorryResponse
-import io.dodn.springboot.core.domain.worry.Feedback
 import io.dodn.springboot.core.domain.worry.WorryService
 import io.dodn.springboot.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.GetMapping
@@ -48,23 +47,16 @@ class WorryController(
     fun createFeedback(
         @PathVariable worryId: Long,
         @RequestBody request: CreateFeedbackRequest?,
-    ): ApiResponse<FeedbackResponse> {
+    ): ApiResponse<CreateFeedbackResponse> {
         val feedback = if (request != null) {
             // Manual feedback provided
-            worryService.createFeedback(
-                worryId,
-                Feedback(
-                    content = request.feedback,
-                    tone = request.tone,
-                    tags = request.tags ?: emptyList(),
-                ),
-            )
+            worryService.saveWorryStep(worryId = worryId, content = request.feedback)
         } else {
             // Auto-generate feedback using AI
             worryService.requestFeedback(worryId)
         }
 
-        return ApiResponse.success(FeedbackResponse.from(feedback))
+        return ApiResponse.success(CreateFeedbackResponse.from(feedback))
     }
 
     @PostMapping("/{worryId}/streaming-feedback")

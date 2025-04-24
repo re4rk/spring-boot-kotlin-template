@@ -19,7 +19,7 @@ data class FeedSummaryResponse(
             return FeedSummaryResponse(
                 feedId = feed.id,
                 emotion = feed.worry.emotion,
-                tags = feed.feedback.tags,
+                tags = ArrayList(),
                 summary = summary,
             )
         }

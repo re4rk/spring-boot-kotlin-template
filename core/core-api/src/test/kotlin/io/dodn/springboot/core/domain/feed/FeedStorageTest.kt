@@ -2,7 +2,6 @@ package io.dodn.springboot.core.domain.feed
 
 import io.dodn.springboot.UnitTest
 import io.dodn.springboot.core.domain.feed.empathy.EmpathyCounter
-import io.dodn.springboot.core.domain.worry.Feedback
 import io.dodn.springboot.core.domain.worry.Worry
 import io.dodn.springboot.core.domain.worry.WorryMode
 import io.dodn.springboot.core.domain.worry.WorryStorage
@@ -63,16 +62,9 @@ class FeedStorageTest : UnitTest() {
             content = "Test content",
         )
 
-        val mockFeedback = Feedback(
-            id = feedbackId,
-            content = "Test feedback",
-            tone = "Positive",
-            tags = listOf("tag1", "tag2"),
-        )
 
         every { feedRepository.save(any()) } returns mockFeedEntity
         every { worryStorage.getWorry(worryId) } returns mockWorry
-        every { worryStorage.getFeedback(feedbackId) } returns mockFeedback
         every { empathyCounter.getEmpathyCount(feedId) } returns 0L
 
         // when
@@ -81,7 +73,6 @@ class FeedStorageTest : UnitTest() {
         // then
         assertThat(result.id).isEqualTo(feedId)
         assertThat(result.worry).isEqualTo(mockWorry)
-        assertThat(result.feedback).isEqualTo(mockFeedback)
         assertThat(result.empathyCount).isEqualTo(0L)
         verify { feedRepository.save(any()) }
     }
@@ -141,17 +132,8 @@ class FeedStorageTest : UnitTest() {
             category = "Work",
             content = "Test content",
         )
-
-        val mockFeedback = Feedback(
-            id = feedbackId,
-            content = "Test feedback",
-            tone = "Positive",
-            tags = listOf("tag1", "tag2"),
-        )
-
         every { feedRepository.findById(feedId) } returns Optional.of(mockFeedEntity)
         every { worryStorage.getWorry(worryId) } returns mockWorry
-        every { worryStorage.getFeedback(feedbackId) } returns mockFeedback
         every { empathyCounter.getEmpathyCount(feedId) } returns 5L
 
         // when
@@ -161,7 +143,6 @@ class FeedStorageTest : UnitTest() {
         assertThat(result.id).isEqualTo(feedId)
         assertThat(result.ownerId).isEqualTo(ownerId)
         assertThat(result.worry).isEqualTo(mockWorry)
-        assertThat(result.feedback).isEqualTo(mockFeedback)
         assertThat(result.empathyCount).isEqualTo(5L)
         assertThat(result.sharedAt).isEqualTo(sharedAt)
     }
@@ -188,14 +169,9 @@ class FeedStorageTest : UnitTest() {
         val mockWorry1 = createMockWorry(10L, ownerId)
         val mockWorry2 = createMockWorry(11L, ownerId)
 
-        val mockFeedback1 = createMockFeedback(20L)
-        val mockFeedback2 = createMockFeedback(21L)
-
         every { feedRepository.findByOwnerId(ownerId) } returns listOf(feed1, feed2)
         every { worryStorage.getWorry(10L) } returns mockWorry1
         every { worryStorage.getWorry(11L) } returns mockWorry2
-        every { worryStorage.getFeedback(20L) } returns mockFeedback1
-        every { worryStorage.getFeedback(21L) } returns mockFeedback2
         every { empathyCounter.getEmpathyCount(1L) } returns 5L
         every { empathyCounter.getEmpathyCount(2L) } returns 10L
 
@@ -219,14 +195,9 @@ class FeedStorageTest : UnitTest() {
         val mockWorry1 = createMockWorry(10L, 100L)
         val mockWorry2 = createMockWorry(11L, 101L)
 
-        val mockFeedback1 = createMockFeedback(20L)
-        val mockFeedback2 = createMockFeedback(21L)
-
         every { feedRepository.findAllByOrderBySharedAtDesc() } returns listOf(feed1, feed2)
         every { worryStorage.getWorry(10L) } returns mockWorry1
         every { worryStorage.getWorry(11L) } returns mockWorry2
-        every { worryStorage.getFeedback(20L) } returns mockFeedback1
-        every { worryStorage.getFeedback(21L) } returns mockFeedback2
         every { empathyCounter.getEmpathyCount(1L) } returns 5L
         every { empathyCounter.getEmpathyCount(2L) } returns 10L
 
@@ -261,15 +232,6 @@ class FeedStorageTest : UnitTest() {
             emotion = "Happy",
             category = "Work",
             content = "Test content",
-        )
-    }
-
-    private fun createMockFeedback(id: Long): Feedback {
-        return Feedback(
-            id = id,
-            content = "Test feedback",
-            tone = "Positive",
-            tags = listOf("tag1", "tag2"),
         )
     }
 }

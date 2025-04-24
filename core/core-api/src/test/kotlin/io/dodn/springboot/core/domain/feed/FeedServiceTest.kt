@@ -2,7 +2,6 @@ package io.dodn.springboot.core.domain.feed
 
 import io.dodn.springboot.UnitTest
 import io.dodn.springboot.core.domain.feed.empathy.EmpathyCounter
-import io.dodn.springboot.core.domain.worry.Feedback
 import io.dodn.springboot.core.domain.worry.Worry
 import io.dodn.springboot.core.domain.worry.WorryMode
 import io.dodn.springboot.core.domain.worry.WorryStorage
@@ -52,7 +51,7 @@ class FeedServiceTest : UnitTest() {
             content = "Test content",
         )
 
-        val mockFeed = createMockFeed(1L, userId, mockWorry, createMockFeedback(feedbackId))
+        val mockFeed = createMockFeed(1L, userId, mockWorry)
 
         every { worryStorage.getWorry(worryId) } returns mockWorry
         every { feedStorage.shareWorry(worryId, feedbackId) } returns mockFeed
@@ -102,7 +101,6 @@ class FeedServiceTest : UnitTest() {
             feedId,
             userId,
             createMockWorry(100L, userId),
-            createMockFeedback(200L),
         )
 
         every { feedStorage.getFeed(feedId) } returns mockFeed
@@ -126,7 +124,6 @@ class FeedServiceTest : UnitTest() {
             feedId,
             ownerId, // Different from userId
             createMockWorry(100L, ownerId),
-            createMockFeedback(200L),
         )
 
         every { feedStorage.getFeed(feedId) } returns mockFeed
@@ -150,7 +147,6 @@ class FeedServiceTest : UnitTest() {
             feedId,
             ownerId, // Different from userId
             createMockWorry(100L, ownerId),
-            createMockFeedback(200L),
         )
 
         every { feedStorage.getFeed(feedId) } returns mockFeed
@@ -168,13 +164,11 @@ class FeedServiceTest : UnitTest() {
             1L,
             10L,
             createMockWorry(100L, 10L, "Happy"),
-            createMockFeedback(200L, tags = listOf("tag1")),
         )
         val mockFeed2 = createMockFeed(
             2L,
             11L,
             createMockWorry(101L, 11L, "Sad"),
-            createMockFeedback(201L, tags = listOf("tag2")),
         )
 
         every { feedStorage.getAllFeeds() } returns listOf(mockFeed1, mockFeed2)
@@ -194,13 +188,11 @@ class FeedServiceTest : UnitTest() {
             1L,
             10L,
             createMockWorry(100L, 10L, "Happy"),
-            createMockFeedback(200L),
         )
         val mockFeed2 = createMockFeed(
             2L,
             11L,
             createMockWorry(101L, 11L, "Sad"),
-            createMockFeedback(201L),
         )
 
         every { feedStorage.getAllFeeds() } returns listOf(mockFeed1, mockFeed2)
@@ -220,13 +212,11 @@ class FeedServiceTest : UnitTest() {
             1L,
             10L,
             createMockWorry(100L, 10L),
-            createMockFeedback(200L, tags = listOf("tag1", "common")),
         )
         val mockFeed2 = createMockFeed(
             2L,
             11L,
             createMockWorry(101L, 11L),
-            createMockFeedback(201L, tags = listOf("tag2", "common")),
         )
 
         every { feedStorage.getAllFeeds() } returns listOf(mockFeed1, mockFeed2)
@@ -247,7 +237,6 @@ class FeedServiceTest : UnitTest() {
             feedId,
             10L,
             createMockWorry(100L, 10L),
-            createMockFeedback(200L),
         )
 
         every { feedStorage.getFeed(feedId) } returns mockFeed
@@ -268,13 +257,11 @@ class FeedServiceTest : UnitTest() {
             1L,
             userId,
             createMockWorry(100L, userId),
-            createMockFeedback(200L),
         )
         val mockFeed2 = createMockFeed(
             2L,
             userId,
             createMockWorry(101L, userId),
-            createMockFeedback(201L),
         )
 
         every { feedStorage.getFeedByOwnerId(userId) } returns listOf(mockFeed1, mockFeed2)
@@ -297,13 +284,11 @@ class FeedServiceTest : UnitTest() {
             1L,
             ownerId,
             createMockWorry(100L, ownerId),
-            createMockFeedback(200L),
         )
         val mockFeed2 = createMockFeed(
             2L,
             ownerId,
             createMockWorry(101L, ownerId),
-            createMockFeedback(201L),
         )
 
         every { feedStorage.getFeedByOwnerId(ownerId) } returns listOf(mockFeed1, mockFeed2)
@@ -339,7 +324,6 @@ class FeedServiceTest : UnitTest() {
             feedId,
             20L,
             createMockWorry(100L, 20L),
-            createMockFeedback(200L),
         )
 
         every { feedStorage.getFeed(feedId) } returns mockFeed
@@ -390,14 +374,13 @@ class FeedServiceTest : UnitTest() {
         id: Long,
         ownerId: Long,
         worry: Worry,
-        feedback: Feedback,
         empathyCount: Long = 0L,
     ): Feed {
         return Feed(
             id = id,
             ownerId = ownerId,
             worry = worry,
-            feedback = feedback,
+            content = worry.content,
             empathyCount = empathyCount,
             sharedAt = LocalDateTime.now(),
         )
@@ -411,15 +394,6 @@ class FeedServiceTest : UnitTest() {
             emotion = emotion,
             category = "Work",
             content = "Test content",
-        )
-    }
-
-    private fun createMockFeedback(id: Long, tags: List<String> = listOf("tag1", "tag2")): Feedback {
-        return Feedback(
-            id = id,
-            content = "Test feedback",
-            tone = "Positive",
-            tags = tags,
         )
     }
 }

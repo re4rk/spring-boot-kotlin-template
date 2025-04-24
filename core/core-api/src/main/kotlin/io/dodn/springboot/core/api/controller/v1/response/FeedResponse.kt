@@ -5,7 +5,6 @@ import io.dodn.springboot.core.domain.feed.Feed
 data class FeedResponse(
     val feedId: Long,
     val worry: WorryResponse,
-    val feedback: FeedbackResponse,
     val empathyCount: Long,
 ) {
     companion object {
@@ -13,7 +12,6 @@ data class FeedResponse(
             return FeedResponse(
                 feedId = feed.id,
                 worry = WorryResponse.from(feed.worry),
-                feedback = FeedbackResponse.from(feed.feedback),
                 empathyCount = feed.empathyCount,
             )
         }

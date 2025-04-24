@@ -22,14 +22,6 @@ class CounselorMapper {
         }
     }
 
-    fun toFeedback(response: CounselingResponse, tagResponse: EmotionTagResponse, tone: String): Feedback {
-        return Feedback(
-            content = response.feedback,
-            tone = tone,
-            tags = tagResponse.tags,
-        )
-    }
-
     fun toSummaryRequest(worry: Worry): SummaryRequest {
         val conversationText = when (worry.mode) {
             WorryMode.LETTER -> worry.content

@@ -47,7 +47,7 @@ class FeedService(
 
         return feeds.filter { feed ->
             (emotion == null || feed.worry.emotion == emotion) &&
-                (tag == null || feed.feedback.tags.contains(tag))
+                (tag == null || feed.content.contains(tag))
         }
     }
 

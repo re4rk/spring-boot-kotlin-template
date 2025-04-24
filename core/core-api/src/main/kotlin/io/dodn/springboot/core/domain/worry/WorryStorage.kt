@@ -2,10 +2,6 @@ package io.dodn.springboot.core.domain.worry
 
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
-import io.dodn.springboot.storage.db.core.worry.FeedbackEntity
-import io.dodn.springboot.storage.db.core.worry.FeedbackRepository
-import io.dodn.springboot.storage.db.core.worry.FeedbackTagEntity
-import io.dodn.springboot.storage.db.core.worry.FeedbackTagRepository
 import io.dodn.springboot.storage.db.core.worry.WorryEntity
 import io.dodn.springboot.storage.db.core.worry.WorryOptionEntity
 import io.dodn.springboot.storage.db.core.worry.WorryOptionRepository
@@ -22,8 +18,6 @@ class WorryStorage(
     private val worryRepository: WorryRepository,
     private val worryStepRepository: WorryStepRepository,
     private val worryOptionRepository: WorryOptionRepository,
-    private val feedbackRepository: FeedbackRepository,
-    private val feedbackTagRepository: FeedbackTagRepository,
 ) {
 
     @Transactional
@@ -79,6 +73,28 @@ class WorryStorage(
     }
 
     @Transactional
+    fun addWorryStep(worryId: Long, step: WorryStep): WorryStep {
+        val worryEntity = worryRepository.findById(worryId)
+            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
+
+        val stepEntity = worryStepRepository.save(
+            WorryStepEntity(
+                worry = worryEntity,
+                role = DbStepRole.valueOf(step.role.name),
+                content = step.content,
+                stepOrder = step.stepOrder,
+            ),
+        )
+
+        return WorryStep(
+            id = stepEntity.id,
+            role = StepRole.valueOf(stepEntity.role.name),
+            content = stepEntity.content,
+            stepOrder = stepEntity.stepOrder,
+        )
+    }
+
+    @Transactional
     fun saveWorryOptions(worryId: Long, options: List<WorryOption>): List<WorryOption> {
         val worryEntity = worryRepository.findById(worryId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
@@ -100,51 +116,6 @@ class WorryStorage(
                 text = entity.text,
             )
         }
-    }
-
-    @Transactional
-    fun saveFeedback(worryId: Long, feedback: Feedback): Feedback {
-        val worryEntity = worryRepository.findById(worryId)
-            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
-
-        val feedbackEntity = feedbackRepository.save(
-            FeedbackEntity(
-                worry = worryEntity,
-                feedback = feedback.content,
-                tone = feedback.tone,
-            ),
-        )
-
-        val tags = feedback.tags.map { tag ->
-            feedbackTagRepository.save(
-                FeedbackTagEntity(
-                    feedback = feedbackEntity,
-                    tag = tag,
-                ),
-            )
-        }
-
-        return Feedback(
-            id = feedbackEntity.id,
-            content = feedbackEntity.feedback,
-            tone = feedbackEntity.tone,
-            tags = tags.map { it.tag },
-        )
-    }
-
-    @Transactional(readOnly = true)
-    fun getFeedback(feedbackId: Long): Feedback {
-        val feedbackEntity = feedbackRepository.findById(feedbackId)
-            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "AI Feedback not found") }
-
-        val tags = feedbackTagRepository.findByFeedbackId(feedbackId).map { it.tag }
-
-        return Feedback(
-            id = feedbackEntity.id,
-            content = feedbackEntity.feedback,
-            tone = feedbackEntity.tone,
-            tags = tags,
-        )
     }
 
     private fun mapToWorry(

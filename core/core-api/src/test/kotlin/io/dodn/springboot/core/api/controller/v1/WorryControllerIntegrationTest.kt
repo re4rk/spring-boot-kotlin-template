@@ -12,7 +12,6 @@ import io.dodn.springboot.storage.db.core.user.UserEntity
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserRole
 import io.dodn.springboot.storage.db.core.user.UserStatus
-import io.dodn.springboot.storage.db.core.worry.FeedbackRepository
 import io.dodn.springboot.storage.db.core.worry.WorryRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -45,9 +44,6 @@ class WorryControllerIntegrationTest {
     private lateinit var worryRepository: WorryRepository
 
     @Autowired
-    private lateinit var feedbackRepository: FeedbackRepository
-
-    @Autowired
     private lateinit var passwordEncoder: PasswordEncoder
 
     @Autowired
@@ -62,7 +58,6 @@ class WorryControllerIntegrationTest {
     @BeforeEach
     fun setUp() {
         // 기존 데이터 정리
-        feedbackRepository.deleteAll()
         worryRepository.deleteAll()
         userRepository.deleteAll()
 
@@ -72,7 +67,6 @@ class WorryControllerIntegrationTest {
 
     @AfterEach
     fun tearDown() {
-        feedbackRepository.deleteAll()
         worryRepository.deleteAll()
         userRepository.deleteAll()
     }
@@ -172,8 +166,8 @@ class WorryControllerIntegrationTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.result").value("SUCCESS"))
             .andExpect(jsonPath("$.data.feedback").exists())
-            .andExpect(jsonPath("$.data.tone").value("Supportive"))
-            .andExpect(jsonPath("$.data.tags").isArray())
+//            .andExpect(jsonPath("$.data.tone").value("Supportive"))
+//            .andExpect(jsonPath("$.data.tags").isArray())
     }
 
     @Test

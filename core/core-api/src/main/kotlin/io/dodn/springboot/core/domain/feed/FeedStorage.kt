@@ -50,14 +50,13 @@ class FeedStorage(
 
     private fun mapToFeed(feedEntity: FeedEntity): Feed {
         val worry = worryStorage.getWorry(feedEntity.worryId)
-        val feedback = worryStorage.getFeedback(feedEntity.feedbackId)
         val empathyCount = empathyCounter.getEmpathyCount(feedEntity.id)
 
         return Feed(
             id = feedEntity.id,
             ownerId = feedEntity.ownerId,
             worry = worry,
-            feedback = feedback,
+            content = worry.content,
             empathyCount = empathyCount,
             sharedAt = feedEntity.sharedAt,
         )
