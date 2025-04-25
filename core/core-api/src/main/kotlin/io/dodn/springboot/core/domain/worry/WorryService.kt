@@ -3,7 +3,6 @@ package io.dodn.springboot.core.domain.worry
 import io.dodn.springboot.core.domain.worry.counselor.CounselorClient
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
 @Service
 class WorryService(
@@ -12,7 +11,7 @@ class WorryService(
     private val counselorMapper: CounselorMapper,
 ) {
     @Transactional
-    fun createLetterWorry(worry: Worry): Worry {
+    fun createWorry(worry: Worry): Worry {
         val savedWorry = worryStorage.saveWorry(worry)
 
         if (savedWorry.steps.isNotEmpty()) {
@@ -27,18 +26,8 @@ class WorryService(
     }
 
     @Transactional
-    fun createConvoWorry(worry: Worry): Worry {
-        val savedWorry = worryStorage.saveWorry(worry)
-
-        if (savedWorry.steps.isNotEmpty()) {
-            worryStorage.saveWorrySteps(savedWorry.id, savedWorry.steps)
-        }
-
-        if (savedWorry.options.isNotEmpty()) {
-            worryStorage.saveWorryOptions(savedWorry.id, savedWorry.options)
-        }
-
-        return worryStorage.getWorry(savedWorry.id)
+    fun addWorryStep(worryId: Long, content: String): WorryStep {
+        return worryStorage.addWorryStep(worryId, WorryStep(role = StepRole.AI, content = content, stepOrder = 1))
     }
 
     @Transactional(readOnly = true)
@@ -65,51 +54,17 @@ class WorryService(
         )
     }
 
-    fun requestStreamingFeedback(worryId: Long, emitter: SseEmitter) {
-        try {
-            val worry = worryStorage.getWorry(worryId)
+    fun requestStreamingFeedback(worryId: Long, onChunk: (chunk: String) -> Unit, onComplete: (String) -> Unit) {
+        val worry = worryStorage.getWorry(worryId)
 
-            val counselingRequest = counselorMapper.toRequest(worry)
-            val tagRequest = counselorMapper.toEmotionTagRequest(worry)
+        val counselingRequest = counselorMapper.toRequest(worry)
+        val tagRequest = counselorMapper.toEmotionTagRequest(worry)
 
-            counselorClient.createStreamingChatCompletion(
-                counselingRequest,
-                onChunk = { partialResponse ->
-                    try {
-                        emitter.send(SseEmitter.event().name("chunk").data(partialResponse))
-                    } catch (e: Exception) {
-                        println("Error sending chunk: ${e.message}")
-                    }
-                },
-                // 완료 콜백
-                onComplete = { fullResponse ->
-                    try {
-                        emitter.send(SseEmitter.event().name("processing").data("Analyzing emotions and tone..."))
-
-                        val worryStep = saveWorryStep(worryId, fullResponse)
-
-                        emitter.send(SseEmitter.event().name("complete").data(worryStep))
-
-                        emitter.complete()
-                    } catch (e: Exception) {
-                        emitter.send(SseEmitter.event().name("error").data("Error processing feedback: ${e.message}"))
-                        emitter.completeWithError(e)
-                    }
-                },
-            )
-        } catch (e: Exception) {
-            try {
-                emitter.send(SseEmitter.event().name("error").data("Error generating feedback: ${e.message}"))
-                emitter.completeWithError(e)
-            } catch (ex: Exception) {
-                println("Error on already closed emitter: ${ex.message}")
-            }
-        }
-    }
-
-    @Transactional
-    fun saveWorryStep(worryId: Long, content: String): WorryStep {
-        return worryStorage.addWorryStep(worryId, WorryStep(role = StepRole.AI, content = content, stepOrder = 1))
+        counselorClient.createStreamingChatCompletion(
+            counselingRequest,
+            onChunk = { chunk -> onChunk(chunk) },
+            onComplete = { fullResponse -> onComplete(fullResponse) },
+        )
     }
 
     @Transactional(readOnly = true)

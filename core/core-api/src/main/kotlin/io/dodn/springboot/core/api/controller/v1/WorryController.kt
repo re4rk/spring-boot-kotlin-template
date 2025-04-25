@@ -27,13 +27,13 @@ class WorryController(
 ) {
     @PostMapping("/letter")
     fun createLetterWorry(@RequestBody request: CreateLetterWorryRequest): ApiResponse<Map<String, Long>> {
-        val worry = worryService.createLetterWorry(request.toWorry())
+        val worry = worryService.createWorry(request.toWorry())
         return ApiResponse.success(mapOf("worryId" to worry.id))
     }
 
     @PostMapping("/convo")
     fun createConvoWorry(@RequestBody request: CreateConvoWorryRequest): ApiResponse<Map<String, Long>> {
-        val worry = worryService.createConvoWorry(request.toWorry())
+        val worry = worryService.createWorry(request.toWorry())
         return ApiResponse.success(mapOf("worryId" to worry.id))
     }
 
@@ -50,7 +50,7 @@ class WorryController(
     ): ApiResponse<CreateFeedbackResponse> {
         val feedback = if (request != null) {
             // Manual feedback provided
-            worryService.saveWorryStep(worryId = worryId, content = request.feedback)
+            worryService.addWorryStep(worryId = worryId, content = request.feedback)
         } else {
             // Auto-generate feedback using AI
             worryService.requestFeedback(worryId)
@@ -65,7 +65,31 @@ class WorryController(
         val emitter = SseEmitter(300000L)
 
         // 비동기적으로 처리하여 즉시 응답
-        worryService.requestStreamingFeedback(worryId, emitter)
+        worryService.requestStreamingFeedback(
+            worryId,
+            onChunk = { partialResponse ->
+                try {
+                    emitter.send(SseEmitter.event().name("chunk").data(partialResponse))
+                } catch (e: Exception) {
+                    println("Error sending chunk: ${e.message}")
+                }
+            },
+            // 완료 콜백
+            onComplete = { fullResponse ->
+                try {
+                    emitter.send(SseEmitter.event().name("processing").data("Analyzing emotions and tone..."))
+
+                    val worryStep = worryService.addWorryStep(worryId, fullResponse)
+
+                    emitter.send(SseEmitter.event().name("complete").data(worryStep))
+
+                    emitter.complete()
+                } catch (e: Exception) {
+                    emitter.send(SseEmitter.event().name("error").data("Error processing feedback: ${e.message}"))
+                    emitter.completeWithError(e)
+                }
+            },
+        )
 
         return emitter
     }
