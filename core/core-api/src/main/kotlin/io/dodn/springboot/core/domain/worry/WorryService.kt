@@ -47,11 +47,7 @@ class WorryService(
 
         return worryStorage.addWorryStep(
             worryId = worryId,
-            step = WorryStep(
-                role = StepRole.AI,
-                content = counselingResponse.feedback,
-                stepOrder = worry.lastStepOrder + 1,
-            ),
+            WorryStep(role = StepRole.AI, content = counselingResponse.feedback, stepOrder = worry.lastStepOrder + 1),
         )
     }
 
@@ -60,11 +56,7 @@ class WorryService(
 
         val counselingRequest = counselorMapper.toRequest(worry)
 
-        counselorClient.createStreamingChatCompletion(
-            counselingRequest,
-            onChunk = { chunk -> onChunk(chunk) },
-            onComplete = { fullResponse -> onComplete(fullResponse) },
-        )
+        counselorClient.createStreamingChatCompletion(counselingRequest, onChunk = onChunk, onComplete = onComplete)
     }
 
     @Transactional(readOnly = true)
