@@ -238,7 +238,6 @@ class WorryControllerStreamingTest {
 
         // 고민 요청 본문 작성
         val letterWorryRequest = CreateLetterWorryRequest(
-            userId = testUserId,
             emotion = "Anxiety",
             content = "I'm worried about my upcoming exam",
             category = "Study",

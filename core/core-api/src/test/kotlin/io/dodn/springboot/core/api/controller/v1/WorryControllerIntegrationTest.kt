@@ -76,7 +76,6 @@ class WorryControllerIntegrationTest {
     fun `should create letter worry`() {
         // given
         val letterWorryRequest = CreateLetterWorryRequest(
-            userId = testUserId,
             emotion = "Anxiety",
             content = "I'm worried about my upcoming exam",
             category = "Study",
@@ -103,7 +102,6 @@ class WorryControllerIntegrationTest {
     fun `should create conversation worry`() {
         // given
         val convoWorryRequest = CreateConvoWorryRequest(
-            userId = testUserId,
             emotion = "Confusion",
             category = "Career",
             steps = listOf(
@@ -255,7 +253,6 @@ class WorryControllerIntegrationTest {
 
     private fun createTestWorry(): Long {
         val letterWorryRequest = CreateLetterWorryRequest(
-            userId = testUserId,
             emotion = "Anxiety",
             content = "I'm worried about my upcoming exam",
             category = "Study",

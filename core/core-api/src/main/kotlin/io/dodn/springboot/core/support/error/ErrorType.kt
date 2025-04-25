@@ -7,6 +7,9 @@ enum class ErrorType(val status: HttpStatus, val code: ErrorCode, val message: S
     // System Errors
     DEFAULT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E500, "An unexpected error has occurred.", LogLevel.ERROR),
 
+    // Parameter Errors
+    INVALID_PARAMETER(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Invalid parameter", LogLevel.WARN),
+
     // Authentication & Authorization Errors
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "Unauthorized", LogLevel.WARN),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "Invalid email or password", LogLevel.WARN),
@@ -49,4 +52,5 @@ enum class ErrorType(val status: HttpStatus, val code: ErrorCode, val message: S
 
     // Worry Related Errors
     WORRY_PERMISSION_DENIED(HttpStatus.FORBIDDEN, ErrorCode.E403, "User does not have permission to access this worry", LogLevel.WARN),
+    WORRY_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.E404, "Worry not found", LogLevel.WARN),
 }

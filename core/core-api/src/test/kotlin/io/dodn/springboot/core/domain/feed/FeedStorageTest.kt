@@ -60,8 +60,8 @@ class FeedStorageTest : UnitTest() {
             emotion = "Happy",
             category = "Work",
             content = "Test content",
+            lastStepOrder = 0,
         )
-
 
         every { feedRepository.save(any()) } returns mockFeedEntity
         every { worryStorage.getWorry(worryId) } returns mockWorry
@@ -131,6 +131,7 @@ class FeedStorageTest : UnitTest() {
             emotion = "Happy",
             category = "Work",
             content = "Test content",
+            lastStepOrder = 0,
         )
         every { feedRepository.findById(feedId) } returns Optional.of(mockFeedEntity)
         every { worryStorage.getWorry(worryId) } returns mockWorry
@@ -232,6 +233,7 @@ class FeedStorageTest : UnitTest() {
             emotion = "Happy",
             category = "Work",
             content = "Test content",
+            lastStepOrder = 0,
         )
     }
 }

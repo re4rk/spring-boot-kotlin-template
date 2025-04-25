@@ -1,12 +1,12 @@
 package io.dodn.springboot.core.api.controller.v1
 
+import io.dodn.springboot.core.api.aspect.CheckWorryAccess
 import io.dodn.springboot.core.api.controller.v1.request.CreateConversationRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackResponse
 import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.SummaryResponse
-import io.dodn.springboot.core.api.controller.v1.response.EmotionTagsResponse
 import io.dodn.springboot.core.api.controller.v1.response.WorryResponse
 import io.dodn.springboot.core.domain.worry.StepRole
 import io.dodn.springboot.core.domain.worry.WorryService
@@ -30,28 +30,37 @@ class WorryController(
     private val worryService: WorryService,
 ) {
     @PostMapping("/letter")
-    fun createLetterWorry(@RequestBody request: CreateLetterWorryRequest): ApiResponse<Map<String, Long>> {
-        val worry = worryService.createWorry(request.toWorry())
+    fun createLetterWorry(
+        @RequestBody request: CreateLetterWorryRequest,
+        @AuthenticationPrincipal userDetails: GominUserDetails,
+    ): ApiResponse<Map<String, Long>> {
+        val worry = worryService.createWorry(request.toWorry(userDetails.id))
         return ApiResponse.success(mapOf("worryId" to worry.id))
     }
 
     @PostMapping("/convo")
-    fun createConvoWorry(@RequestBody request: CreateConvoWorryRequest): ApiResponse<Map<String, Long>> {
-        val worry = worryService.createWorry(request.toWorry())
+    fun createConvoWorry(
+        @RequestBody request: CreateConvoWorryRequest,
+        @AuthenticationPrincipal userDetails: GominUserDetails,
+    ): ApiResponse<Map<String, Long>> {
+        val worry = worryService.createWorry(request.toWorry(userDetails.id))
         return ApiResponse.success(mapOf("worryId" to worry.id))
     }
 
     @GetMapping("/{worryId}")
-    fun getWorry(@PathVariable worryId: Long): ApiResponse<WorryResponse> {
+    @CheckWorryAccess(permission = "VIEW")
+    fun getWorry(
+        @PathVariable worryId: Long,
+    ): ApiResponse<WorryResponse> {
         val worry = worryService.getWorry(worryId)
         return ApiResponse.success(WorryResponse.from(worry))
     }
 
     @PostMapping("/{worryId}/conversation")
+    @CheckWorryAccess(permission = "EDIT")
     fun createConversation(
         @PathVariable worryId: Long,
         request: CreateConversationRequest,
-        @AuthenticationPrincipal userDetails: GominUserDetails,
     ): ApiResponse<WorryResponse> {
         val worry = worryService.getWorry(worryId)
         worryService.addWorryStep(
@@ -63,6 +72,7 @@ class WorryController(
     }
 
     @PostMapping("/{worryId}/feedback")
+    @CheckWorryAccess(permission = "EDIT")
     fun createFeedback(
         @PathVariable worryId: Long,
         @RequestBody request: CreateFeedbackRequest?,
@@ -79,6 +89,7 @@ class WorryController(
     }
 
     @PostMapping("/{worryId}/streaming-feedback")
+    @CheckWorryAccess(permission = "EDIT")
     fun createStreamingFeedback(@PathVariable worryId: Long): SseEmitter {
         // SseEmitter 인스턴스 생성 (타임아웃 5분)
         val emitter = SseEmitter(300000L)
@@ -114,8 +125,10 @@ class WorryController(
     }
 
     @GetMapping("/{worryId}/summary")
+    @CheckWorryAccess(permission = "VIEW")
     fun getWorrySummary(@PathVariable worryId: Long): ApiResponse<SummaryResponse> {
         val summary = worryService.generateSummary(worryId)
         return ApiResponse.success(SummaryResponse(summary))
     }
 }
+

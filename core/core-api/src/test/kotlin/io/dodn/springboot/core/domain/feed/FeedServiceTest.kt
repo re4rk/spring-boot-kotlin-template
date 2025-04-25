@@ -49,6 +49,7 @@ class FeedServiceTest : UnitTest() {
             emotion = "Happy",
             category = "Work",
             content = "Test content",
+            lastStepOrder = 0,
         )
 
         val mockFeed = createMockFeed(1L, userId, mockWorry)
@@ -80,6 +81,7 @@ class FeedServiceTest : UnitTest() {
             emotion = "Happy",
             category = "Work",
             content = "Test content",
+            lastStepOrder = 0,
         )
 
         every { worryStorage.getWorry(worryId) } returns mockWorry
@@ -394,6 +396,7 @@ class FeedServiceTest : UnitTest() {
             emotion = emotion,
             category = "Work",
             content = "Test content",
+            lastStepOrder = 0,
         )
     }
 }
