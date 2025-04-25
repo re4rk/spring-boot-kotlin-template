@@ -40,9 +40,6 @@ class WorryService(
         val worry = worryStorage.getWorry(worryId)
 
         val counselingResponse = counselorClient.getCounseling(counselorMapper.toRequest(worry))
-        val tagResponse = counselorClient.extractEmotionTags(counselorMapper.toEmotionTagRequest(worry))
-
-//        val tone = counselorMapper.determineTone(counselorClient, counselingResponse.feedback)
 
         return worryStorage.addWorryStep(
             worryId = worryId,
@@ -58,7 +55,6 @@ class WorryService(
         val worry = worryStorage.getWorry(worryId)
 
         val counselingRequest = counselorMapper.toRequest(worry)
-        val tagRequest = counselorMapper.toEmotionTagRequest(worry)
 
         counselorClient.createStreamingChatCompletion(
             counselingRequest,
