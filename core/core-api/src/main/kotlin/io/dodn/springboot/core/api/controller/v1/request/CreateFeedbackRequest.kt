@@ -8,6 +8,10 @@ data class CreateFeedbackRequest(
     val tags: List<String>? = null,
 )
 
+data class CreateConversationRequest(
+    val conversation: String,
+)
+
 data class CreateFeedbackResponse(
     val feedbackId: Long,
     val feedback: String,

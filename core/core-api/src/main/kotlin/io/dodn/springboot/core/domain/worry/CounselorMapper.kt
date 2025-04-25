@@ -3,9 +3,6 @@ package io.dodn.springboot.core.domain.worry
 import io.dodn.springboot.core.domain.worry.counselor.CounselorClient
 import io.dodn.springboot.core.domain.worry.counselor.dto.ConversationStep
 import io.dodn.springboot.core.domain.worry.counselor.dto.CounselingRequest
-import io.dodn.springboot.core.domain.worry.counselor.dto.CounselingResponse
-import io.dodn.springboot.core.domain.worry.counselor.dto.EmotionTagRequest
-import io.dodn.springboot.core.domain.worry.counselor.dto.EmotionTagResponse
 import io.dodn.springboot.core.domain.worry.counselor.dto.SummaryRequest
 import org.springframework.stereotype.Component
 
@@ -29,24 +26,6 @@ class CounselorMapper {
         }
 
         return SummaryRequest(fullConversation = conversationText)
-    }
-
-    fun toEmotionTagRequest(worry: Worry): EmotionTagRequest {
-        val content = when (worry.mode) {
-            WorryMode.LETTER -> buildConversationText(worry.steps)
-            WorryMode.CONVO -> buildConversationText(worry.steps)
-        }
-
-        return EmotionTagRequest(fullConversation = content)
-    }
-
-    private fun toCounselingRequestForLetter(worry: Worry): CounselingRequest {
-        return CounselingRequest(
-            userInput = worry.content,
-            emotion = worry.emotion,
-            category = worry.category,
-            options = worry.options.map { "${it.label}. ${it.text}" },
-        )
     }
 
     private fun toCounselingRequestForConvo(worry: Worry): CounselingRequest {

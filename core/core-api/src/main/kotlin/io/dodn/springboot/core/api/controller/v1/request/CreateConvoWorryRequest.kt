@@ -18,6 +18,7 @@ data class CreateConvoWorryRequest(
             emotion = emotion,
             category = category,
             content = "",
+            lastStepOrder = steps.size - 1,
             steps = steps.mapIndexed { index, step ->
                 WorryStep(
                     id = index.toLong(),

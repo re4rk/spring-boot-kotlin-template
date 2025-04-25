@@ -46,4 +46,7 @@ enum class ErrorType(val status: HttpStatus, val code: ErrorCode, val message: S
     // Feed Related Errors
     FEED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, ErrorCode.E403, "User does not have permission to share this worry", LogLevel.WARN),
     FEED_ALREADY_EMPATHIZED(HttpStatus.BAD_REQUEST, ErrorCode.E400, "User has already empathized with this feed", LogLevel.WARN),
+
+    // Worry Related Errors
+    WORRY_PERMISSION_DENIED(HttpStatus.FORBIDDEN, ErrorCode.E403, "User does not have permission to access this worry", LogLevel.WARN),
 }

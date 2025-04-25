@@ -1,5 +1,6 @@
 package io.dodn.springboot.core.api.controller.v1
 
+import io.dodn.springboot.core.api.controller.v1.request.CreateConversationRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackResponse
@@ -7,8 +8,11 @@ import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryReques
 import io.dodn.springboot.core.api.controller.v1.request.SummaryResponse
 import io.dodn.springboot.core.api.controller.v1.response.EmotionTagsResponse
 import io.dodn.springboot.core.api.controller.v1.response.WorryResponse
+import io.dodn.springboot.core.domain.worry.StepRole
 import io.dodn.springboot.core.domain.worry.WorryService
+import io.dodn.springboot.core.support.auth.GominUserDetails
 import io.dodn.springboot.core.support.response.ApiResponse
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -43,6 +47,21 @@ class WorryController(
         return ApiResponse.success(WorryResponse.from(worry))
     }
 
+    @PostMapping("/{worryId}/conversation")
+    fun createConversation(
+        @PathVariable worryId: Long,
+        request: CreateConversationRequest,
+        @AuthenticationPrincipal userDetails: GominUserDetails,
+    ): ApiResponse<WorryResponse> {
+        val worry = worryService.getWorry(worryId)
+        worryService.addWorryStep(
+            worryId = worryId,
+            role = StepRole.USER,
+            content = request.conversation,
+        )
+        return ApiResponse.success(WorryResponse.from(worry))
+    }
+
     @PostMapping("/{worryId}/feedback")
     fun createFeedback(
         @PathVariable worryId: Long,
@@ -50,7 +69,7 @@ class WorryController(
     ): ApiResponse<CreateFeedbackResponse> {
         val feedback = if (request != null) {
             // Manual feedback provided
-            worryService.addWorryStep(worryId = worryId, content = request.feedback)
+            worryService.addWorryStep(worryId = worryId, role = StepRole.AI, content = request.feedback)
         } else {
             // Auto-generate feedback using AI
             worryService.requestFeedback(worryId)
@@ -79,7 +98,7 @@ class WorryController(
                 try {
                     emitter.send(SseEmitter.event().name("processing").data("Analyzing emotions and tone..."))
 
-                    val worryStep = worryService.addWorryStep(worryId, fullResponse)
+                    val worryStep = worryService.addWorryStep(worryId, StepRole.AI, fullResponse)
 
                     emitter.send(SseEmitter.event().name("complete").data(worryStep))
 
@@ -98,18 +117,5 @@ class WorryController(
     fun getWorrySummary(@PathVariable worryId: Long): ApiResponse<SummaryResponse> {
         val summary = worryService.generateSummary(worryId)
         return ApiResponse.success(SummaryResponse(summary))
-    }
-
-    @GetMapping("/{worryId}/emotion-tags")
-    fun getWorryEmotionTags(@PathVariable worryId: Long): ApiResponse<EmotionTagsResponse> {
-        val tags = worryService.extractEmotionTags(worryId)
-        return ApiResponse.success(EmotionTagsResponse(tags))
-    }
-
-    @PostMapping("/{worryId}/save")
-    fun saveWorry(@PathVariable worryId: Long): ApiResponse<Map<String, String>> {
-        // Just verify the worry exists
-        worryService.getWorry(worryId)
-        return ApiResponse.success(mapOf("status" to "saved"))
     }
 }

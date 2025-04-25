@@ -26,8 +26,12 @@ class WorryService(
     }
 
     @Transactional
-    fun addWorryStep(worryId: Long, content: String): WorryStep {
-        return worryStorage.addWorryStep(worryId, WorryStep(role = StepRole.AI, content = content, stepOrder = 1))
+    fun addWorryStep(worryId: Long, role: StepRole, content: String): WorryStep {
+        val worry = worryStorage.getWorry(worryId)
+        return worryStorage.addWorryStep(
+            worryId,
+            WorryStep(role = role, content = content, stepOrder = worry.lastStepOrder + 1),
+        )
     }
 
     @Transactional(readOnly = true)
@@ -46,7 +50,7 @@ class WorryService(
             step = WorryStep(
                 role = StepRole.AI,
                 content = counselingResponse.feedback,
-                stepOrder = 1,
+                stepOrder = worry.lastStepOrder + 1,
             ),
         )
     }
@@ -69,13 +73,5 @@ class WorryService(
         val summaryRequest = counselorMapper.toSummaryRequest(worry)
         val summaryResponse = counselorClient.summarizeConversation(summaryRequest)
         return summaryResponse.summary
-    }
-
-    @Transactional(readOnly = true)
-    fun extractEmotionTags(worryId: Long): List<String> {
-        val worry = worryStorage.getWorry(worryId)
-        val tagRequest = counselorMapper.toEmotionTagRequest(worry)
-        val tagResponse = counselorClient.extractEmotionTags(tagRequest)
-        return tagResponse.tags
     }
 }

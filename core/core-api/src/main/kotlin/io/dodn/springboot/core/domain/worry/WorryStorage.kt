@@ -147,6 +147,7 @@ class WorryStorage(
             emotion = worryEntity.emotion,
             category = worryEntity.category,
             content = worryEntity.content,
+            lastStepOrder = steps.maxOfOrNull { it.stepOrder } ?: 0,
             steps = steps,
             options = options,
         )
