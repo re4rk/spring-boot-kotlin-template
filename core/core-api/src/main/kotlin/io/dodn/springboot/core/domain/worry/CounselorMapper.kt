@@ -17,14 +17,14 @@ class CounselorMapper {
 
     fun toRequest(worry: Worry): CounselingRequest {
         return when (worry.mode) {
-            WorryMode.LETTER -> toCounselingRequestForLetter(worry)
+            WorryMode.LETTER -> toCounselingRequestForConvo(worry)
             WorryMode.CONVO -> toCounselingRequestForConvo(worry)
         }
     }
 
     fun toSummaryRequest(worry: Worry): SummaryRequest {
         val conversationText = when (worry.mode) {
-            WorryMode.LETTER -> worry.content
+            WorryMode.LETTER -> buildConversationText(worry.steps)
             WorryMode.CONVO -> buildConversationText(worry.steps)
         }
 
@@ -33,7 +33,7 @@ class CounselorMapper {
 
     fun toEmotionTagRequest(worry: Worry): EmotionTagRequest {
         val content = when (worry.mode) {
-            WorryMode.LETTER -> worry.content
+            WorryMode.LETTER -> buildConversationText(worry.steps)
             WorryMode.CONVO -> buildConversationText(worry.steps)
         }
 
