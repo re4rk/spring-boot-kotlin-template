@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.api.controller.v1.request
 
-import io.dodn.springboot.core.domain.worry.StepRole
+import io.dodn.springboot.core.domain.worry.MeesageRole
 import io.dodn.springboot.core.domain.worry.Worry
 import io.dodn.springboot.core.domain.worry.WorryMode
 import io.dodn.springboot.core.domain.worry.WorryOption
@@ -20,11 +20,11 @@ data class CreateLetterWorryRequest(
             emotion = emotion,
             category = category,
             content = content,
-            lastStepOrder = 0,
-            steps = listOf(
+            lastMessageOrder = 0,
+            messages = listOf(
                 WorryMessage(
                     id = 0L,
-                    role = StepRole.USER,
+                    role = MeesageRole.USER,
                     content = content,
                     messageOrder = 0,
                 ),

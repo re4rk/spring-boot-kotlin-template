@@ -8,7 +8,7 @@ import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackResponse
 import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.SummaryResponse
 import io.dodn.springboot.core.api.controller.v1.response.WorryResponse
-import io.dodn.springboot.core.domain.worry.StepRole
+import io.dodn.springboot.core.domain.worry.MeesageRole
 import io.dodn.springboot.core.domain.worry.WorryService
 import io.dodn.springboot.core.support.auth.GominUserDetails
 import io.dodn.springboot.core.support.response.ApiResponse
@@ -62,7 +62,7 @@ class WorryController(
         @PathVariable worryId: Long,
         @RequestBody request: AddWorryMessageRequest,
     ): ApiResponse<WorryResponse> {
-        worryService.addWorryMessage(worryId = worryId, role = StepRole.USER, content = request.message)
+        worryService.addWorryMessage(worryId = worryId, role = MeesageRole.USER, content = request.message)
         return ApiResponse.success(WorryResponse.from(worryService.getWorry(worryId)))
     }
 
@@ -74,7 +74,7 @@ class WorryController(
     ): ApiResponse<CreateFeedbackResponse> {
         val feedback = if (request != null) {
             // Manual feedback provided
-            worryService.addWorryMessage(worryId = worryId, role = StepRole.AI, content = request.feedback)
+            worryService.addWorryMessage(worryId = worryId, role = MeesageRole.AI, content = request.feedback)
         } else {
             // Auto-generate feedback using AI
             worryService.requestFeedback(worryId)
@@ -104,9 +104,9 @@ class WorryController(
                 try {
                     emitter.send(SseEmitter.event().name("processing").data("Analyzing emotions and tone..."))
 
-                    val worryStep = worryService.addWorryMessage(worryId, StepRole.AI, fullResponse)
+                    val worryMessage = worryService.addWorryMessage(worryId, MeesageRole.AI, fullResponse)
 
-                    emitter.send(SseEmitter.event().name("complete").data(worryStep))
+                    emitter.send(SseEmitter.event().name("complete").data(worryMessage))
 
                     emitter.complete()
                 } catch (e: Exception) {

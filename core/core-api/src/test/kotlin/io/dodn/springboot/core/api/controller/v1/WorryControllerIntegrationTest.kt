@@ -7,8 +7,8 @@ import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.OptionReqeust
-import io.dodn.springboot.core.api.controller.v1.request.StepRequest
-import io.dodn.springboot.core.domain.worry.StepRole
+import io.dodn.springboot.core.api.controller.v1.request.MessageRequest
+import io.dodn.springboot.core.domain.worry.MeesageRole
 import io.dodn.springboot.storage.db.core.user.UserEntity
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserRole
@@ -105,10 +105,10 @@ class WorryControllerIntegrationTest {
         val convoWorryRequest = CreateConvoWorryRequest(
             emotion = "Confusion",
             category = "Career",
-            steps = listOf(
-                StepRequest(StepRole.USER, "I'm not sure what career path to choose"),
-                StepRequest(StepRole.AI, "That's a common concern. What are your interests?"),
-                StepRequest(StepRole.USER, "I like technology and helping people"),
+            messages = listOf(
+                MessageRequest(MeesageRole.USER, "I'm not sure what career path to choose"),
+                MessageRequest(MeesageRole.AI, "That's a common concern. What are your interests?"),
+                MessageRequest(MeesageRole.USER, "I like technology and helping people"),
             ),
         )
 
@@ -207,8 +207,8 @@ class WorryControllerIntegrationTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.result").value("SUCCESS"))
             .andExpect(jsonPath("$.data.worryId").value(worryId))
-            .andExpect(jsonPath("$.data.steps[${0}].role").value("user"))
-            .andExpect(jsonPath("$.data.steps[${0}].content").value("I've been studying for hours but still feel unprepared"))
+            .andExpect(jsonPath("$.data.messages[${0}].role").value("user"))
+            .andExpect(jsonPath("$.data.messages[${0}].content").value("I've been studying for hours but still feel unprepared"))
     }
 
     // Helper methods
@@ -275,10 +275,10 @@ class WorryControllerIntegrationTest {
         val convoWorryRequest = CreateConvoWorryRequest(
             emotion = "Confusion",
             category = "Career",
-            steps = listOf(
-                StepRequest(StepRole.USER, "I'm not sure what career path to choose"),
-                StepRequest(StepRole.AI, "That's a common concern. What are your interests?"),
-                StepRequest(StepRole.USER, "I like technology and helping people"),
+            messages = listOf(
+                MessageRequest(MeesageRole.USER, "I'm not sure what career path to choose"),
+                MessageRequest(MeesageRole.AI, "That's a common concern. What are your interests?"),
+                MessageRequest(MeesageRole.USER, "I like technology and helping people"),
             ),
         )
 

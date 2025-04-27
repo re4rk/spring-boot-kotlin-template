@@ -7,7 +7,7 @@ data class Worry(
     val emotion: String,
     val category: String,
     val content: String,
-    val lastStepOrder: Int,
-    val steps: List<WorryMessage> = emptyList(),
+    val lastMessageOrder: Int,
+    val messages: List<WorryMessage> = emptyList(),
     val options: List<WorryOption> = emptyList(),
 )

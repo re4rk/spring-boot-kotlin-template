@@ -7,7 +7,7 @@ import io.dodn.springboot.core.domain.worry.WorryMessage
 data class CreateConvoWorryRequest(
     val emotion: String,
     val category: String,
-    val steps: List<StepRequest>,
+    val messages: List<MessageRequest>,
 ) {
     fun toWorry(userId: Long): Worry {
         return Worry(
@@ -17,12 +17,12 @@ data class CreateConvoWorryRequest(
             emotion = emotion,
             category = category,
             content = "",
-            lastStepOrder = steps.size - 1,
-            steps = steps.mapIndexed { index, step ->
+            lastMessageOrder = messages.size - 1,
+            messages = messages.mapIndexed { index, message ->
                 WorryMessage(
                     id = index.toLong(),
-                    role = step.role,
-                    content = step.content,
+                    role = message.role,
+                    content = message.content,
                     messageOrder = index,
                 )
             },

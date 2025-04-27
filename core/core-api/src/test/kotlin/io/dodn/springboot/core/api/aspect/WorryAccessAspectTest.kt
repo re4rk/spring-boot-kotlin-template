@@ -70,8 +70,8 @@ class WorryAccessAspectTest {
             emotion = "슬픔",
             category = "일상",
             content = "Test Content",
-            lastStepOrder = 0,
-            steps = emptyList(),
+            lastMessageOrder = 0,
+            messages = emptyList(),
             options = emptyList(),
         )
     }

@@ -9,7 +9,7 @@ data class WorryResponse(
     val emotion: String,
     val category: String,
     val content: String?,
-    val steps: List<WorryStepResponse>?,
+    val messages: List<WorryMessageResponse>?,
     val options: List<WorryOptionResponse>?,
 ) {
     companion object {
@@ -20,7 +20,7 @@ data class WorryResponse(
                 emotion = worry.emotion,
                 category = worry.category,
                 content = worry.content,
-                steps = worry.steps.takeIf { it.isNotEmpty() }?.map { WorryStepResponse.from(it) },
+                messages = worry.messages.takeIf { it.isNotEmpty() }?.map { WorryMessageResponse.from(it) },
                 options = worry.options.takeIf { it.isNotEmpty() }?.map { WorryOptionResponse.from(it) },
             )
         }

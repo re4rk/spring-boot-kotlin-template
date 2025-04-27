@@ -14,8 +14,8 @@ class WorryService(
     fun createWorry(worry: Worry): Worry {
         val savedWorry = worryStorage.saveWorry(worry)
 
-        if (savedWorry.steps.isNotEmpty()) {
-            worryStorage.saveWorrySteps(savedWorry.id, savedWorry.steps)
+        if (savedWorry.messages.isNotEmpty()) {
+            worryStorage.saveWorryMessages(savedWorry.id, savedWorry.messages)
         }
 
         if (savedWorry.options.isNotEmpty()) {
@@ -26,11 +26,11 @@ class WorryService(
     }
 
     @Transactional
-    fun addWorryMessage(worryId: Long, role: StepRole, content: String): WorryMessage {
+    fun addWorryMessage(worryId: Long, role: MeesageRole, content: String): WorryMessage {
         val worry = worryStorage.getWorry(worryId)
         return worryStorage.addWorryMessage(
             worryId,
-            WorryMessage(role = role, content = content, messageOrder = worry.lastStepOrder + 1),
+            WorryMessage(role = role, content = content, messageOrder = worry.lastMessageOrder + 1),
         )
     }
 
@@ -47,7 +47,7 @@ class WorryService(
 
         return worryStorage.addWorryMessage(
             worryId = worryId,
-            WorryMessage(role = StepRole.AI, content = counselingResponse.feedback, messageOrder = worry.lastStepOrder + 1),
+            WorryMessage(role = MeesageRole.AI, content = counselingResponse.feedback, messageOrder = worry.lastMessageOrder + 1),
         )
     }
 

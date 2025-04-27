@@ -1,6 +1,6 @@
 package io.dodn.springboot.storage.db.core.worry
 
-enum class StepRole {
+enum class MessageRole {
     USER,
     AI,
 }

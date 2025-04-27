@@ -21,8 +21,8 @@ class CounselorMapper {
 
     fun toSummaryRequest(worry: Worry): SummaryRequest {
         val conversationText = when (worry.mode) {
-            WorryMode.LETTER -> buildConversationText(worry.steps)
-            WorryMode.CONVO -> buildConversationText(worry.steps)
+            WorryMode.LETTER -> buildConversationText(worry.messages)
+            WorryMode.CONVO -> buildConversationText(worry.messages)
         }
 
         return SummaryRequest(fullConversation = conversationText)
@@ -30,14 +30,14 @@ class CounselorMapper {
 
     private fun toCounselingRequestForConvo(worry: Worry): CounselingRequest {
         // Get the last user message as the current input
-        val lastUserStep = worry.steps.lastOrNull { it.role.name.equals("USER", ignoreCase = true) }
+        val lastUserStep = worry.messages.lastOrNull { it.role.name.equals("USER", ignoreCase = true) }
         val userInput = lastUserStep?.content ?: ""
 
         // Convert all steps to conversation history
-        val conversationHistory = worry.steps.dropLast(1).map { step ->
+        val conversationHistory = worry.messages.dropLast(1).map { message ->
             ConversationStep(
-                role = step.role.name.lowercase(),
-                content = step.content,
+                role = message.role.name.lowercase(),
+                content = message.content,
             )
         }
 
