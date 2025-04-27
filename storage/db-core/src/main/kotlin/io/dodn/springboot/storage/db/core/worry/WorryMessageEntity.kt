@@ -18,7 +18,7 @@ class WorryMessageEntity(
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    val role: MessageRole,
+    val role: DbMessageRole,
 
     @Column(nullable = false, columnDefinition = "TEXT")
     val content: String,

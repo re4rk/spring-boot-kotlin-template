@@ -10,8 +10,8 @@ import io.dodn.springboot.storage.db.core.worry.WorryMessageEntity
 import io.dodn.springboot.storage.db.core.worry.WorryMessageRepository
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import io.dodn.springboot.storage.db.core.worry.MessageRole as DbMessageRole
-import io.dodn.springboot.storage.db.core.worry.WorryMode as DbWorryMode
+import io.dodn.springboot.storage.db.core.worry.DbMessageRole
+import io.dodn.springboot.storage.db.core.worry.DbWorryMode
 
 @Component
 class WorryStorage(

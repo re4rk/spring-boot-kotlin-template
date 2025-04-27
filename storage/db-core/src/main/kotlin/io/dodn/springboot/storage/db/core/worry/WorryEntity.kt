@@ -13,7 +13,7 @@ class WorryEntity(
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    val mode: WorryMode,
+    val mode: DbWorryMode,
 
     @Column(nullable = false)
     val emotion: String,

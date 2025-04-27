@@ -1,6 +1,6 @@
 package io.dodn.springboot.storage.db.core.worry
 
-enum class WorryMode {
-    LETTER,
-    CONVO,
+enum class DbMessageRole {
+    USER,
+    AI,
 }
