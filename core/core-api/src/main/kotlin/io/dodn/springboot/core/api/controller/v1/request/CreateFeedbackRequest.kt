@@ -8,8 +8,8 @@ data class CreateFeedbackRequest(
     val tags: List<String>? = null,
 )
 
-data class CreateConversationRequest(
-    val conversation: String,
+data class AddWorryMessageRequest(
+    val message: String,
 )
 
 data class CreateFeedbackResponse(

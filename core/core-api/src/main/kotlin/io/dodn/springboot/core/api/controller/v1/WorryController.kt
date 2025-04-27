@@ -1,7 +1,7 @@
 package io.dodn.springboot.core.api.controller.v1
 
 import io.dodn.springboot.core.api.aspect.CheckWorryAccess
-import io.dodn.springboot.core.api.controller.v1.request.CreateConversationRequest
+import io.dodn.springboot.core.api.controller.v1.request.AddWorryMessageRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackResponse
@@ -56,19 +56,14 @@ class WorryController(
         return ApiResponse.success(WorryResponse.from(worry))
     }
 
-    @PostMapping("/{worryId}/conversation")
+    @PostMapping("/{worryId}/message")
     @CheckWorryAccess(permission = "EDIT")
-    fun createConversation(
+    fun addWorryMessage(
         @PathVariable worryId: Long,
-        @RequestBody request: CreateConversationRequest,
+        @RequestBody request: AddWorryMessageRequest,
     ): ApiResponse<WorryResponse> {
-        worryService.addWorryStep(
-            worryId = worryId,
-            role = StepRole.USER,
-            content = request.conversation,
-        )
-        val worry = worryService.getWorry(worryId)
-        return ApiResponse.success(WorryResponse.from(worry))
+        worryService.addWorryMessage(worryId = worryId, role = StepRole.USER, content = request.message)
+        return ApiResponse.success(WorryResponse.from(worryService.getWorry(worryId)))
     }
 
     @PostMapping("/{worryId}/feedback")
@@ -79,7 +74,7 @@ class WorryController(
     ): ApiResponse<CreateFeedbackResponse> {
         val feedback = if (request != null) {
             // Manual feedback provided
-            worryService.addWorryStep(worryId = worryId, role = StepRole.AI, content = request.feedback)
+            worryService.addWorryMessage(worryId = worryId, role = StepRole.AI, content = request.feedback)
         } else {
             // Auto-generate feedback using AI
             worryService.requestFeedback(worryId)
@@ -109,7 +104,7 @@ class WorryController(
                 try {
                     emitter.send(SseEmitter.event().name("processing").data("Analyzing emotions and tone..."))
 
-                    val worryStep = worryService.addWorryStep(worryId, StepRole.AI, fullResponse)
+                    val worryStep = worryService.addWorryMessage(worryId, StepRole.AI, fullResponse)
 
                     emitter.send(SseEmitter.event().name("complete").data(worryStep))
 
@@ -131,4 +126,3 @@ class WorryController(
         return ApiResponse.success(SummaryResponse(summary))
     }
 }
-

@@ -26,9 +26,9 @@ class WorryService(
     }
 
     @Transactional
-    fun addWorryStep(worryId: Long, role: StepRole, content: String): WorryStep {
+    fun addWorryMessage(worryId: Long, role: StepRole, content: String): WorryStep {
         val worry = worryStorage.getWorry(worryId)
-        return worryStorage.addWorryStep(
+        return worryStorage.addWorryMessage(
             worryId,
             WorryStep(role = role, content = content, stepOrder = worry.lastStepOrder + 1),
         )
@@ -45,7 +45,7 @@ class WorryService(
 
         val counselingResponse = counselorClient.getCounseling(counselorMapper.toRequest(worry))
 
-        return worryStorage.addWorryStep(
+        return worryStorage.addWorryMessage(
             worryId = worryId,
             WorryStep(role = StepRole.AI, content = counselingResponse.feedback, stepOrder = worry.lastStepOrder + 1),
         )

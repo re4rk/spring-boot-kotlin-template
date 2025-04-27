@@ -2,7 +2,7 @@ package io.dodn.springboot.core.api.controller.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.dodn.springboot.CoreApiApplication
-import io.dodn.springboot.core.api.controller.v1.request.CreateConversationRequest
+import io.dodn.springboot.core.api.controller.v1.request.AddWorryMessageRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequest
@@ -193,13 +193,13 @@ class WorryControllerIntegrationTest {
         val worryId = createTestConvoWorry()
 
         // 대화 요청 생성
-        val conversationRequest = CreateConversationRequest(
-            conversation = "I've been studying for hours but still feel unprepared",
+        val conversationRequest = AddWorryMessageRequest(
+            message = "I've been studying for hours but still feel unprepared",
         )
 
         // when & then
         mockMvc.perform(
-            post("/api/v1/worries/$worryId/conversation")
+            post("/api/v1/worries/$worryId/message")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(conversationRequest)),

@@ -73,7 +73,7 @@ class WorryStorage(
     }
 
     @Transactional
-    fun addWorryStep(worryId: Long, step: WorryStep): WorryStep {
+    fun addWorryMessage(worryId: Long, step: WorryStep): WorryStep {
         val worryEntity = worryRepository.findById(worryId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
 
