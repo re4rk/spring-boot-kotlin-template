@@ -40,10 +40,9 @@ class WorryService(
     @Transactional
     fun addWorryMessage(worryId: Long, role: MessageRole, content: String): WorryMessage {
         val worry = worryStorage.getWorry(worryId)
-        return worryStorage.addWorryMessage(
-            worryId,
-            WorryMessage(role = role, content = content, messageOrder = worry.lastMessageOrder + 1),
-        )
+        val message = WorryMessage(role = role, content = content, messageOrder = worry.lastMessageOrder + 1)
+
+        return worryStorage.addWorryMessage(worryId = worryId, message = message)
     }
 
     @Transactional(readOnly = true)
@@ -89,32 +88,35 @@ class WorryService(
         worryId: Long,
         summaryRequest: SummaryRequest,
     ): CompletableFuture<Void> {
-        return CompletableFuture.supplyAsync({
-            logger.info("Starting async summary generation for worry $worryId")
+        return CompletableFuture.supplyAsync(
+            {
+                logger.info("Starting async summary generation for worry $worryId")
 
-            // Request the summary from the counselor client
-            val summaryResponse = try {
-                counselorClient.summarizeConversation(summaryRequest)
-            } catch (e: Exception) {
-                logger.error("Error during summary generation for worry $worryId", e)
-                throw e
-            }
-
-            // save the summary to the database
-            val transactionTemplate = TransactionTemplate(transactionManager)
-
-            transactionTemplate.execute { status ->
-                try {
-                    worryStorage.saveWorrySummary(worryId, summaryResponse.summary)
-                    logger.info("Successfully generated and saved summary for worry $worryId")
+                // Request the summary from the counselor client
+                val summaryResponse = try {
+                    counselorClient.summarizeConversation(summaryRequest)
                 } catch (e: Exception) {
-                    logger.error("Failed to save summary for worry $worryId", e)
-                    status.setRollbackOnly()
+                    logger.error("Error during summary generation for worry $worryId", e)
                     throw e
                 }
-            }
 
-            null
-        }, executor)
+                // save the summary to the database
+                val transactionTemplate = TransactionTemplate(transactionManager)
+
+                transactionTemplate.execute { status ->
+                    try {
+                        worryStorage.saveWorrySummary(worryId, summaryResponse.summary)
+                        logger.info("Successfully generated and saved summary for worry $worryId")
+                    } catch (e: Exception) {
+                        logger.error("Failed to save summary for worry $worryId", e)
+                        status.setRollbackOnly()
+                        throw e
+                    }
+                }
+
+                null
+            },
+            executor,
+        )
     }
 }
