@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.logging.LogLevel
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -28,5 +29,12 @@ class ApiControllerAdvice {
     fun handleException(e: Exception): ResponseEntity<ApiResponse<Any>> {
         log.error("Exception : {}", e.message, e)
         return ResponseEntity(ApiResponse.error(ErrorType.DEFAULT_ERROR), ErrorType.DEFAULT_ERROR.status)
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleValidationException(e: MethodArgumentNotValidException): ResponseEntity<ApiResponse<Any>> {
+        val errorMessage = e.bindingResult.fieldErrors.joinToString(", ") { "${it.field}: ${it.defaultMessage}" }
+        log.error("Validation error: {}", errorMessage, e)
+        return ResponseEntity(ApiResponse.error(ErrorType.VALIDATION_ERROR, errorMessage), ErrorType.VALIDATION_ERROR.status)
     }
 }

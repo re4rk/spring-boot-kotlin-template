@@ -2,6 +2,7 @@ package io.dodn.springboot.core.api.controller.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.dodn.springboot.CoreApiApplication
+import io.dodn.springboot.core.api.controller.v1.request.CreateConversationRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequest
@@ -128,7 +129,7 @@ class WorryControllerIntegrationTest {
     fun `should get worry by id`() {
         // given
         // 먼저 고민 생성
-        val worryId = createTestWorry()
+        val worryId = createTestLetterWorry()
 
         // when & then
         mockMvc.perform(
@@ -147,7 +148,7 @@ class WorryControllerIntegrationTest {
     @Transactional
     fun `should create feedback for worry`() {
         // given
-        val worryId = createTestWorry()
+        val worryId = createTestLetterWorry()
         val feedbackRequest = CreateFeedbackRequest(
             feedback = "It's normal to feel anxious before exams. Try to break down your study plan into manageable tasks.",
             tone = "Supportive",
@@ -172,7 +173,7 @@ class WorryControllerIntegrationTest {
     @Transactional
     fun `should generate summary for worry`() {
         // given
-        val worryId = createTestWorry()
+        val worryId = createTestLetterWorry()
 
         // when & then
         mockMvc.perform(
@@ -186,34 +187,28 @@ class WorryControllerIntegrationTest {
 
     @Test
     @Transactional
-    fun `should extract emotion tags from worry`() {
+    fun `should add conversation to existing worry`() {
         // given
-        val worryId = createTestWorry()
+        // 먼저 고민 생성
+        val worryId = createTestConvoWorry()
+
+        // 대화 요청 생성
+        val conversationRequest = CreateConversationRequest(
+            conversation = "I've been studying for hours but still feel unprepared",
+        )
 
         // when & then
         mockMvc.perform(
-            get("/api/v1/worries/$worryId/emotion-tags")
-                .header("Authorization", "Bearer $accessToken"),
+            post("/api/v1/worries/$worryId/conversation")
+                .header("Authorization", "Bearer $accessToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(conversationRequest)),
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.result").value("SUCCESS"))
-            .andExpect(jsonPath("$.data.tags").isArray())
-    }
-
-    @Test
-    @Transactional
-    fun `should save worry`() {
-        // given
-        val worryId = createTestWorry()
-
-        // when & then
-        mockMvc.perform(
-            post("/api/v1/worries/$worryId/save")
-                .header("Authorization", "Bearer $accessToken"),
-        )
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.result").value("SUCCESS"))
-            .andExpect(jsonPath("$.data.status").value("saved"))
+            .andExpect(jsonPath("$.data.worryId").value(worryId))
+            .andExpect(jsonPath("$.data.steps[${0}].role").value("user"))
+            .andExpect(jsonPath("$.data.steps[${0}].content").value("I've been studying for hours but still feel unprepared"))
     }
 
     // Helper methods
@@ -251,7 +246,7 @@ class WorryControllerIntegrationTest {
         accessToken = data["accessToken"] as String
     }
 
-    private fun createTestWorry(): Long {
+    private fun createTestLetterWorry(): Long {
         val letterWorryRequest = CreateLetterWorryRequest(
             emotion = "Anxiety",
             content = "I'm worried about my upcoming exam",
@@ -267,6 +262,31 @@ class WorryControllerIntegrationTest {
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(letterWorryRequest)),
+        )
+            .andReturn()
+
+        val responseJson = result.response.contentAsString
+        val responseMap = objectMapper.readValue(responseJson, Map::class.java)
+        val data = responseMap["data"] as Map<*, *>
+        return (data["worryId"] as Int).toLong()
+    }
+
+    private fun createTestConvoWorry(): Long {
+        val convoWorryRequest = CreateConvoWorryRequest(
+            emotion = "Confusion",
+            category = "Career",
+            steps = listOf(
+                StepRequest(StepRole.USER, "I'm not sure what career path to choose"),
+                StepRequest(StepRole.AI, "That's a common concern. What are your interests?"),
+                StepRequest(StepRole.USER, "I like technology and helping people"),
+            ),
+        )
+
+        val result = mockMvc.perform(
+            post("/api/v1/worries/convo")
+                .header("Authorization", "Bearer $accessToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(convoWorryRequest)),
         )
             .andReturn()
 

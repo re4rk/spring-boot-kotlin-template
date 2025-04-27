@@ -60,14 +60,14 @@ class WorryController(
     @CheckWorryAccess(permission = "EDIT")
     fun createConversation(
         @PathVariable worryId: Long,
-        request: CreateConversationRequest,
+        @RequestBody request: CreateConversationRequest,
     ): ApiResponse<WorryResponse> {
-        val worry = worryService.getWorry(worryId)
         worryService.addWorryStep(
             worryId = worryId,
             role = StepRole.USER,
             content = request.conversation,
         )
+        val worry = worryService.getWorry(worryId)
         return ApiResponse.success(WorryResponse.from(worry))
     }
 

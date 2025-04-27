@@ -15,7 +15,7 @@ data class WorryResponse(
     companion object {
         fun from(worry: Worry): WorryResponse {
             return WorryResponse(
-                worryId = worry.id!!,
+                worryId = worry.id,
                 mode = worry.mode,
                 emotion = worry.emotion,
                 category = worry.category,
