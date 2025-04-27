@@ -49,7 +49,7 @@ class CounselorMapper {
         )
     }
 
-    private fun buildConversationText(steps: List<WorryStep>): String {
+    private fun buildConversationText(steps: List<WorryMessage>): String {
         return steps.joinToString("\n") { step ->
             val rolePrefix = if (step.role.name.equals("USER", ignoreCase = true)) "사용자" else "AI"
             "$rolePrefix: ${step.content}"

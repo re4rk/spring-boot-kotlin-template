@@ -26,11 +26,11 @@ class WorryService(
     }
 
     @Transactional
-    fun addWorryMessage(worryId: Long, role: StepRole, content: String): WorryStep {
+    fun addWorryMessage(worryId: Long, role: StepRole, content: String): WorryMessage {
         val worry = worryStorage.getWorry(worryId)
         return worryStorage.addWorryMessage(
             worryId,
-            WorryStep(role = role, content = content, stepOrder = worry.lastStepOrder + 1),
+            WorryMessage(role = role, content = content, messageOrder = worry.lastStepOrder + 1),
         )
     }
 
@@ -40,14 +40,14 @@ class WorryService(
     }
 
     @Transactional
-    fun requestFeedback(worryId: Long): WorryStep {
+    fun requestFeedback(worryId: Long): WorryMessage {
         val worry = worryStorage.getWorry(worryId)
 
         val counselingResponse = counselorClient.getCounseling(counselorMapper.toRequest(worry))
 
         return worryStorage.addWorryMessage(
             worryId = worryId,
-            WorryStep(role = StepRole.AI, content = counselingResponse.feedback, stepOrder = worry.lastStepOrder + 1),
+            WorryMessage(role = StepRole.AI, content = counselingResponse.feedback, messageOrder = worry.lastStepOrder + 1),
         )
     }
 

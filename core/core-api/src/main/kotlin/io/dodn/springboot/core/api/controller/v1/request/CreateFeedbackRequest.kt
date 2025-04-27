@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.api.controller.v1.request
 
-import io.dodn.springboot.core.domain.worry.WorryStep
+import io.dodn.springboot.core.domain.worry.WorryMessage
 
 data class CreateFeedbackRequest(
     val feedback: String,
@@ -17,7 +17,7 @@ data class CreateFeedbackResponse(
     val feedback: String,
 ) {
     companion object {
-        fun from(request: WorryStep): CreateFeedbackResponse {
+        fun from(request: WorryMessage): CreateFeedbackResponse {
             return CreateFeedbackResponse(
                 feedbackId = request.id,
                 feedback = request.content,

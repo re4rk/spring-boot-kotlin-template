@@ -11,7 +11,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 
 @Entity
-class WorryStepEntity(
+class WorryMessageEntity(
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "worry_id", nullable = false)
     val worry: WorryEntity? = null,
@@ -24,5 +24,5 @@ class WorryStepEntity(
     val content: String,
 
     @Column(nullable = false)
-    val stepOrder: Int,
+    val messageOrder: Int,
 ) : BaseEntity()

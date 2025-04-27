@@ -2,7 +2,7 @@ package io.dodn.springboot.core.api.controller.v1.request
 
 import io.dodn.springboot.core.domain.worry.Worry
 import io.dodn.springboot.core.domain.worry.WorryMode
-import io.dodn.springboot.core.domain.worry.WorryStep
+import io.dodn.springboot.core.domain.worry.WorryMessage
 
 data class CreateConvoWorryRequest(
     val emotion: String,
@@ -19,11 +19,11 @@ data class CreateConvoWorryRequest(
             content = "",
             lastStepOrder = steps.size - 1,
             steps = steps.mapIndexed { index, step ->
-                WorryStep(
+                WorryMessage(
                     id = index.toLong(),
                     role = step.role,
                     content = step.content,
-                    stepOrder = index,
+                    messageOrder = index,
                 )
             },
         )

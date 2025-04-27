@@ -1,8 +1,8 @@
 package io.dodn.springboot.core.domain.worry
 
-data class WorryStep(
+data class WorryMessage(
     val id: Long = 0,
     val role: StepRole,
     val content: String,
-    val stepOrder: Int,
+    val messageOrder: Int,
 )

@@ -6,7 +6,7 @@ import io.dodn.springboot.storage.db.core.worry.WorryEntity
 import io.dodn.springboot.storage.db.core.worry.WorryOptionEntity
 import io.dodn.springboot.storage.db.core.worry.WorryOptionRepository
 import io.dodn.springboot.storage.db.core.worry.WorryRepository
-import io.dodn.springboot.storage.db.core.worry.WorryStepEntity
+import io.dodn.springboot.storage.db.core.worry.WorryMessageEntity
 import io.dodn.springboot.storage.db.core.worry.WorryStepRepository
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -16,7 +16,7 @@ import io.dodn.springboot.storage.db.core.worry.WorryMode as DbWorryMode
 @Component
 class WorryStorage(
     private val worryRepository: WorryRepository,
-    private val worryStepRepository: WorryStepRepository,
+    private val worryMessageRepository: WorryStepRepository,
     private val worryOptionRepository: WorryOptionRepository,
 ) {
 
@@ -40,57 +40,57 @@ class WorryStorage(
         val worryEntity = worryRepository.findById(worryId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
 
-        val steps = worryStepRepository.findByWorryIdOrderByStepOrder(worryId)
+        val steps = worryMessageRepository.findByWorryIdOrderByStepOrder(worryId)
         val options = worryOptionRepository.findByWorryId(worryId)
 
         return mapToWorry(worryEntity, steps, options)
     }
 
     @Transactional
-    fun saveWorrySteps(worryId: Long, steps: List<WorryStep>): List<WorryStep> {
+    fun saveWorrySteps(worryId: Long, steps: List<WorryMessage>): List<WorryMessage> {
         val worryEntity = worryRepository.findById(worryId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
 
         val stepEntities = steps.map { step ->
-            worryStepRepository.save(
-                WorryStepEntity(
+            worryMessageRepository.save(
+                WorryMessageEntity(
                     worry = worryEntity,
                     role = DbStepRole.valueOf(step.role.name),
                     content = step.content,
-                    stepOrder = step.stepOrder,
+                    messageOrder = step.messageOrder,
                 ),
             )
         }
 
         return stepEntities.map { entity ->
-            WorryStep(
+            WorryMessage(
                 id = entity.id,
                 role = StepRole.valueOf(entity.role.name),
                 content = entity.content,
-                stepOrder = entity.stepOrder,
+                messageOrder = entity.messageOrder,
             )
         }
     }
 
     @Transactional
-    fun addWorryMessage(worryId: Long, step: WorryStep): WorryStep {
+    fun addWorryMessage(worryId: Long, step: WorryMessage): WorryMessage {
         val worryEntity = worryRepository.findById(worryId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
 
-        val stepEntity = worryStepRepository.save(
-            WorryStepEntity(
+        val stepEntity = worryMessageRepository.save(
+            WorryMessageEntity(
                 worry = worryEntity,
                 role = DbStepRole.valueOf(step.role.name),
                 content = step.content,
-                stepOrder = step.stepOrder,
+                messageOrder = step.messageOrder,
             ),
         )
 
-        return WorryStep(
+        return WorryMessage(
             id = stepEntity.id,
             role = StepRole.valueOf(stepEntity.role.name),
             content = stepEntity.content,
-            stepOrder = stepEntity.stepOrder,
+            messageOrder = stepEntity.messageOrder,
         )
     }
 
@@ -120,15 +120,15 @@ class WorryStorage(
 
     private fun mapToWorry(
         worryEntity: WorryEntity,
-        stepEntities: List<WorryStepEntity>,
+        stepEntities: List<WorryMessageEntity>,
         optionEntities: List<WorryOptionEntity>,
     ): Worry {
         val steps = stepEntities.map { step ->
-            WorryStep(
+            WorryMessage(
                 id = step.id,
                 role = StepRole.valueOf(step.role.name),
                 content = step.content,
-                stepOrder = step.stepOrder,
+                messageOrder = step.messageOrder,
             )
         }
 
@@ -147,7 +147,7 @@ class WorryStorage(
             emotion = worryEntity.emotion,
             category = worryEntity.category,
             content = worryEntity.content,
-            lastStepOrder = steps.maxOfOrNull { it.stepOrder } ?: 0,
+            lastStepOrder = steps.maxOfOrNull { it.messageOrder } ?: 0,
             steps = steps,
             options = options,
         )

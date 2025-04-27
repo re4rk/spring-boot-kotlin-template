@@ -4,7 +4,7 @@ import io.dodn.springboot.core.domain.worry.StepRole
 import io.dodn.springboot.core.domain.worry.Worry
 import io.dodn.springboot.core.domain.worry.WorryMode
 import io.dodn.springboot.core.domain.worry.WorryOption
-import io.dodn.springboot.core.domain.worry.WorryStep
+import io.dodn.springboot.core.domain.worry.WorryMessage
 
 data class CreateLetterWorryRequest(
     val emotion: String,
@@ -22,11 +22,11 @@ data class CreateLetterWorryRequest(
             content = content,
             lastStepOrder = 0,
             steps = listOf(
-                WorryStep(
+                WorryMessage(
                     id = 0L,
                     role = StepRole.USER,
                     content = content,
-                    stepOrder = 0,
+                    messageOrder = 0,
                 ),
             ),
             options = options?.mapIndexed { index, option ->
