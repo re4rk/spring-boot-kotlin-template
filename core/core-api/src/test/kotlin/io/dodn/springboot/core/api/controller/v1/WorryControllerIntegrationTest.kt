@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.dodn.springboot.CoreApiApplication
 import io.dodn.springboot.core.api.controller.v1.request.AddWorryMessageRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequest
-import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.MessageRequest
 import io.dodn.springboot.core.api.controller.v1.request.OptionReqeust
@@ -142,31 +141,6 @@ class WorryControllerIntegrationTest {
             .andExpect(jsonPath("$.data.worryId").value(worryId))
             .andExpect(jsonPath("$.data.emotion").value("Anxiety"))
             .andExpect(jsonPath("$.data.content").value("I'm worried about my upcoming exam"))
-    }
-
-    @Test
-    @Transactional
-    fun `should create feedback for worry`() {
-        // given
-        val worryId = createTestLetterWorry()
-        val feedbackRequest = CreateFeedbackRequest(
-            feedback = "It's normal to feel anxious before exams. Try to break down your study plan into manageable tasks.",
-            tone = "Supportive",
-            tags = listOf("anxiety", "academic", "stress-management"),
-        )
-
-        // when & then
-        mockMvc.perform(
-            post("/api/v1/worries/$worryId/feedback")
-                .header("Authorization", "Bearer $accessToken")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(feedbackRequest)),
-        )
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.result").value("SUCCESS"))
-            .andExpect(jsonPath("$.data.feedback").exists())
-//            .andExpect(jsonPath("$.data.tone").value("Supportive"))
-//            .andExpect(jsonPath("$.data.tags").isArray())
     }
 
     @Test

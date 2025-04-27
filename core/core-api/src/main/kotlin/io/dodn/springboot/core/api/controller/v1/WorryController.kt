@@ -3,7 +3,6 @@ package io.dodn.springboot.core.api.controller.v1
 import io.dodn.springboot.core.api.aspect.CheckWorryAccess
 import io.dodn.springboot.core.api.controller.v1.request.AddWorryMessageRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateConvoWorryRequest
-import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackResponse
 import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.SummaryResponse
@@ -68,24 +67,17 @@ class WorryController(
 
     @PostMapping("/{worryId}/feedback")
     @CheckWorryAccess(permission = "EDIT")
-    fun createFeedback(
+    fun requestFeedback(
         @PathVariable worryId: Long,
-        @RequestBody request: CreateFeedbackRequest?,
     ): ApiResponse<CreateFeedbackResponse> {
-        val feedback = if (request != null) {
-            // Manual feedback provided
-            worryService.addWorryMessage(worryId = worryId, role = MessageRole.AI, content = request.feedback)
-        } else {
-            // Auto-generate feedback using AI
-            worryService.requestFeedback(worryId)
-        }
+        val feedback = worryService.requestFeedback(worryId)
 
         return ApiResponse.success(CreateFeedbackResponse.from(feedback))
     }
 
     @PostMapping("/{worryId}/streaming-feedback")
     @CheckWorryAccess(permission = "EDIT")
-    fun createStreamingFeedback(@PathVariable worryId: Long): SseEmitter {
+    fun requestStreamingFeedback(@PathVariable worryId: Long): SseEmitter {
         // SseEmitter 인스턴스 생성 (타임아웃 5분)
         val emitter = SseEmitter(300000L)
 
