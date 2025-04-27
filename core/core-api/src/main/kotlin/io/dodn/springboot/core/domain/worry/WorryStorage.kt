@@ -118,6 +118,16 @@ class WorryStorage(
         }
     }
 
+    @Transactional
+    fun saveWorrySummary(worryId: Long, summary: String): Worry {
+        val worryEntity = worryRepository.findById(worryId)
+            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
+
+        worryEntity.content = summary
+
+        return mapToWorry(worryEntity, emptyList(), emptyList())
+    }
+
     private fun mapToWorry(
         worryEntity: WorryEntity,
         messageEntities: List<WorryMessageEntity>,

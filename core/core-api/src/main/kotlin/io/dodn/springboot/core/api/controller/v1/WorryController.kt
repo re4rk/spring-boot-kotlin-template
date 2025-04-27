@@ -113,8 +113,8 @@ class WorryController(
 
     @GetMapping("/{worryId}/summary")
     @CheckWorryAccess(permission = "VIEW")
-    fun getWorrySummary(@PathVariable worryId: Long): ApiResponse<SummaryResponse> {
-        val summary = worryService.generateSummary(worryId)
-        return ApiResponse.success(SummaryResponse(summary))
+    fun requestWorrySummary(@PathVariable worryId: Long): ApiResponse<SummaryResponse> {
+        worryService.generateSummary(worryId)
+        return ApiResponse.success(SummaryResponse("OK"))
     }
 }

@@ -1,15 +1,27 @@
 package io.dodn.springboot.core.domain.worry
 
 import io.dodn.springboot.core.domain.worry.counselor.CounselorClient
+import io.dodn.springboot.core.domain.worry.counselor.dto.SummaryRequest
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
 
 @Service
 class WorryService(
     private val worryStorage: WorryStorage,
     private val counselorClient: CounselorClient,
     private val counselorMapper: CounselorMapper,
+    @Autowired private val transactionManager: PlatformTransactionManager,
+    @Qualifier("applicationTaskExecutor") private val executor: Executor,
 ) {
+    private val logger = LoggerFactory.getLogger(WorryService::class.java)
+
     @Transactional
     fun createWorry(worry: Worry): Worry {
         val savedWorry = worryStorage.saveWorry(worry)
@@ -47,7 +59,11 @@ class WorryService(
 
         return worryStorage.addWorryMessage(
             worryId = worryId,
-            WorryMessage(role = MessageRole.AI, content = counselingResponse.feedback, messageOrder = worry.lastMessageOrder + 1),
+            WorryMessage(
+                role = MessageRole.AI,
+                content = counselingResponse.feedback,
+                messageOrder = worry.lastMessageOrder + 1,
+            ),
         )
     }
 
@@ -60,10 +76,45 @@ class WorryService(
     }
 
     @Transactional(readOnly = true)
-    fun generateSummary(worryId: Long): String {
+    fun generateSummary(worryId: Long) {
         val worry = worryStorage.getWorry(worryId)
         val summaryRequest = counselorMapper.toSummaryRequest(worry)
-        val summaryResponse = counselorClient.summarizeConversation(summaryRequest)
-        return summaryResponse.summary
+
+        generateSummaryInner(worryId, summaryRequest)
+
+        return
+    }
+
+    private fun generateSummaryInner(
+        worryId: Long,
+        summaryRequest: SummaryRequest,
+    ): CompletableFuture<Void> {
+        return CompletableFuture.supplyAsync({
+            logger.info("Starting async summary generation for worry $worryId")
+
+            // Request the summary from the counselor client
+            val summaryResponse = try {
+                counselorClient.summarizeConversation(summaryRequest)
+            } catch (e: Exception) {
+                logger.error("Error during summary generation for worry $worryId", e)
+                throw e
+            }
+
+            // save the summary to the database
+            val transactionTemplate = TransactionTemplate(transactionManager)
+
+            transactionTemplate.execute { status ->
+                try {
+                    worryStorage.saveWorrySummary(worryId, summaryResponse.summary)
+                    logger.info("Successfully generated and saved summary for worry $worryId")
+                } catch (e: Exception) {
+                    logger.error("Failed to save summary for worry $worryId", e)
+                    status.setRollbackOnly()
+                    throw e
+                }
+            }
+
+            null
+        }, executor)
     }
 }

@@ -22,7 +22,7 @@ class WorryEntity(
     val category: String,
 
     @Column(columnDefinition = "TEXT")
-    val content: String,
+    var content: String,
 
     @Column(nullable = false)
     var isShared: Boolean = false,
