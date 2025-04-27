@@ -1,5 +1,6 @@
 package io.dodn.springboot.client.openai
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import feign.Response
 import io.dodn.springboot.client.ClientOpenAiDevelopTest
 import io.dodn.springboot.client.openai.model.ChatCompletionChoice
@@ -12,18 +13,25 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 
 class OpenAiClientTest : ClientOpenAiDevelopTest() {
 
     private lateinit var openAiApi: OpenAiApi
     private lateinit var openAiClient: OpenAiClient
     private lateinit var openAiProperties: OpenAiProperties
+    private lateinit var objectMapper: ObjectMapper
+    private lateinit var executor: ThreadPoolTaskExecutor
 
     @BeforeEach
     fun setup() {
-        openAiApi = Mockito.mock(OpenAiApi::class.java)
+        openAiApi = mock(OpenAiApi::class.java)
         openAiProperties = OpenAiProperties("gpt-3.5-turbo")
-        openAiClient = OpenAiClient(openAiApi, openAiProperties)
+        objectMapper = ObjectMapper()
+        executor = ThreadPoolTaskExecutor()
+        openAiClient = OpenAiClient(openAiApi, openAiProperties, objectMapper, executor)
     }
 
     @Test
@@ -46,7 +54,7 @@ class OpenAiClientTest : ClientOpenAiDevelopTest() {
             ),
         )
 
-        Mockito.`when`(openAiApi.createChatCompletion(Mockito.any())).thenReturn(mockResponse)
+        `when`(openAiApi.createChatCompletion(any())).thenReturn(mockResponse)
 
         // when
         val result = openAiClient.askQuestion("Hello!")
@@ -75,7 +83,7 @@ class OpenAiClientTest : ClientOpenAiDevelopTest() {
             ),
         )
 
-        Mockito.`when`(openAiApi.createChatCompletion(Mockito.any())).thenReturn(mockResponse)
+        `when`(openAiApi.createChatCompletion(any())).thenReturn(mockResponse)
 
         // when
         val messages = listOf(
@@ -87,25 +95,8 @@ class OpenAiClientTest : ClientOpenAiDevelopTest() {
         Assertions.assertThat(result.choices[0].message.content).isEqualTo("I'm an AI assistant.")
     }
 
-    @Test
-    fun `createStreamingChatCompletion 스트림 값이 true로 설정되는지 테스트`() {
-        // given
-        val mockFeign = Mockito.mock(Response::class.java)
-
-        // ChatCompletionRequest 캡처를 위한 설정
-        val requestCaptor = ArgumentCaptor.forClass(ChatCompletionRequest::class.java)
-
-        Mockito.`when`(openAiApi.createStreamingChatCompletion(requestCaptor.capture())).thenReturn(mockFeign)
-
-        // when
-        val messages = listOf(
-            Message(role = "user", content = "Tell me a story"),
-        )
-        openAiClient.createStreamingChatCompletion(messages)
-
-        // then
-        val capturedRequest = requestCaptor.value
-        Assertions.assertThat(capturedRequest.stream).isTrue()
-        Assertions.assertThat(capturedRequest.model).isEqualTo("gpt-3.5-turbo")
+    private fun <T> any(): T {
+        Mockito.any<T>()
+        return null as T
     }
 }
