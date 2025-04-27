@@ -1,6 +1,6 @@
 package io.dodn.springboot.core.domain.worry
 
-enum class MeesageRole {
+enum class MessageRole {
     USER,
     AI,
 }

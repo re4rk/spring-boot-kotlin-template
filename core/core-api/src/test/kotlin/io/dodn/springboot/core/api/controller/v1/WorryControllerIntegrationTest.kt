@@ -8,7 +8,7 @@ import io.dodn.springboot.core.api.controller.v1.request.CreateFeedbackRequest
 import io.dodn.springboot.core.api.controller.v1.request.CreateLetterWorryRequest
 import io.dodn.springboot.core.api.controller.v1.request.OptionReqeust
 import io.dodn.springboot.core.api.controller.v1.request.MessageRequest
-import io.dodn.springboot.core.domain.worry.MeesageRole
+import io.dodn.springboot.core.domain.worry.MessageRole
 import io.dodn.springboot.storage.db.core.user.UserEntity
 import io.dodn.springboot.storage.db.core.user.UserRepository
 import io.dodn.springboot.storage.db.core.user.UserRole
@@ -106,9 +106,9 @@ class WorryControllerIntegrationTest {
             emotion = "Confusion",
             category = "Career",
             messages = listOf(
-                MessageRequest(MeesageRole.USER, "I'm not sure what career path to choose"),
-                MessageRequest(MeesageRole.AI, "That's a common concern. What are your interests?"),
-                MessageRequest(MeesageRole.USER, "I like technology and helping people"),
+                MessageRequest(MessageRole.USER, "I'm not sure what career path to choose"),
+                MessageRequest(MessageRole.AI, "That's a common concern. What are your interests?"),
+                MessageRequest(MessageRole.USER, "I like technology and helping people"),
             ),
         )
 
@@ -276,9 +276,9 @@ class WorryControllerIntegrationTest {
             emotion = "Confusion",
             category = "Career",
             messages = listOf(
-                MessageRequest(MeesageRole.USER, "I'm not sure what career path to choose"),
-                MessageRequest(MeesageRole.AI, "That's a common concern. What are your interests?"),
-                MessageRequest(MeesageRole.USER, "I like technology and helping people"),
+                MessageRequest(MessageRole.USER, "I'm not sure what career path to choose"),
+                MessageRequest(MessageRole.AI, "That's a common concern. What are your interests?"),
+                MessageRequest(MessageRole.USER, "I like technology and helping people"),
             ),
         )
 

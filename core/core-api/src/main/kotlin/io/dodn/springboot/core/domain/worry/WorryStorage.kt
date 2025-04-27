@@ -65,7 +65,7 @@ class WorryStorage(
         return messageEntities.map { entity ->
             WorryMessage(
                 id = entity.id,
-                role = MeesageRole.valueOf(entity.role.name),
+                role = MessageRole.valueOf(entity.role.name),
                 content = entity.content,
                 messageOrder = entity.messageOrder,
             )
@@ -88,7 +88,7 @@ class WorryStorage(
 
         return WorryMessage(
             id = messageEntity.id,
-            role = MeesageRole.valueOf(messageEntity.role.name),
+            role = MessageRole.valueOf(messageEntity.role.name),
             content = messageEntity.content,
             messageOrder = messageEntity.messageOrder,
         )
@@ -126,7 +126,7 @@ class WorryStorage(
         val messages = messageEntities.map { message ->
             WorryMessage(
                 id = message.id,
-                role = MeesageRole.valueOf(message.role.name),
+                role = MessageRole.valueOf(message.role.name),
                 content = message.content,
                 messageOrder = message.messageOrder,
             )

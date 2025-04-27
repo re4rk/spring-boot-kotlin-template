@@ -26,7 +26,7 @@ class WorryService(
     }
 
     @Transactional
-    fun addWorryMessage(worryId: Long, role: MeesageRole, content: String): WorryMessage {
+    fun addWorryMessage(worryId: Long, role: MessageRole, content: String): WorryMessage {
         val worry = worryStorage.getWorry(worryId)
         return worryStorage.addWorryMessage(
             worryId,
@@ -47,7 +47,7 @@ class WorryService(
 
         return worryStorage.addWorryMessage(
             worryId = worryId,
-            WorryMessage(role = MeesageRole.AI, content = counselingResponse.feedback, messageOrder = worry.lastMessageOrder + 1),
+            WorryMessage(role = MessageRole.AI, content = counselingResponse.feedback, messageOrder = worry.lastMessageOrder + 1),
         )
     }
 
