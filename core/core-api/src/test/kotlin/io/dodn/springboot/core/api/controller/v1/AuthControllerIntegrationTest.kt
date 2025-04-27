@@ -232,7 +232,7 @@ class AuthControllerIntegrationTest {
         createTestUser()
 
         val registerParams = UserRegisterParams(
-            email = testEmail, // Same email as existing user
+            email = testEmail,
             password = "AnotherPassword123",
             name = "Another User",
         )

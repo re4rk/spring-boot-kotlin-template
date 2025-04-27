@@ -2,9 +2,9 @@ package io.dodn.springboot.core.api.controller.v1.request
 
 import io.dodn.springboot.core.domain.worry.MessageRole
 import io.dodn.springboot.core.domain.worry.Worry
+import io.dodn.springboot.core.domain.worry.WorryMessage
 import io.dodn.springboot.core.domain.worry.WorryMode
 import io.dodn.springboot.core.domain.worry.WorryOption
-import io.dodn.springboot.core.domain.worry.WorryMessage
 
 data class CreateLetterWorryRequest(
     val emotion: String,

@@ -1,17 +1,14 @@
 package io.dodn.springboot.client.openai
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import feign.Response
 import io.dodn.springboot.client.ClientOpenAiDevelopTest
 import io.dodn.springboot.client.openai.model.ChatCompletionChoice
-import io.dodn.springboot.client.openai.model.ChatCompletionRequest
 import io.dodn.springboot.client.openai.model.ChatCompletionResponse
 import io.dodn.springboot.client.openai.model.Message
 import io.dodn.springboot.client.openai.model.Usage
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`

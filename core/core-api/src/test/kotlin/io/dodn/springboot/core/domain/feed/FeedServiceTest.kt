@@ -76,7 +76,7 @@ class FeedServiceTest : UnitTest() {
 
         val mockWorry = Worry(
             id = worryId,
-            userId = ownerId, // Different from userId
+            userId = ownerId,
             mode = WorryMode.LETTER,
             emotion = "Happy",
             category = "Work",
@@ -124,7 +124,7 @@ class FeedServiceTest : UnitTest() {
 
         val mockFeed = createMockFeed(
             feedId,
-            ownerId, // Different from userId
+            ownerId,
             createMockWorry(100L, ownerId),
         )
 
@@ -147,7 +147,7 @@ class FeedServiceTest : UnitTest() {
 
         val mockFeed = createMockFeed(
             feedId,
-            ownerId, // Different from userId
+            ownerId,
             createMockWorry(100L, ownerId),
         )
 

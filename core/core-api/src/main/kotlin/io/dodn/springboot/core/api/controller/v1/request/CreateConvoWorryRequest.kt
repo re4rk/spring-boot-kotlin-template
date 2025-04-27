@@ -1,8 +1,8 @@
 package io.dodn.springboot.core.api.controller.v1.request
 
 import io.dodn.springboot.core.domain.worry.Worry
-import io.dodn.springboot.core.domain.worry.WorryMode
 import io.dodn.springboot.core.domain.worry.WorryMessage
+import io.dodn.springboot.core.domain.worry.WorryMode
 
 data class CreateConvoWorryRequest(
     val emotion: String,
