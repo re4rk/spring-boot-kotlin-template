@@ -16,7 +16,7 @@ class OpenAiCounselorClient(
 ) : CounselorClient {
 
     override fun getCounseling(request: CounselingRequest): CounselingResponse {
-        val promptContent = if (request.conversationHistory.isEmpty()) {
+        val promptContent = if (request.messages.isEmpty()) {
             buildLetterPrompt(request)
         } else {
             buildConvoPrompt(request)
@@ -41,7 +41,7 @@ class OpenAiCounselorClient(
         onChunk: (String) -> Unit,
         onComplete: (String) -> Unit,
     ) {
-        val promptContent = if (request.conversationHistory.isEmpty()) {
+        val promptContent = if (request.messages.isEmpty()) {
             buildLetterPrompt(request)
         } else {
             buildConvoPrompt(request)
@@ -149,9 +149,9 @@ class OpenAiCounselorClient(
      * Build prompt for conversation-mode requests
      */
     private fun buildConvoPrompt(request: CounselingRequest): String {
-        val conversationText = request.conversationHistory.joinToString("\n") { step ->
-            val rolePrefix = if (step.role == "user") "사용자" else "AI"
-            "$rolePrefix: ${step.content}"
+        val conversationText = request.messages.joinToString("\n") { message ->
+            val rolePrefix = if (message.role == "user") "사용자" else "AI"
+            "$rolePrefix: ${message.content}"
         }
 
         return """

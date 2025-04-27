@@ -1,7 +1,7 @@
 package io.dodn.springboot.core.domain.worry
 
 import io.dodn.springboot.core.domain.worry.counselor.CounselorClient
-import io.dodn.springboot.core.domain.worry.counselor.dto.ConversationStep
+import io.dodn.springboot.core.domain.worry.counselor.dto.ConversationMessage
 import io.dodn.springboot.core.domain.worry.counselor.dto.CounselingRequest
 import io.dodn.springboot.core.domain.worry.counselor.dto.SummaryRequest
 import org.springframework.stereotype.Component
@@ -30,12 +30,12 @@ class CounselorMapper {
 
     private fun toCounselingRequestForConvo(worry: Worry): CounselingRequest {
         // Get the last user message as the current input
-        val lastUserStep = worry.messages.lastOrNull { it.role.name.equals("USER", ignoreCase = true) }
-        val userInput = lastUserStep?.content ?: ""
+        val worryMessage = worry.messages.lastOrNull { it.role.name.equals("USER", ignoreCase = true) }
+        val userInput = worryMessage?.content ?: ""
 
-        // Convert all steps to conversation history
-        val conversationHistory = worry.messages.dropLast(1).map { message ->
-            ConversationStep(
+        // Convert all messages to conversation history
+        val messages = worry.messages.dropLast(1).map { message ->
+            ConversationMessage(
                 role = message.role.name.lowercase(),
                 content = message.content,
             )
@@ -45,14 +45,14 @@ class CounselorMapper {
             userInput = userInput,
             emotion = worry.emotion,
             category = worry.category,
-            conversationHistory = conversationHistory,
+            messages = messages,
         )
     }
 
-    private fun buildConversationText(steps: List<WorryMessage>): String {
-        return steps.joinToString("\n") { step ->
-            val rolePrefix = if (step.role.name.equals("USER", ignoreCase = true)) "사용자" else "AI"
-            "$rolePrefix: ${step.content}"
+    private fun buildConversationText(messages: List<WorryMessage>): String {
+        return messages.joinToString("\n") { message ->
+            val rolePrefix = if (message.role.name.equals("USER", ignoreCase = true)) "사용자" else "AI"
+            "$rolePrefix: ${message.content}"
         }
     }
 

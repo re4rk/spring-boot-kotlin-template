@@ -5,5 +5,5 @@ data class CounselingRequest(
     val emotion: String,
     val category: String,
     val options: List<String> = emptyList(),
-    val conversationHistory: List<ConversationStep> = emptyList(),
+    val messages: List<ConversationMessage> = emptyList(),
 )
