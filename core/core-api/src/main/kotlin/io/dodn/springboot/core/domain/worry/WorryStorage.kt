@@ -32,7 +32,7 @@ class WorryStorage(
             ),
         )
 
-        return mapToWorry(worryEntity, emptyList(), emptyList())
+        return worryEntity.toWorry()
     }
 
     @Transactional(readOnly = true)
@@ -40,10 +40,7 @@ class WorryStorage(
         val worryEntity = worryRepository.findById(worryId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
 
-        val messages = worryMessageRepository.findByWorryIdOrderByMessageOrder(worryId)
-        val options = worryOptionRepository.findByWorryId(worryId)
-
-        return mapToWorry(worryEntity, messages, options)
+        return worryEntity.toWorry()
     }
 
     @Transactional
@@ -62,14 +59,7 @@ class WorryStorage(
             )
         }
 
-        return messageEntities.map { entity ->
-            WorryMessage(
-                id = entity.id,
-                role = MessageRole.valueOf(entity.role.name),
-                content = entity.content,
-                messageOrder = entity.messageOrder,
-            )
-        }
+        return messageEntities.map { it.toWorryMessage() }
     }
 
     @Transactional
@@ -86,12 +76,7 @@ class WorryStorage(
             ),
         )
 
-        return WorryMessage(
-            id = messageEntity.id,
-            role = MessageRole.valueOf(messageEntity.role.name),
-            content = messageEntity.content,
-            messageOrder = messageEntity.messageOrder,
-        )
+        return messageEntity.toWorryMessage()
     }
 
     @Transactional
@@ -101,21 +86,11 @@ class WorryStorage(
 
         val optionEntities = options.map { option ->
             worryOptionRepository.save(
-                WorryOptionEntity(
-                    worry = worryEntity,
-                    label = option.label,
-                    text = option.text,
-                ),
+                WorryOptionEntity(worry = worryEntity, label = option.label, text = option.text),
             )
         }
 
-        return optionEntities.map { entity ->
-            WorryOption(
-                id = entity.id,
-                label = entity.label,
-                text = entity.text,
-            )
-        }
+        return optionEntities.map { entity -> entity.toWorryOption() }
     }
 
     @Transactional
@@ -125,41 +100,42 @@ class WorryStorage(
 
         worryEntity.content = summary
 
-        return mapToWorry(worryEntity, emptyList(), emptyList())
+        return worryEntity.toWorry()
     }
 
-    private fun mapToWorry(
-        worryEntity: WorryEntity,
-        messageEntities: List<WorryMessageEntity>,
-        optionEntities: List<WorryOptionEntity>,
-    ): Worry {
-        val messages = messageEntities.map { message ->
-            WorryMessage(
-                id = message.id,
-                role = MessageRole.valueOf(message.role.name),
-                content = message.content,
-                messageOrder = message.messageOrder,
-            )
-        }
+    private fun WorryEntity.toWorry(): Worry {
+        val messages = worryMessageRepository.findByWorryIdOrderByMessageOrder(this.id)
+            .map { message -> message.toWorryMessage() }
 
-        val options = optionEntities.map { option ->
-            WorryOption(
-                id = option.id,
-                label = option.label,
-                text = option.text,
-            )
-        }
+        val options = worryOptionRepository.findByWorryId(this.id).map { option -> option.toWorryOption() }
 
         return Worry(
-            id = worryEntity.id,
-            userId = worryEntity.userId,
-            mode = WorryMode.valueOf(worryEntity.mode.name),
-            emotion = worryEntity.emotion,
-            category = worryEntity.category,
-            content = worryEntity.content,
+            id = this.id,
+            userId = this.userId,
+            mode = WorryMode.valueOf(this.mode.name),
+            emotion = this.emotion,
+            category = this.category,
+            content = this.content,
             lastMessageOrder = messages.maxOfOrNull { it.messageOrder } ?: 0,
             messages = messages,
             options = options,
+        )
+    }
+
+    private fun WorryOptionEntity.toWorryOption(): WorryOption {
+        return WorryOption(
+            id = this.id,
+            label = this.label,
+            text = this.text,
+        )
+    }
+
+    private fun WorryMessageEntity.toWorryMessage(): WorryMessage {
+        return WorryMessage(
+            id = this.id,
+            role = MessageRole.valueOf(this.role.name),
+            content = this.content,
+            messageOrder = this.messageOrder,
         )
     }
 }
