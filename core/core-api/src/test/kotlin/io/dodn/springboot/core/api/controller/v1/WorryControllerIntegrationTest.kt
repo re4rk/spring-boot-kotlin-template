@@ -180,8 +180,8 @@ class WorryControllerIntegrationTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.result").value("SUCCESS"))
             .andExpect(jsonPath("$.data.worryId").value(worryId))
-            .andExpect(jsonPath("$.data.messages[${0}].role").value("user"))
-            .andExpect(jsonPath("$.data.messages[${0}].content").value("I've been studying for hours but still feel unprepared"))
+            .andExpect(jsonPath("$.data.messages[${3}].role").value("user"))
+            .andExpect(jsonPath("$.data.messages[${3}].content").value("I've been studying for hours but still feel unprepared"))
     }
 
     // Helper methods
