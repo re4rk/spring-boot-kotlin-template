@@ -32,19 +32,14 @@ class WorryStorage(
             ),
         )
 
-        return worryEntity.toWorry()
-    }
+        saveWorryMessages(worryEntity.id, worry.messages)
 
-    @Transactional(readOnly = true)
-    fun getWorry(worryId: Long): Worry {
-        val worryEntity = worryRepository.findById(worryId)
-            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
+        saveWorryOptions(worryEntity.id, worry.options)
 
         return worryEntity.toWorry()
     }
 
-    @Transactional
-    fun saveWorryMessages(worryId: Long, messages: List<WorryMessage>): List<WorryMessage> {
+    private fun saveWorryMessages(worryId: Long, messages: List<WorryMessage>): List<WorryMessage> {
         val worryEntity = worryRepository.findById(worryId)
             .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
 
@@ -62,6 +57,27 @@ class WorryStorage(
         return messageEntities.map { it.toWorryMessage() }
     }
 
+    private fun saveWorryOptions(worryId: Long, options: List<WorryOption>): List<WorryOption> {
+        val worryEntity = worryRepository.findById(worryId)
+            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
+
+        val optionEntities = options.map { option ->
+            worryOptionRepository.save(
+                WorryOptionEntity(worry = worryEntity, label = option.label, text = option.text),
+            )
+        }
+
+        return optionEntities.map { entity -> entity.toWorryOption() }
+    }
+
+    @Transactional(readOnly = true)
+    fun getWorry(worryId: Long): Worry {
+        val worryEntity = worryRepository.findById(worryId)
+            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
+
+        return worryEntity.toWorry()
+    }
+
     @Transactional
     fun addWorryMessage(worryId: Long, message: WorryMessage): WorryMessage {
         val worryEntity = worryRepository.findById(worryId)
@@ -77,20 +93,6 @@ class WorryStorage(
         )
 
         return messageEntity.toWorryMessage()
-    }
-
-    @Transactional
-    fun saveWorryOptions(worryId: Long, options: List<WorryOption>): List<WorryOption> {
-        val worryEntity = worryRepository.findById(worryId)
-            .orElseThrow { CoreException(ErrorType.DEFAULT_ERROR, "Worry not found") }
-
-        val optionEntities = options.map { option ->
-            worryOptionRepository.save(
-                WorryOptionEntity(worry = worryEntity, label = option.label, text = option.text),
-            )
-        }
-
-        return optionEntities.map { entity -> entity.toWorryOption() }
     }
 
     @Transactional

@@ -26,14 +26,6 @@ class WorryService(
     fun createWorry(worry: Worry): Worry {
         val savedWorry = worryStorage.saveWorry(worry)
 
-        if (savedWorry.messages.isNotEmpty()) {
-            worryStorage.saveWorryMessages(savedWorry.id, savedWorry.messages)
-        }
-
-        if (savedWorry.options.isNotEmpty()) {
-            worryStorage.saveWorryOptions(savedWorry.id, savedWorry.options)
-        }
-
         return worryStorage.getWorry(savedWorry.id)
     }
 
