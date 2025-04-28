@@ -4,14 +4,16 @@ import io.dodn.springboot.core.domain.feed.Feed
 
 data class FeedResponse(
     val feedId: Long,
-    val worry: WorryResponse,
+    val emotion: String,
+    val content: String,
     val empathyCount: Long,
 ) {
     companion object {
         fun from(feed: Feed): FeedResponse {
             return FeedResponse(
                 feedId = feed.id,
-                worry = WorryResponse.from(feed.worry),
+                emotion = feed.emotion,
+                content = feed.content,
                 empathyCount = feed.empathyCount,
             )
         }

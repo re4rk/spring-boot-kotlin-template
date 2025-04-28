@@ -1,5 +1,7 @@
 package io.dodn.springboot.core.api.controller.v1
 
+import io.dodn.springboot.core.api.aspect.CheckFeedAccess
+import io.dodn.springboot.core.api.aspect.CheckWorryAccess
 import io.dodn.springboot.core.api.controller.v1.response.EmpathyResponse
 import io.dodn.springboot.core.api.controller.v1.response.FeedResponse
 import io.dodn.springboot.core.api.controller.v1.response.FeedSummaryResponse
@@ -22,6 +24,7 @@ class FeedController(
     private val feedService: FeedService,
 ) {
     @GetMapping
+    @CheckFeedAccess(permission = "VIEW")
     fun getFeeds(
         @RequestParam(required = false) emotion: String?,
         @RequestParam(required = false) tag: String?,
@@ -31,12 +34,14 @@ class FeedController(
     }
 
     @GetMapping("/{feedId}")
+    @CheckFeedAccess(permission = "VIEW")
     fun getFeed(@PathVariable feedId: Long): ApiResponse<FeedResponse> {
         val feed = feedService.getFeed(feedId)
         return ApiResponse.success(FeedResponse.from(feed))
     }
 
     @GetMapping("/owner/{ownerId}")
+    @CheckFeedAccess(permission = "VIEW")
     fun getFeedByOwnerId(
         @PathVariable ownerId: Long,
         @AuthenticationPrincipal userDetails: GominUserDetails,
@@ -45,17 +50,18 @@ class FeedController(
         return ApiResponse.success(feeds.map { FeedSummaryResponse.from(it) })
     }
 
-    @PostMapping("/worry/{worryId}/feedback/{feedbackId}")
+    @PostMapping("/worry/{worryId}")
+    @CheckWorryAccess(permission = "EDIT")
     fun shareWorry(
         @PathVariable worryId: Long,
-        @PathVariable feedbackId: Long,
         @AuthenticationPrincipal userDetails: GominUserDetails,
     ): ApiResponse<FeedResponse> {
-        val feed = feedService.createFeedByWorry(userDetails, worryId, feedbackId)
+        val feed = feedService.createFeedByWorry(userDetails, worryId)
         return ApiResponse.success(FeedResponse.from(feed))
     }
 
     @DeleteMapping("/{feedId}")
+    @CheckFeedAccess(permission = "EDIT")
     fun deleteFeed(
         @PathVariable feedId: Long,
         @AuthenticationPrincipal userDetails: UserDetails,
@@ -67,9 +73,9 @@ class FeedController(
     @PostMapping("/{feedId}/empathy")
     fun addEmpathy(
         @PathVariable feedId: Long,
-        @RequestParam userId: Long,
+        @AuthenticationPrincipal userDetails: GominUserDetails,
     ): ApiResponse<EmpathyResponse> {
-        val count = feedService.addEmpathy(feedId, userId)
+        val count = feedService.addEmpathy(feedId, userDetails.id)
         return ApiResponse.success(
             EmpathyResponse(
                 status = "liked",
@@ -81,9 +87,9 @@ class FeedController(
     @DeleteMapping("/{feedId}/empathy")
     fun removeEmpathy(
         @PathVariable feedId: Long,
-        @RequestParam userId: Long,
+        @AuthenticationPrincipal userDetails: GominUserDetails,
     ): ApiResponse<EmpathyResponse> {
-        val count = feedService.removeEmpathy(feedId, userId)
+        val count = feedService.removeEmpathy(feedId, userDetails.id)
         return ApiResponse.success(
             EmpathyResponse(
                 status = "unliked",

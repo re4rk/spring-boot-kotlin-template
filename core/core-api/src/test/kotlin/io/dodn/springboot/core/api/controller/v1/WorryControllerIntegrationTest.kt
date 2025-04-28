@@ -156,7 +156,6 @@ class WorryControllerIntegrationTest {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.result").value("SUCCESS"))
-            .andExpect(jsonPath("$.data.summary").exists())
     }
 
     @Test

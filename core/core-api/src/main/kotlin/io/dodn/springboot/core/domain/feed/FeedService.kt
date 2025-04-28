@@ -1,7 +1,6 @@
 package io.dodn.springboot.core.domain.feed
 
 import io.dodn.springboot.core.domain.feed.empathy.EmpathyCounter
-import io.dodn.springboot.core.domain.worry.WorryStorage
 import io.dodn.springboot.core.support.error.CoreException
 import io.dodn.springboot.core.support.error.ErrorType
 import org.springframework.security.core.userdetails.UserDetails
@@ -11,20 +10,11 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class FeedService(
     private val feedStorage: FeedStorage,
-    private val worryStorage: WorryStorage,
     private val empathyCounter: EmpathyCounter,
 ) {
     @Transactional
-    fun createFeedByWorry(userDetails: UserDetails, worryId: Long, feedbackId: Long): Feed {
-        val worry = worryStorage.getWorry(worryId)
-
-        val isOwner = userDetails.username.toLong() == worry.userId
-
-        if (!isOwner) {
-            throw CoreException(ErrorType.FEED_PERMISSION_DENIED)
-        }
-
-        return feedStorage.shareWorry(worryId, feedbackId)
+    fun createFeedByWorry(userDetails: UserDetails, worryId: Long): Feed {
+        return feedStorage.shareWorry(worryId)
     }
 
     @Transactional
@@ -46,7 +36,7 @@ class FeedService(
         val feeds = feedStorage.getAllFeeds()
 
         return feeds.filter { feed ->
-            (emotion == null || feed.worry.emotion == emotion) &&
+            (emotion == null || feed.emotion == emotion) &&
                 (tag == null || feed.content.contains(tag))
         }
     }

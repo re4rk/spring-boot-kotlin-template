@@ -16,10 +16,17 @@ class FeedStorage(
     private val empathyCounter: EmpathyCounter,
 ) {
     @Transactional
-    fun shareWorry(worryId: Long, feedbackId: Long): Feed {
-        val feedEntity = feedRepository.save(FeedEntity(worryId = worryId, feedbackId = feedbackId))
+    fun shareWorry(worryId: Long): Feed {
+        val worry = worryStorage.getWorry(worryId)
+        val feedEntity = FeedEntity(
+            ownerId = worry.userId,
+            worryId = worryId,
+            emotion = worry.emotion,
+            content = worry.content,
+        )
 
-        return mapToFeed(feedEntity)
+        val savedFeedEntity = feedRepository.save(feedEntity)
+        return mapToFeed(savedFeedEntity)
     }
 
     @Transactional
@@ -49,15 +56,12 @@ class FeedStorage(
     }
 
     private fun mapToFeed(feedEntity: FeedEntity): Feed {
-        val worry = worryStorage.getWorry(feedEntity.worryId)
-        val empathyCount = empathyCounter.getEmpathyCount(feedEntity.id)
-
         return Feed(
             id = feedEntity.id,
             ownerId = feedEntity.ownerId,
-            worry = worry,
-            content = worry.content,
-            empathyCount = empathyCount,
+            emotion = feedEntity.emotion,
+            content = feedEntity.content,
+            empathyCount = empathyCounter.getEmpathyCount(feedEntity.id),
             sharedAt = feedEntity.sharedAt,
         )
     }

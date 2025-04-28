@@ -1,7 +1,6 @@
 package io.dodn.springboot.core.api.controller.v1.response
 
 import io.dodn.springboot.core.domain.feed.Feed
-import io.dodn.springboot.core.domain.worry.WorryMode
 
 data class FeedSummaryResponse(
     val feedId: Long,
@@ -11,16 +10,11 @@ data class FeedSummaryResponse(
 ) {
     companion object {
         fun from(feed: Feed): FeedSummaryResponse {
-            val summary = when (feed.worry.mode) {
-                WorryMode.LETTER -> "${feed.worry.content.take(20)}... 고민에 AI가 답변했어요."
-                WorryMode.CONVO -> "대화형 고민에 AI가 공감해주었어요."
-            }
-
             return FeedSummaryResponse(
                 feedId = feed.id,
-                emotion = feed.worry.emotion,
+                emotion = feed.emotion,
                 tags = ArrayList(),
-                summary = summary,
+                summary = feed.content,
             )
         }
     }

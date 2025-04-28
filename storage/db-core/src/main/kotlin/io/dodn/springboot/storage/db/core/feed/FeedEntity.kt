@@ -11,7 +11,9 @@ class FeedEntity(
 
     val worryId: Long = 0,
 
-    val feedbackId: Long = 0,
+    val emotion: String = "",
+
+    val content: String = "",
 
     @Column(nullable = false)
     val sharedAt: LocalDateTime = LocalDateTime.now(),

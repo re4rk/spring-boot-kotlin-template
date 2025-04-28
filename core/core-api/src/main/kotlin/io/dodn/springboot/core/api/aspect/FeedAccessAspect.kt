@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 
 @Aspect
 @Component
-class WorryAccessAspect(
+class FeedAccessAspect(
     private val worryStorage: WorryStorage,
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -23,7 +23,7 @@ class WorryAccessAspect(
     @Around("@annotation(checkAccess)")
     fun checkAccess(joinPoint: ProceedingJoinPoint, checkAccess: CheckWorryAccess): Any {
         // 1. 메서드 파라미터에서 worryId 추출
-        val worryId = extractWorryId(joinPoint, checkAccess.worryIdParam)
+        val worryId = extractFeedId(joinPoint, checkAccess.worryIdParam)
 
         // 2. 현재 인증된 사용자 정보 가져오기
         val authentication = SecurityContextHolder.getContext().authentication
@@ -50,7 +50,7 @@ class WorryAccessAspect(
         return joinPoint.proceed()
     }
 
-    private fun extractWorryId(joinPoint: ProceedingJoinPoint, paramName: String): Long {
+    private fun extractFeedId(joinPoint: ProceedingJoinPoint, paramName: String): Long {
         val signature = joinPoint.signature as MethodSignature
         val paramNames = signature.parameterNames
         val args = joinPoint.args
@@ -75,4 +75,3 @@ class WorryAccessAspect(
         return worry.userId == userDetails.id
     }
 }
-

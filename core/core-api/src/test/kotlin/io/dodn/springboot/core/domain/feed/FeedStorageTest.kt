@@ -45,7 +45,8 @@ class FeedStorageTest : UnitTest() {
         val mockFeedEntity = FeedEntity(
             ownerId = ownerId,
             worryId = worryId,
-            feedbackId = feedbackId,
+            emotion = "Happy",
+            content = "Test content",
             sharedAt = sharedAt,
         ).apply {
             val field = BaseEntity::class.java.getDeclaredField("id")
@@ -68,11 +69,13 @@ class FeedStorageTest : UnitTest() {
         every { empathyCounter.getEmpathyCount(feedId) } returns 0L
 
         // when
-        val result = feedStorage.shareWorry(worryId, feedbackId)
+        val result = feedStorage.shareWorry(worryId)
 
         // then
         assertThat(result.id).isEqualTo(feedId)
-        assertThat(result.worry).isEqualTo(mockWorry)
+        assertThat(result.ownerId).isEqualTo(ownerId)
+        assertThat(result.emotion).isEqualTo("Happy")
+        assertThat(result.content).isEqualTo("Test content")
         assertThat(result.empathyCount).isEqualTo(0L)
         verify { feedRepository.save(any()) }
     }
@@ -110,13 +113,13 @@ class FeedStorageTest : UnitTest() {
         val feedId = 1L
         val ownerId = 2L
         val worryId = 3L
-        val feedbackId = 4L
         val sharedAt = LocalDateTime.now()
 
         val mockFeedEntity = FeedEntity(
             ownerId = ownerId,
             worryId = worryId,
-            feedbackId = feedbackId,
+            emotion = "Happy",
+            content = "Test content",
             sharedAt = sharedAt,
         ).apply {
             val field = BaseEntity::class.java.getDeclaredField("id")
@@ -143,7 +146,8 @@ class FeedStorageTest : UnitTest() {
         // then
         assertThat(result.id).isEqualTo(feedId)
         assertThat(result.ownerId).isEqualTo(ownerId)
-        assertThat(result.worry).isEqualTo(mockWorry)
+        assertThat(result.emotion).isEqualTo("Happy")
+        assertThat(result.content).isEqualTo("Test content")
         assertThat(result.empathyCount).isEqualTo(5L)
         assertThat(result.sharedAt).isEqualTo(sharedAt)
     }
@@ -164,8 +168,8 @@ class FeedStorageTest : UnitTest() {
     fun `should get feeds by owner id`() {
         // given
         val ownerId = 1L
-        val feed1 = createMockFeedEntity(1L, ownerId, 10L, 20L)
-        val feed2 = createMockFeedEntity(2L, ownerId, 11L, 21L)
+        val feed1 = createMockFeedEntity(1L, ownerId, 10L)
+        val feed2 = createMockFeedEntity(2L, ownerId, 11L)
 
         val mockWorry1 = createMockWorry(10L, ownerId)
         val mockWorry2 = createMockWorry(11L, ownerId)
@@ -190,8 +194,8 @@ class FeedStorageTest : UnitTest() {
     @Test
     fun `should get all feeds ordered by shared date`() {
         // given
-        val feed1 = createMockFeedEntity(1L, 100L, 10L, 20L)
-        val feed2 = createMockFeedEntity(2L, 101L, 11L, 21L)
+        val feed1 = createMockFeedEntity(1L, 100L, 10L)
+        val feed2 = createMockFeedEntity(2L, 101L, 11L)
 
         val mockWorry1 = createMockWorry(10L, 100L)
         val mockWorry2 = createMockWorry(11L, 101L)
@@ -212,11 +216,10 @@ class FeedStorageTest : UnitTest() {
     }
 
     // Helper methods
-    private fun createMockFeedEntity(id: Long, ownerId: Long, worryId: Long, feedbackId: Long): FeedEntity {
+    private fun createMockFeedEntity(id: Long, ownerId: Long, worryId: Long): FeedEntity {
         return FeedEntity(
             ownerId = ownerId,
             worryId = worryId,
-            feedbackId = feedbackId,
             sharedAt = LocalDateTime.now(),
         ).apply {
             val field = BaseEntity::class.java.getDeclaredField("id")
