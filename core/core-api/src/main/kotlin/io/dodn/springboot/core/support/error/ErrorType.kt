@@ -10,6 +10,7 @@ enum class ErrorType(val status: HttpStatus, val code: ErrorCode, val message: S
     // Parameter Errors
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Invalid parameter", LogLevel.WARN),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Validation error", LogLevel.WARN),
+    DUPLICATE_RESOURCE(HttpStatus.CONFLICT, ErrorCode.E409, "Resource already exists", LogLevel.WARN),
 
     // Authentication & Authorization Errors
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "Unauthorized", LogLevel.WARN),
