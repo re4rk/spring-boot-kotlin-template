@@ -75,4 +75,3 @@ class WorryAccessAspect(
         return worry.userId == userDetails.id
     }
 }
-

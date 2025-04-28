@@ -6,4 +6,3 @@ annotation class CheckWorryAccess(
     val permission: String,
     val worryIdParam: String = "worryId",
 )
-
