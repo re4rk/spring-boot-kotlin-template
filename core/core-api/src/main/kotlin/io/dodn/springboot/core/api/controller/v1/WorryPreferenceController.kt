@@ -25,18 +25,13 @@ import org.springframework.web.bind.annotation.RestController
 class WorryPreferenceController(
     private val worryPreferenceService: WorryPreferenceService,
 ) {
-
     @PostMapping
     fun createWorryPreference(
         @RequestBody @Valid request: WorryPreferenceRequest,
         @AuthenticationPrincipal userDetails: GominUserDetails,
     ): ResponseEntity<ApiResponse<WorryPreferenceResponse>> {
-        val params = WorryPreferenceParams(
-            expressionStyle = request.expressionStyle,
-            comfortStyle = request.comfortStyle,
-        )
-
-        val preference = worryPreferenceService.createWorryPreference(userDetails.id, params)
+        val preference =
+            worryPreferenceService.createWorryPreference(userDetails.id, request.toWorryPreferenceParams())
 
         return ResponseEntity.ok(ApiResponse.success(WorryPreferenceResponse.from(preference)))
     }
@@ -55,12 +50,7 @@ class WorryPreferenceController(
         @RequestBody @Valid request: WorryPreferenceRequest,
         @AuthenticationPrincipal userDetails: GominUserDetails,
     ): ResponseEntity<ApiResponse<WorryPreferenceResponse>> {
-        val params = WorryPreferenceParams(
-            expressionStyle = request.expressionStyle,
-            comfortStyle = request.comfortStyle,
-        )
-
-        val preference = worryPreferenceService.updateWorryPreference(userDetails.id, params)
+        val preference = worryPreferenceService.updateWorryPreference(userDetails.id, request.toWorryPreferenceParams())
 
         return ResponseEntity.ok(ApiResponse.success(WorryPreferenceResponse.from(preference)))
     }
@@ -83,6 +73,13 @@ class WorryPreferenceController(
         return ResponseEntity.ok(ApiResponse.success(response))
     }
 
+    private fun WorryPreferenceRequest.toWorryPreferenceParams(): WorryPreferenceParams {
+        return WorryPreferenceParams(
+            expressionStyle = this.expressionStyle,
+            comfortStyle = this.comfortStyle,
+        )
+    }
+
     private fun getExpressionStyleDescription(style: ExpressionStyle): String {
         return when (style) {
             ExpressionStyle.DIRECT -> "감정을 직접적으로 표현하는 스타일"
@@ -98,4 +95,3 @@ class WorryPreferenceController(
         }
     }
 }
-
