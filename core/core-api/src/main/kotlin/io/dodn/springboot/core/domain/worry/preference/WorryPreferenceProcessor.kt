@@ -32,6 +32,12 @@ class WorryPreferenceProcessor(
     }
 
     @Transactional
+    fun findByUserIdOrDefault(userId: Long): WorryPreference {
+        return worryPreferenceStorage.findByUserIdOrNull(userId)
+            ?: createDefault(userId)
+    }
+
+    @Transactional
     fun createDefault(userId: Long): WorryPreference {
         val now = LocalDateTime.now()
         val defaultPreference = WorryPreference(

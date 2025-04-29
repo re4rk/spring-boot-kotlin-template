@@ -2,6 +2,7 @@ package io.dodn.springboot.core.domain.worry
 
 import io.dodn.springboot.core.domain.worry.counselor.CounselorClient
 import io.dodn.springboot.core.domain.worry.counselor.dto.SummaryRequest
+import io.dodn.springboot.core.domain.worry.preference.WorryPreferenceProcessor
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -15,6 +16,7 @@ import java.util.concurrent.Executor
 @Service
 class WorryService(
     private val worryStorage: WorryStorage,
+    private val worryPreferenceProcessor: WorryPreferenceProcessor,
     private val counselorClient: CounselorClient,
     private val counselorMapper: CounselorMapper,
     @Autowired private val transactionManager: PlatformTransactionManager,
@@ -47,6 +49,8 @@ class WorryService(
         val worry = worryStorage.getWorry(worryId)
 
         val counselingResponse = counselorClient.getCounseling(counselorMapper.toRequest(worry))
+
+        val worryPreference = worryPreferenceProcessor.findByUserIdOrDefault(worry.userId)
 
         return worryStorage.addWorryMessage(
             worryId = worryId,
